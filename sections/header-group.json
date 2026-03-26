@@ -202,7 +202,7 @@
         "color_scheme": "scheme-1",
         "enable_sticky": true,
         "hide_on_scroll": true,
-        "mobile_layout": "logo_left_navigation_right",
+        "mobile_layout": "logo_with_menu_left_navigation_right",
         "desktop_layout": "logo_left_navigation_inline",
         "logo": "{{shop.brand.logo}}",
         "logo_max_width": 300,
