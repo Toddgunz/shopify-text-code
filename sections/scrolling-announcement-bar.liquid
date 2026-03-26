@@ -1,0 +1,294 @@
+{%- if section.blocks.size > 0 -%}
+  {%- liquid
+    assign should_render = true
+
+    if request.page_type != 'index' and section.settings.show_on_homepage_only
+      assign should_render = false
+    endif
+  -%}
+
+  {%- if should_render -%}
+    <style>
+      #shopify-section-{{ section.id }} {
+        {% if section.settings.enable_sticky %}
+          position: sticky;
+          top: 0;
+          z-index: 3;
+        {% endif %}
+      }
+
+      .shopify-section--header ~ #shopify-section-{{ section.id }} {
+        top: calc(var(--header-is-sticky, 0) * var(--header-is-visible, 0) * var(--header-height, 0px));
+      }
+
+      .scrolling-announcement-bar-{{ section.id }} {
+        width: 100%;
+        overflow: hidden;
+      }
+
+      .scrolling-announcement-bar__viewport-{{ section.id }} {
+        width: 100%;
+        overflow: hidden;
+      }
+
+      .scrolling-announcement-bar__track-{{ section.id }} {
+        display: flex;
+        width: max-content;
+        animation: scrolling-announcement-bar-marquee-{{ section.id }} {{ section.settings.scroll_speed }}s linear infinite;
+        will-change: transform;
+      }
+
+      .scrolling-announcement-bar-{{ section.id }}:hover .scrolling-announcement-bar__track-{{ section.id }} {
+        animation-play-state: paused;
+      }
+
+      .scrolling-announcement-bar__item-{{ section.id }} {
+        flex: 0 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: {{ section.settings.vertical_padding }}px {{ section.settings.horizontal_padding }}px;
+        font-size: {{ section.settings.font_size }}px;
+        line-height: 1;
+        white-space: nowrap;
+      }
+
+      .scrolling-announcement-bar__item-{{ section.id }} > * {
+        margin: 0;
+      }
+
+      .scrolling-announcement-bar__separator-{{ section.id }} {
+        flex: 0 0 auto;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 {{ section.settings.message_spacing }}px;
+        opacity: {{ section.settings.separator_opacity | divided_by: 100.0 }};
+        line-height: 1;
+      }
+
+      @keyframes scrolling-announcement-bar-marquee-{{ section.id }} {
+        from { transform: translateX(0); }
+        to { transform: translateX(-50%); }
+      }
+
+      @media screen and (max-width: 749px) {
+        .scrolling-announcement-bar__item-{{ section.id }} {
+          padding: {{ section.settings.vertical_padding_mobile }}px {{ section.settings.horizontal_padding_mobile }}px;
+          font-size: {{ section.settings.font_size_mobile }}px;
+        }
+
+        .scrolling-announcement-bar__separator-{{ section.id }} {
+          margin: 0 {{ section.settings.message_spacing_mobile }}px;
+        }
+      }
+    </style>
+
+    <div class="color-scheme color-scheme--{{ section.settings.color_scheme.id }}">
+      <div class="scrolling-announcement-bar-{{ section.id }}">
+        <div class="scrolling-announcement-bar__viewport-{{ section.id }}">
+          <div class="scrolling-announcement-bar__track-{{ section.id }}">
+            {%- for duplicate in (1..2) -%}
+              {%- for block in section.blocks -%}
+                {%- if block.settings.text != blank -%}
+                  <div class="scrolling-announcement-bar__item-{{ section.id }}" {{ block.shopify_attributes }}>
+                    {{- block.settings.text -}}
+                  </div>
+
+                  {%- unless forloop.last and duplicate == 2 -%}
+                    <span class="scrolling-announcement-bar__separator-{{ section.id }}">{{ section.settings.separator }}</span>
+                  {%- endunless -%}
+                {%- endif -%}
+              {%- endfor -%}
+            {%- endfor -%}
+          </div>
+        </div>
+      </div>
+    </div>
+  {%- endif -%}
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Scrolling announcement bar",
+  "class": "shopify-section--announcement-bar",
+  "tag": "aside",
+  "enabled_on": {
+    "groups": ["header"]
+  },
+  "max_blocks": 8,
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-2"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_sticky",
+      "label": "Stick below header",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_on_homepage_only",
+      "label": "Show on homepage only",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "separator",
+      "label": "Separator",
+      "default": "|"
+    },
+    {
+      "type": "range",
+      "id": "separator_opacity",
+      "label": "Separator opacity",
+      "min": 10,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "scroll_speed",
+      "label": "Scroll speed",
+      "min": 10,
+      "max": 60,
+      "step": 2,
+      "unit": "s",
+      "default": 24
+    },
+    {
+      "type": "header",
+      "content": "Desktop spacing"
+    },
+    {
+      "type": "range",
+      "id": "vertical_padding",
+      "label": "Vertical padding",
+      "min": 4,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "horizontal_padding",
+      "label": "Horizontal padding",
+      "min": 8,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "message_spacing",
+      "label": "Message spacing",
+      "min": 8,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "font_size",
+      "label": "Font size",
+      "min": 10,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "header",
+      "content": "Mobile spacing"
+    },
+    {
+      "type": "range",
+      "id": "vertical_padding_mobile",
+      "label": "Vertical padding",
+      "min": 4,
+      "max": 16,
+      "step": 1,
+      "unit": "px",
+      "default": 7
+    },
+    {
+      "type": "range",
+      "id": "horizontal_padding_mobile",
+      "label": "Horizontal padding",
+      "min": 8,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "message_spacing_mobile",
+      "label": "Message spacing",
+      "min": 8,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "font_size_mobile",
+      "label": "Font size",
+      "min": 10,
+      "max": 16,
+      "step": 1,
+      "unit": "px",
+      "default": 11
+    }
+  ],
+  "blocks": [
+    {
+      "type": "message",
+      "name": "Message",
+      "settings": [
+        {
+          "type": "inline_richtext",
+          "id": "text",
+          "label": "Text",
+          "default": "Announce something here"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Scrolling announcement bar",
+      "blocks": [
+        {
+          "type": "message",
+          "settings": {
+            "text": "Free shipping on orders over $100"
+          }
+        },
+        {
+          "type": "message",
+          "settings": {
+            "text": "New arrivals just landed"
+          }
+        },
+        {
+          "type": "message",
+          "settings": {
+            "text": "Bandit Spring 2026 Drop 2"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
