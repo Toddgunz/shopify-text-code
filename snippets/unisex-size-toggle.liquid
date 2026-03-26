@@ -1,0 +1,144 @@
+{%- doc -%}
+  Renders a Men's / Women's size display toggle for products using unisex sizing.
+  Only displays when the product metafield custom.display_unisex is true.
+  Reads the custom.size_offset metafield when present, defaulting to 1.5.
+
+  @param {object} product - the current product
+{%- enddoc -%}
+
+{%- liquid
+  assign display_unisex_metafield = product.metafields.custom.display_unisex
+  assign display_unisex_value = display_unisex_metafield.value | default: display_unisex_metafield
+  assign size_offset_metafield = product.metafields.custom.size_offset
+  assign size_offset = size_offset_metafield.value | default: size_offset_metafield | default: 1.5
+-%}
+
+{%- if display_unisex_value == true or display_unisex_value == 'true' or display_unisex_value == 1 or display_unisex_value == '1' -%}
+  <div class="unisex-size-toggle" data-size-offset="{{ size_offset }}">
+    <div class="unisex-size-toggle__header">
+      <div class="unisex-size-toggle__buttons" role="group" aria-label="Size display">
+        <button
+          type="button"
+          class="unisex-size-toggle__btn unisex-size-toggle__btn--active"
+          data-gender="mens"
+          aria-pressed="true"
+        >
+          Men's
+        </button>
+        <button
+          type="button"
+          class="unisex-size-toggle__btn"
+          data-gender="womens"
+          aria-pressed="false"
+        >
+          Women's
+        </button>
+      </div>
+    </div>
+
+    <div class="unisex-size-toggle__note-wrap">
+      <span class="unisex-size-toggle__note-sizer" aria-hidden="true">Women's sizes run {{ size_offset }} sizes larger than the unisex/men's size. The unisex size is shown below each size.</span>
+      <span class="unisex-size-toggle__note" data-toggle-note>Unisex sizing - same as men's. Select your men's size below.</span>
+    </div>
+  </div>
+
+  <style>
+    .unisex-size-toggle {
+      margin-bottom: 0.75rem;
+    }
+
+    .unisex-size-toggle__header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .unisex-size-toggle__buttons {
+      display: inline-flex;
+      border: 1px solid rgba(var(--border-color), 0.35);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .unisex-size-toggle__btn {
+      padding: 6px 16px;
+      font-size: 13px;
+      font-family: inherit;
+      font-weight: 400;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: rgba(var(--text-color), 0.55);
+      transition: background 0.15s, color 0.15s;
+      line-height: 1.4;
+    }
+
+    .unisex-size-toggle__btn + .unisex-size-toggle__btn {
+      border-left: 1px solid rgba(var(--border-color), 0.35);
+    }
+
+    .unisex-size-toggle__btn--active {
+      background: rgba(var(--text-color), 0.07);
+      color: rgb(var(--text-color));
+      font-weight: 500;
+    }
+
+    .unisex-size-toggle__note-wrap {
+      position: relative;
+    }
+
+    .unisex-size-toggle__note-sizer {
+      display: block;
+      font-size: 12px;
+      line-height: 1.5;
+      visibility: hidden;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .unisex-size-toggle__note {
+      position: absolute;
+      inset: 0;
+      font-size: 12px;
+      line-height: 1.5;
+      color: rgba(var(--text-color), 0.55);
+    }
+
+    [data-block-type="variant-picker"] .variant-picker__option[data-option-role="size"] .block-swatch,
+    [data-block-type="variant-picker"] .variant-picker__option[data-option-role="size"] .option-value,
+    [data-block-type="variant-picker"] .variant-picker__option[data-option-role="size"] label:not([class]) {
+      height: 52px !important;
+      max-width: none !important;
+      display: inline-flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      justify-content: center !important;
+      min-width: 52px !important;
+      padding: 0 6px !important;
+      box-sizing: border-box !important;
+    }
+
+    [data-block-type="variant-picker"] .variant-picker__option[data-option-role="size"] .block-swatch > span:not(.block-swatch__color),
+    [data-block-type="variant-picker"] .variant-picker__option[data-option-role="size"] .option-value__label {
+      font-size: 13px;
+      line-height: 1.2;
+      display: block;
+      text-align: center;
+    }
+
+    .variant-value__womens-label {
+      display: none;
+      font-size: 9px;
+      line-height: 1.1;
+      opacity: 0.55;
+      text-align: center;
+      margin-top: 2px;
+      white-space: nowrap;
+    }
+
+    .unisex-womens-active .variant-value__womens-label {
+      display: block;
+    }
+  </style>
+{%- endif -%}

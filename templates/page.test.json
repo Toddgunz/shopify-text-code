@@ -1,0 +1,178 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "image_with_text_overlay_9wXPYD": {
+      "type": "image-with-text-overlay",
+      "blocks": {
+        "subheading_9KK4Ut": {
+          "type": "subheading",
+          "settings": {
+            "text": "Subheading"
+          },
+          "blocks": {}
+        },
+        "heading_dbM4LB": {
+          "type": "heading",
+          "settings": {
+            "text": "Image with text overlay",
+            "heading_size": "h3",
+            "html_tag": "p",
+            "indent": "none",
+            "highlight_effect": "default",
+            "highlight_accent_color": "",
+            "highlight_text_color": ""
+          },
+          "blocks": {}
+        },
+        "rich_text_V4zj3h": {
+          "type": "rich-text",
+          "settings": {
+            "text": "<p>Write some text about your products or your brand.</p>",
+            "content_width": "sm"
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "subheading_9KK4Ut",
+        "heading_dbM4LB",
+        "rich_text_V4zj3h"
+      ],
+      "name": "t:sections.image_with_text_overlay.name",
+      "settings": {
+        "color_scheme": "",
+        "allow_transparent_header": true,
+        "image_size": "auto",
+        "overlay_color": "#000000",
+        "overlay_opacity": 20,
+        "enable_sticky_content": false,
+        "content_width": "md",
+        "desktop_text_position": "sm:place-self-center",
+        "mobile_text_position": "place-self-center"
+      }
+    },
+    "text_with_icons_gVxxKr": {
+      "type": "text-with-icons",
+      "blocks": {
+        "item_dbCYMq": {
+          "type": "item",
+          "settings": {
+            "icon": "none",
+            "title": "Free shipping",
+            "heading_tag": "h6",
+            "content": "<p>Free worldwide shipping and returns - customs and duties taxes included</p>"
+          }
+        },
+        "item_J8XcWg": {
+          "type": "item",
+          "settings": {
+            "icon": "none",
+            "title": "Customer service",
+            "heading_tag": "h6",
+            "content": "<p>We are available from monday to friday to answer your questions.</p>"
+          }
+        },
+        "item_fHD7By": {
+          "type": "item",
+          "settings": {
+            "icon": "none",
+            "title": "Secure payment",
+            "heading_tag": "h6",
+            "content": "<p>Your payment information is processed securely.</p>"
+          }
+        },
+        "item_UEdNn8": {
+          "type": "item",
+          "settings": {
+            "icon": "none",
+            "title": "Satisfaction guarantee",
+            "heading_tag": "h6",
+            "content": "<p>Enjoy a 30-day money-back guarantee for a risk-free shopping experience.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "item_dbCYMq",
+        "item_J8XcWg",
+        "item_fHD7By",
+        "item_UEdNn8"
+      ],
+      "name": "t:sections.text_with_icons.name",
+      "settings": {
+        "color_scheme": "",
+        "subheading": "",
+        "title": "Text with icons",
+        "content": "<p>Use this section to build trust with your customers, or showcase product features with text and icons.</p>",
+        "heading_tag": "h3",
+        "text_alignment": "center",
+        "items_per_row_desktop": 2,
+        "stack_on_mobile": false,
+        "separator_style": "horizontal",
+        "icon_position": "stacked",
+        "icon_width": 36,
+        "mobile_icon_width": 32,
+        "item_text_alignment": "left"
+      }
+    },
+    "text_with_fixed_background_jQ3KKc": {
+      "type": "text-with-fixed-background",
+      "blocks": {
+        "title_zaNBzj": {
+          "type": "title",
+          "settings": {
+            "content_position": "md:place-self-start",
+            "subheading": "About us",
+            "title": "BEANS ARE BEST",
+            "heading_tag": "h2",
+            "highlight_effect": "default",
+            "highlight_accent_color": "",
+            "highlight_text_color": ""
+          }
+        },
+        "content_EjwcrW": {
+          "type": "content",
+          "settings": {
+            "color_scheme": "",
+            "content_position": "md:place-self-end",
+            "title": "Share something about your business",
+            "content": "<p>Give extra information to your customers about your values or your products.</p>",
+            "indent_heading": false
+          }
+        }
+      },
+      "block_order": [
+        "title_zaNBzj",
+        "content_EjwcrW"
+      ],
+      "name": "t:sections.text_with_fixed_background.name",
+      "settings": {
+        "color_scheme": "",
+        "overlay_color": "#000000",
+        "overlay_opacity": 20
+      }
+    },
+    "main": {
+      "type": "main-page",
+      "disabled": true,
+      "settings": {
+        "color_scheme": "",
+        "show_title": true,
+        "content_width": "md"
+      }
+    }
+  },
+  "order": [
+    "image_with_text_overlay_9wXPYD",
+    "text_with_icons_gVxxKr",
+    "text_with_fixed_background_jQ3KKc",
+    "main"
+  ]
+}

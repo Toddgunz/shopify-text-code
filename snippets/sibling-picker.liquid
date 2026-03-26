@@ -1,0 +1,75 @@
+{%- doc -%}
+Renders a color picker for sibling products linked via the sibling_collection metafield.
+Each sibling product represents a different color of the same shoe. Clicking a swatch
+fetches the new product via Section Rendering API without a full page reload.
+
+@param {object} product - the current product
+@param {string} product_form_id - the ID of the product form
+@param {string} [option_name] - the label for the color option (defaults to "Color")
+@param {string} [swatch_selector_size] - "sm" or "lg" (defaults to "lg")
+@param {string} [alignment] - content alignment ("start", "center", "end")
+@param {string} [context] - rendering context ("main_product", "featured_product", "quick_buy")
+@param {object} [section]
+{%- enddoc -%}
+
+{%- liquid
+  assign sibling_collection = product.metafields.custom.sibling_collection.value
+-%}
+
+{%- if sibling_collection != blank and sibling_collection.products.size > 1 -%}
+  {%- liquid
+    assign current_color = product.metafields.custom.product_color.value
+    assign option_name = option_name | default: 'Color'
+    assign swatch_selector_size = swatch_selector_size | default: 'lg'
+    assign alignment = alignment | default: 'start'
+  -%}
+
+  <sibling-picker class="variant-picker" section-id="{{ section.id }}" form-id="{{ product_form_id }}"{% if context == 'quick_buy' %} context="quick_buy"{% endif %}>
+    <fieldset class="variant-picker__option justify-{{ alignment }}">
+      <div class="variant-picker__option-info {% if alignment == 'start' %}justify-between{% else %}justify-{{ alignment }}{% endif %}">
+        <div class="h-stack gap-2">
+          <legend class="text-subdued">{{ option_name | escape }}:</legend>
+          {%- if current_color != blank -%}
+            <span data-sibling-active-label>{{ current_color }}</span>
+          {%- endif -%}
+        </div>
+      </div>
+
+      <div class="variant-picker__option-values h-stack gap-1 wrap">
+        {%- for sibling in sibling_collection.products -%}
+          {%- liquid
+            assign sibling_color = sibling.metafields.custom.product_color.value
+            assign is_current = false
+
+            if sibling.id == product.id
+              assign is_current = true
+            endif
+          -%}
+
+          {%- capture input_id -%}sibling-{{ product_form_id }}-{{ sibling.id }}{%- endcapture -%}
+
+          <input
+            class="sr-only"
+            type="radio"
+            name="sibling-color-{{ product_form_id }}"
+            id="{{ input_id }}"
+            value="{{ sibling.handle }}"
+            data-product-url="{{ sibling.url }}"
+            {% if is_current %}checked{% endif %}
+          >
+
+          {%- if sibling.featured_media != blank -%}
+            <label for="{{ input_id }}" class="thumbnail-swatch {% if swatch_selector_size == 'sm' %}thumbnail-swatch--sm{% endif %} {% if is_current %}is-selected{% endif %}" data-tooltip="{{ sibling_color | default: sibling.title | escape }}" data-tooltip-style="color">
+              <span class="sr-only">{{ sibling_color | default: sibling.title }}</span>
+              {{- sibling.featured_media | image_url: width: sibling.featured_media.width | image_tag: loading: 'lazy', sizes: '(max-width: 699px) 56px, 72px', widths: '56,72,112,144', class: 'object-contain' -}}
+            </label>
+          {%- else -%}
+            <label for="{{ input_id }}" class="block-swatch {% if is_current %}is-selected{% endif %}" data-tooltip="{{ sibling_color | default: sibling.title | escape }}" data-tooltip-style="color">
+              {{- sibling_color | default: sibling.title -}}
+            </label>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    </fieldset>
+  </sibling-picker>
+{%- endif -%}

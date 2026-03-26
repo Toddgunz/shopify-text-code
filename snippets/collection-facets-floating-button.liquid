@@ -1,0 +1,29 @@
+{%- doc -%}
+This component is used on collection and search pages to show the floating button on mobile that allows customers
+to open the filters drawer.
+
+@param {object} data_source - the source from which the data is extracted (collection or search)
+@param {object} [section]
+{%- enddoc -%}
+
+{%- liquid
+  assign show_mobile_floating_button = true
+  assign aria_controls = 'facets-drawer'
+  
+  if section.settings.show_sort_by and section.settings.show_filters and data_source.filters.size > 0
+    assign button_content = 'collection.faceting.filter_and_sort_button' | t
+  elsif section.settings.show_filters and section.settings.show_sort_by == false and data_source.filters.size > 0
+    assign button_content = 'collection.faceting.filter_button' | t
+  elsif section.settings.show_sort_by and section.settings.show_filters == false
+    assign aria_controls = 'collection-sort-by-popover-mobile'
+    assign button_content = 'collection.faceting.sort_button' | t
+  else
+    assign show_mobile_floating_button = false
+  endif
+-%}
+
+{%- if show_mobile_floating_button -%}
+  <collection-facets-floating-button class="collection__floating-button md:hidden">
+    {%- render 'button', type: 'button', content: button_content, icon: 'filters', icon_position: 'before_text', stretch: true, aria_controls: aria_controls -%}
+  </collection-facets-floating-button>
+{%- endif -%}

@@ -1,0 +1,231 @@
+<script>
+  (function () {
+    if (!window.__unisexToggleInitialised) {
+      window.__unisexToggleInitialised = true;
+      window.__unisexGender = 'mens';
+      window.__unisexOffset = 1.5;
+
+      try {
+        var savedGender = sessionStorage.getItem('unisexGender');
+        if (savedGender) {
+          window.__unisexGender = savedGender;
+        }
+      } catch (e) {}
+
+      document.addEventListener('click', function (e) {
+        var btn = e.target.closest('.unisex-size-toggle__btn');
+        if (!btn) return;
+
+        var toggle = btn.closest('.unisex-size-toggle');
+        if (!toggle) return;
+
+        var gender = btn.dataset.gender;
+        var offset = parseFloat(toggle.dataset.sizeOffset) || 1.5;
+        var note = toggle.querySelector('[data-toggle-note]');
+        var btns = toggle.querySelectorAll('.unisex-size-toggle__btn');
+        var blockList = toggle.closest('.product-info__block-list');
+
+        window.__unisexGender = gender;
+        window.__unisexOffset = offset;
+
+        try {
+          sessionStorage.setItem('unisexGender', gender);
+        } catch (e2) {}
+
+        btns.forEach(function (button) {
+          button.classList.remove('unisex-size-toggle__btn--active');
+          button.setAttribute('aria-pressed', 'false');
+        });
+
+        btn.classList.add('unisex-size-toggle__btn--active');
+        btn.setAttribute('aria-pressed', 'true');
+
+        if (gender === 'womens') {
+          if (note) {
+            note.textContent = "Women's sizes run " + offset + " sizes larger than the unisex/men's size. The unisex size is shown below each size.";
+          }
+          applyWomensMode(blockList, offset, true);
+        } else {
+          if (note) {
+            note.textContent = "Unisex sizing - same as men's. Select your men's size below.";
+          }
+          applyWomensMode(blockList, offset, false);
+        }
+      });
+
+      var reapplyTimer = null;
+      var observer = new MutationObserver(function (mutations) {
+        var sawVariantPicker = false;
+        var sawToggleAdded = false;
+
+        mutations.forEach(function (mutation) {
+          mutation.addedNodes.forEach(function (node) {
+            if (node.nodeType !== 1) return;
+
+            if (node.dataset && node.dataset.blockType === 'variant-picker') {
+              sawVariantPicker = true;
+            }
+
+            if (
+              (node.classList && node.classList.contains('unisex-size-toggle')) ||
+              (node.querySelector && node.querySelector('.unisex-size-toggle'))
+            ) {
+              sawToggleAdded = true;
+            }
+          });
+        });
+
+        if (sawToggleAdded) {
+          cancelAnimationFrame(reapplyTimer);
+
+          try {
+            window.__unisexGender = sessionStorage.getItem('unisexGender') || 'mens';
+          } catch (e3) {
+            window.__unisexGender = 'mens';
+          }
+
+          if (window.__unisexGender === 'womens') {
+            reapplyTimer = requestAnimationFrame(function () {
+              document.querySelectorAll('.unisex-size-toggle').forEach(function (toggle) {
+                var offset = parseFloat(toggle.dataset.sizeOffset) || 1.5;
+                var blockList = toggle.closest('.product-info__block-list');
+
+                window.__unisexOffset = offset;
+                restoreToggleUI(toggle, offset);
+                applyWomensMode(blockList, offset, true);
+              });
+            });
+          }
+
+          return;
+        }
+
+        if (!sawVariantPicker) return;
+
+        cancelAnimationFrame(reapplyTimer);
+        reapplyTimer = requestAnimationFrame(function () {
+          if (window.__unisexGender !== 'womens') return;
+
+          document.querySelectorAll('.unisex-size-toggle').forEach(function (toggle) {
+            var blockList = toggle.closest('.product-info__block-list');
+
+            restoreToggleUI(toggle, window.__unisexOffset);
+            applyWomensMode(blockList, window.__unisexOffset, true);
+          });
+        });
+      });
+
+      observer.observe(document.body, { childList: true, subtree: true });
+
+      document.addEventListener('shopify:section:load', function () {
+        window.__unisexGender = 'mens';
+        window.__unisexOffset = 1.5;
+      });
+    }
+
+    function getSizeFieldset(blockList) {
+      if (!blockList) return null;
+
+      return blockList.querySelector('[data-block-type="variant-picker"] .variant-picker__option[data-option-role="size"]');
+    }
+
+    function restoreToggleUI(toggle, offset) {
+      var gender = window.__unisexGender;
+      var note = toggle.querySelector('[data-toggle-note]');
+      var btns = toggle.querySelectorAll('.unisex-size-toggle__btn');
+
+      btns.forEach(function (button) {
+        var isActive = button.dataset.gender === gender;
+        button.classList.toggle('unisex-size-toggle__btn--active', isActive);
+        button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+      });
+
+      if (!note) return;
+
+      if (gender === 'womens') {
+        note.textContent = "Women's sizes run " + offset + " sizes larger than the unisex/men's size. The unisex size is shown below each size.";
+      } else {
+        note.textContent = "Unisex sizing - same as men's. Select your men's size below.";
+      }
+    }
+
+    function applyWomensMode(blockList, offset, isWomens) {
+      if (!blockList) return;
+
+      var variantBlock = blockList.querySelector('[data-block-type="variant-picker"]');
+      var sizeFieldset = getSizeFieldset(blockList);
+      if (!variantBlock || !sizeFieldset) return;
+
+      variantBlock.classList.toggle('unisex-womens-active', isWomens);
+
+      var optionValues = sizeFieldset.querySelectorAll('.block-swatch, .block-swatch-item, [data-option-value]');
+      if (optionValues.length === 0) {
+        optionValues = sizeFieldset.querySelectorAll('label, .option-value');
+      }
+
+      optionValues.forEach(function (el) {
+        var existingSub = el.querySelector('.variant-value__womens-label');
+        var mainTextEl = el.querySelector('.block-swatch__label, .option-value__label, span:not(.variant-value__womens-label):not(.block-swatch__color)');
+
+        if (!el.dataset.mensSize) {
+          var rawText = mainTextEl ? mainTextEl.textContent.trim() : el.textContent.trim();
+          var parsed = parseFloat(rawText);
+          if (isNaN(parsed)) return;
+          el.dataset.mensSize = parsed;
+        }
+
+        var mensSize = parseFloat(el.dataset.mensSize);
+        if (isNaN(mensSize)) return;
+
+        var mensSizeStr = mensSize % 1 === 0 ? mensSize.toFixed(0) : mensSize.toFixed(1);
+
+        if (isWomens) {
+          var womensSize = mensSize + offset;
+          var womensSizeStr = womensSize % 1 === 0 ? womensSize.toFixed(0) : womensSize.toFixed(1);
+
+          if (mainTextEl) mainTextEl.textContent = womensSizeStr;
+
+          if (!existingSub) {
+            existingSub = document.createElement('span');
+            existingSub.className = 'variant-value__womens-label';
+            el.appendChild(existingSub);
+          }
+
+          existingSub.textContent = 'U ' + mensSizeStr;
+        } else {
+          if (mainTextEl) mainTextEl.textContent = mensSizeStr;
+          if (existingSub) existingSub.remove();
+        }
+      });
+
+      updateSelectedLabel(sizeFieldset, offset, isWomens);
+    }
+
+    function updateSelectedLabel(sizeFieldset, offset, isWomens) {
+      if (!sizeFieldset) return;
+
+      var info = sizeFieldset.querySelector('.variant-picker__option-info');
+      if (!info) return;
+
+      var legend = info.querySelector('legend');
+      var span = legend ? legend.nextElementSibling : null;
+      if (!legend || !span || span.tagName !== 'SPAN') return;
+
+      if (!span.dataset.mensDisplaySize) {
+        var value = parseFloat(span.textContent.trim());
+        if (isNaN(value)) return;
+        span.dataset.mensDisplaySize = value;
+      }
+
+      var mensVal = parseFloat(span.dataset.mensDisplaySize);
+      if (isNaN(mensVal)) return;
+
+      if (isWomens) {
+        var womensVal = mensVal + offset;
+        span.textContent = womensVal % 1 === 0 ? womensVal.toFixed(0) : womensVal.toFixed(1);
+      } else {
+        span.textContent = mensVal % 1 === 0 ? mensVal.toFixed(0) : mensVal.toFixed(1);
+      }
+    }
+  })();
+</script>

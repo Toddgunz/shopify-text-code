@@ -1,0 +1,90 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "type": "footer",
+  "name": "Footer group",
+  "sections": {
+    "trust-icons": {
+      "type": "trust-icons",
+      "blocks": {
+        "item-1": {
+          "type": "item",
+          "settings": {
+            "title": "Worldwide delivery",
+            "content": "Receive your order anywhere in the world."
+          }
+        },
+        "item-2": {
+          "type": "item",
+          "settings": {
+            "title": "Fast shipping",
+            "content": "Super fast shipping in 48 hours."
+          }
+        },
+        "item-3": {
+          "type": "item",
+          "settings": {
+            "title": "Customer service",
+            "content": "We are available from monday to friday to answer your questions."
+          }
+        },
+        "item-4": {
+          "type": "item",
+          "settings": {
+            "title": "Secure payment",
+            "content": "Your payment information is processed securely."
+          }
+        }
+      },
+      "block_order": [
+        "item-1",
+        "item-2",
+        "item-3",
+        "item-4"
+      ],
+      "settings": {
+        "color_scheme": "scheme-2"
+      }
+    },
+    "footer": {
+      "type": "footer",
+      "blocks": {
+        "newsletter": {
+          "type": "newsletter",
+          "settings": {}
+        },
+        "links": {
+          "type": "links",
+          "settings": {
+            "menu": "footer",
+            "show_menu_title": true
+          }
+        },
+        "text": {
+          "type": "text",
+          "settings": {
+            "title": "About",
+            "content": "<p>Use this text area to tell your customers about your brand and vision. You can change it in the theme editor.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "newsletter",
+        "links",
+        "text"
+      ],
+      "settings": {}
+    }
+  },
+  "order": [
+    "trust-icons",
+    "footer"
+  ]
+}
