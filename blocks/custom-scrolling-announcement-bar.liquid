@@ -92,6 +92,10 @@
   }
 
   @media screen and (max-width: 749px) {
+    .ai-scrolling-text-wrapper-{{ ai_gen_id }} {
+      animation-duration: {{ block.settings.mobile_scroll_speed }}s;
+    }
+
     .ai-scrolling-text-{{ ai_gen_id }} {
       padding: {{ block.settings.mobile_padding_vertical }}px 0;
     }
@@ -248,12 +252,22 @@
     {
       "type": "range",
       "id": "scroll_speed",
-      "label": "Scroll speed",
+      "label": "Desktop scroll speed",
       "min": 20,
       "max": 100,
       "step": 5,
       "unit": "s",
       "default": 60
+    },
+    {
+      "type": "range",
+      "id": "mobile_scroll_speed",
+      "label": "Mobile scroll speed",
+      "min": 10,
+      "max": 100,
+      "step": 5,
+      "unit": "s",
+      "default": 45
     },
     {
       "type": "select",

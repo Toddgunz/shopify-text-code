@@ -29,6 +29,7 @@
             "link_5": "",
             "separator": "|",
             "scroll_speed": 60,
+            "mobile_scroll_speed": 45,
             "pause_on_hover": "paused",
             "font_size": 16,
             "font_weight": "400",
