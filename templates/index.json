@@ -11,20 +11,12 @@
   "sections": {
     "slideshow": {
       "type": "slideshow",
-      "settings": {
-        "allow_transparent_header": true,
-        "image_size": "fill",
-        "transition_type": "distortion",
-        "autoplay": true,
-        "pause_auto_rotate_on_hover": false,
-        "cycle_speed": 4,
-        "background": "#c4cfcd"
-      },
       "blocks": {
         "slideshow-image-slide-1": {
           "type": "_slideshow-image-slide",
           "settings": {
             "color_scheme": "scheme-3",
+            "slide_link": "",
             "content_max_width": 720,
             "mobile_content_position": "place-self-end-start",
             "desktop_content_position": "sm:place-self-end-start",
@@ -39,15 +31,19 @@
                 "heading_size": "display-m",
                 "html_tag": "p",
                 "indent": "none",
-                "highlight_effect": "underline"
-              }
+                "highlight_effect": "underline",
+                "highlight_accent_color": "",
+                "highlight_text_color": ""
+              },
+              "blocks": {}
             },
             "rich-text-1": {
               "type": "rich-text",
               "settings": {
                 "text": "<p>Our latest clothing collection balances functionality and aesthetics in the space of traditional workwear, lifestyle and activewear.</p>",
                 "content_width": "sm"
-              }
+              },
+              "blocks": {}
             },
             "button-1": {
               "type": "button",
@@ -55,8 +51,11 @@
                 "text": "Shop Apparel",
                 "url": "shopify://collections/all",
                 "open_in_new_tab": false,
-                "style": "solid"
-              }
+                "style": "solid",
+                "background": "",
+                "text_color": ""
+              },
+              "blocks": {}
             }
           },
           "block_order": [
@@ -65,18 +64,28 @@
             "button-1"
           ]
         },
-        "slideshow-controls-1": {
+        "slideshow-controls": {
           "type": "_slideshow-controls",
           "static": true,
           "settings": {
-            "controls_style": "dot",
+            "controls_style": "line",
             "controls_color": "#ffffff"
-          }
+          },
+          "blocks": {}
         }
       },
       "block_order": [
         "slideshow-image-slide-1"
-      ]
+      ],
+      "settings": {
+        "allow_transparent_header": true,
+        "image_size": "fill",
+        "transition_type": "distortion",
+        "autoplay": true,
+        "pause_auto_rotate_on_hover": false,
+        "cycle_speed": 4,
+        "background": "#c4cfcd"
+      }
     },
     "featured-product-list": {
       "type": "featured-product-list",
@@ -88,44 +97,49 @@
         "products_per_row_mobile": "2",
         "products_per_row_desktop": 4,
         "intro_color_scheme": "scheme-2",
+        "intro_image_overlay": "#00000021",
         "intro_title": "Winter collection",
         "intro_title_tag": "h5",
+        "intro_content": "<p>Share details of your store's product selection, or share a story that speaks to your customers.</p>",
         "intro_button_text": "View all",
+        "intro_button_link": "",
         "intro_button_style": "solid"
       }
     },
     "featured-links": {
       "type": "featured-links",
-      "settings": {
-        "color_scheme": "scheme-1",
-        "title": "explore collections",
-        "layout": "list",
-        "show_dividers": true,
-        "change_colors_on_hover": true
-      },
       "blocks": {
         "link-1": {
           "type": "link",
           "settings": {
             "title": "Jackets",
+            "content": "",
+            "url": "",
             "heading_tag": "display-m",
-            "background_hover": "#ecebe9"
+            "background_hover": "#ecebe9",
+            "text_color_hover": ""
           }
         },
         "link-2": {
           "type": "link",
           "settings": {
             "title": "Tops",
+            "content": "",
+            "url": "",
             "heading_tag": "display-m",
-            "background_hover": "#ecebe9"
+            "background_hover": "#ecebe9",
+            "text_color_hover": ""
           }
         },
         "link-3": {
           "type": "link",
           "settings": {
             "title": "Bottoms",
+            "content": "",
+            "url": "",
             "heading_tag": "display-m",
-            "background_hover": "#ecebe9"
+            "background_hover": "#ecebe9",
+            "text_color_hover": ""
           }
         }
       },
@@ -133,21 +147,17 @@
         "link-1",
         "link-2",
         "link-3"
-      ]
+      ],
+      "settings": {
+        "color_scheme": "scheme-1",
+        "title": "explore collections",
+        "layout": "list",
+        "show_dividers": true,
+        "change_colors_on_hover": true
+      }
     },
     "dynamic-grid": {
       "type": "dynamic-grid",
-      "settings": {
-        "color_scheme": "scheme-2",
-        "allow_transparent_header": true,
-        "show_background_image_parallax": false,
-        "add_vertical_spacing": true,
-        "add_horizontal_spacing": true,
-        "gap": 24,
-        "mobile_gap": 8,
-        "overlay_color": "#000000",
-        "overlay_opacity": 20
-      },
       "blocks": {
         "dynamic-grid-item-1": {
           "type": "_dynamic-grid-item",
@@ -178,8 +188,11 @@
                 "font_size_line_height": 1,
                 "html_tag": "p",
                 "indent": "none",
-                "highlight_effect": "default"
-              }
+                "highlight_effect": "default",
+                "highlight_accent_color": "",
+                "highlight_text_color": ""
+              },
+              "blocks": {}
             }
           },
           "block_order": [
@@ -215,8 +228,11 @@
                 "font_size_line_height": 1,
                 "html_tag": "p",
                 "indent": "none",
-                "highlight_effect": "default"
-              }
+                "highlight_effect": "default",
+                "highlight_accent_color": "",
+                "highlight_text_color": ""
+              },
+              "blocks": {}
             }
           },
           "block_order": [
@@ -252,8 +268,11 @@
                 "font_size_line_height": 1,
                 "html_tag": "p",
                 "indent": "none",
-                "highlight_effect": "default"
-              }
+                "highlight_effect": "default",
+                "highlight_accent_color": "",
+                "highlight_text_color": ""
+              },
+              "blocks": {}
             }
           },
           "block_order": [
@@ -282,9 +301,11 @@
             "image-with-caption-1": {
               "type": "image-with-caption",
               "settings": {
+                "caption": "",
                 "max_width": 100,
                 "mobile_max_width": 100
-              }
+              },
+              "blocks": {}
             }
           },
           "block_order": [
@@ -313,9 +334,11 @@
             "image-with-caption-1": {
               "type": "image-with-caption",
               "settings": {
+                "caption": "",
                 "max_width": 100,
                 "mobile_max_width": 100
-              }
+              },
+              "blocks": {}
             }
           },
           "block_order": [
@@ -344,9 +367,11 @@
             "image-with-caption-1": {
               "type": "image-with-caption",
               "settings": {
+                "caption": "",
                 "max_width": 100,
                 "mobile_max_width": 100
-              }
+              },
+              "blocks": {}
             }
           },
           "block_order": [
@@ -375,9 +400,11 @@
             "image-with-caption-1": {
               "type": "image-with-caption",
               "settings": {
+                "caption": "",
                 "max_width": 100,
                 "mobile_max_width": 100
-              }
+              },
+              "blocks": {}
             }
           },
           "block_order": [
@@ -406,9 +433,11 @@
             "image-with-caption-1": {
               "type": "image-with-caption",
               "settings": {
+                "caption": "",
                 "max_width": 100,
                 "mobile_max_width": 100
-              }
+              },
+              "blocks": {}
             }
           },
           "block_order": [
@@ -437,9 +466,11 @@
             "image-with-caption-1": {
               "type": "image-with-caption",
               "settings": {
+                "caption": "",
                 "max_width": 100,
                 "mobile_max_width": 100
-              }
+              },
+              "blocks": {}
             }
           },
           "block_order": [
@@ -469,9 +500,13 @@
               "type": "button",
               "settings": {
                 "text": "view lookbook",
+                "url": "",
                 "open_in_new_tab": false,
-                "style": "solid"
-              }
+                "style": "solid",
+                "background": "",
+                "text_color": ""
+              },
+              "blocks": {}
             }
           },
           "block_order": [
@@ -490,18 +525,21 @@
         "dynamic-grid-item-8",
         "dynamic-grid-item-9",
         "dynamic-grid-item-10"
-      ]
+      ],
+      "settings": {
+        "color_scheme": "scheme-2",
+        "allow_transparent_header": true,
+        "show_background_image_parallax": false,
+        "add_vertical_spacing": true,
+        "add_horizontal_spacing": true,
+        "gap": 24,
+        "mobile_gap": 8,
+        "overlay_color": "#000000",
+        "overlay_opacity": 20
+      }
     },
     "hot-spots": {
       "type": "hot-spots",
-      "settings": {
-        "color_scheme": "scheme-4",
-        "hot_spot_background": "#ffffff",
-        "hot_spot_color": "#000000",
-        "background_text_size": "display-l",
-        "lower_scrolling_text_layer": true,
-        "show_scrolling_title": false
-      },
       "blocks": {
         "placeable-content-1": {
           "type": "_placeable-content",
@@ -514,7 +552,8 @@
               "type": "subheading",
               "settings": {
                 "text": "the autumn look"
-              }
+              },
+              "blocks": {}
             },
             "heading-1": {
               "type": "heading",
@@ -526,7 +565,8 @@
                 "highlight_effect": "default",
                 "highlight_accent_color": "#e04837",
                 "highlight_text_color": "#ffffff"
-              }
+              },
+              "blocks": {}
             }
           },
           "block_order": [
@@ -537,29 +577,35 @@
         "hot-spot-content-product-1": {
           "type": "_hot-spot-content-product",
           "settings": {
+            "product": "",
             "desktop_horizontal_position": 59,
             "desktop_vertical_position": 35,
             "mobile_horizontal_position": 84,
             "mobile_vertical_position": 33
-          }
+          },
+          "blocks": {}
         },
         "hot-spot-content-product-2": {
           "type": "_hot-spot-content-product",
           "settings": {
+            "product": "",
             "desktop_horizontal_position": 39,
             "desktop_vertical_position": 66,
             "mobile_horizontal_position": 37,
             "mobile_vertical_position": 62
-          }
+          },
+          "blocks": {}
         },
         "hot-spot-content-product-3": {
           "type": "_hot-spot-content-product",
           "settings": {
+            "product": "",
             "desktop_horizontal_position": 50,
             "desktop_vertical_position": 85,
             "mobile_horizontal_position": 62,
             "mobile_vertical_position": 79
-          }
+          },
+          "blocks": {}
         }
       },
       "block_order": [
@@ -567,19 +613,19 @@
         "hot-spot-content-product-1",
         "hot-spot-content-product-2",
         "hot-spot-content-product-3"
-      ]
+      ],
+      "settings": {
+        "color_scheme": "scheme-4",
+        "hot_spot_background": "#ffffff",
+        "hot_spot_color": "#000000",
+        "background_text": "",
+        "background_text_size": "display-l",
+        "lower_scrolling_text_layer": true,
+        "show_scrolling_title": false
+      }
     },
     "products-with-image": {
       "type": "products-with-image",
-      "settings": {
-        "color_scheme": "scheme-2",
-        "products": [],
-        "overlay_color": "#000000",
-        "overlay_opacity": 5,
-        "desktop_product_layout": "carousel",
-        "mobile_product_layout": "carousel",
-        "mobile_products_per_row": "2"
-      },
       "blocks": {
         "subheading-1": {
           "type": "subheading",
@@ -591,10 +637,12 @@
         "heading-1": {
           "type": "heading",
           "settings": {
-            "text": "Style &\u2028<em>Comfort</em>",
+            "text": "Style & <em>Comfort</em>",
             "heading_tag": "h2",
             "position": "bottom_left",
-            "highlight_effect": "default"
+            "highlight_effect": "default",
+            "highlight_accent_color": "",
+            "highlight_text_color": ""
           }
         },
         "richtext-1": {
@@ -609,7 +657,17 @@
         "subheading-1",
         "heading-1",
         "richtext-1"
-      ]
+      ],
+      "settings": {
+        "color_scheme": "scheme-2",
+        "products": [],
+        "desktop_product_list_position": "start",
+        "overlay_color": "#000000",
+        "overlay_opacity": 5,
+        "desktop_product_layout": "carousel",
+        "mobile_product_layout": "carousel",
+        "mobile_products_per_row": "2"
+      }
     },
     "reading-text": {
       "type": "reading-text",
@@ -618,6 +676,7 @@
         "subheading": "About us",
         "content": "Designed to bring ease and assurance to everyday life, this apparel blends practicality, function, and comfort for all-day wear.",
         "button_text": "learn more",
+        "button_link": "",
         "heading_tag": "h2",
         "mobile_text_position": "place-self-center",
         "desktop_text_position": "sm:place-self-center",
@@ -631,12 +690,6 @@
     },
     "testimonials": {
       "type": "testimonials",
-      "settings": {
-        "text_alignment": "left",
-        "image_position": "end",
-        "autoplay": true,
-        "cycle_speed": 6
-      },
       "blocks": {
         "testimonial-1": {
           "type": "testimonial",
@@ -646,6 +699,7 @@
             "author": "John b., An experienced hiker",
             "title": "The Alpine pants are a game-changer for mountain treks. Lightweight yet durable, they offer excellent breathability and weather resistance. The articulated knees ensure total freedom on steep climbs.",
             "heading_tag": "h5",
+            "product": "",
             "position": "place-self-end-start"
           }
         },
@@ -657,6 +711,7 @@
             "author": "Chase S., golfer",
             "title": "Perfect for chilly mornings, the Trail fleece delivers warmth without bulk. Its quick-dry fabric and ergonomic cut make it a reliable companion for running or layering during hikes.",
             "heading_tag": "h5",
+            "product": "",
             "position": "place-self-end-start"
           }
         }
@@ -664,7 +719,14 @@
       "block_order": [
         "testimonial-1",
         "testimonial-2"
-      ]
+      ],
+      "settings": {
+        "color_scheme": "",
+        "text_alignment": "left",
+        "image_position": "end",
+        "autoplay": true,
+        "cycle_speed": 6
+      }
     },
     "countdown": {
       "type": "countdown",
@@ -673,10 +735,12 @@
         "image_position": "split",
         "image_size": "md",
         "add_image_spacing": true,
+        "subheading": "",
         "title": "Special <em>Sale</em>",
         "heading_tag": "display-xl",
         "content": "<p>Shop our selection of exclusive products at reduced price during the Special Sale. Hurry up!</p>",
         "button_text": "Discover",
+        "button_url": "",
         "button_style": "outline",
         "expiration_date": "2025-07-03 12:00",
         "expiration_behavior": "leave",
@@ -690,22 +754,6 @@
     },
     "before-after": {
       "type": "before-after",
-      "settings": {
-        "color_scheme": "scheme-1",
-        "layout": "stacked",
-        "add_comparison_spacing": false,
-        "subheading": "Footwear Program",
-        "title": "The reinvented hiking boot",
-        "title_tag": "h3",
-        "content": "<p>Introducing a new generation of footwear\u2014crafted for modern explorers who move with purpose. Blending style, comfort, and performance, these shoes are built for both urban journeys and outdoor escapes.</p>",
-        "button_text": "shop",
-        "button_url": "shopify://collections/all",
-        "button_style": "link",
-        "cursor_direction": "horizontal",
-        "cursor_initial_position": 50,
-        "cursor_background": "#ffffff",
-        "cursor_arrows_color": "#000000"
-      },
       "blocks": {
         "before-1": {
           "type": "before",
@@ -729,20 +777,26 @@
       "block_order": [
         "before-1",
         "after-1"
-      ]
+      ],
+      "settings": {
+        "color_scheme": "scheme-1",
+        "layout": "stacked",
+        "add_comparison_spacing": false,
+        "subheading": "Footwear Program",
+        "title": "The reinvented hiking boot",
+        "title_tag": "h3",
+        "content": "<p>Introducing a new generation of footwear—crafted for modern explorers who move with purpose. Blending style, comfort, and performance, these shoes are built for both urban journeys and outdoor escapes.</p>",
+        "button_text": "shop",
+        "button_url": "shopify://collections/all",
+        "button_style": "link",
+        "cursor_direction": "horizontal",
+        "cursor_initial_position": 50,
+        "cursor_background": "#ffffff",
+        "cursor_arrows_color": "#000000"
+      }
     },
     "dynamic-grid-2": {
       "type": "dynamic-grid",
-      "settings": {
-        "allow_transparent_header": true,
-        "show_background_image_parallax": false,
-        "add_vertical_spacing": true,
-        "add_horizontal_spacing": true,
-        "gap": 8,
-        "mobile_gap": 4,
-        "overlay_color": "#000000",
-        "overlay_opacity": 20
-      },
       "blocks": {
         "dynamic-grid-item-1": {
           "type": "_dynamic-grid-item",
@@ -773,15 +827,19 @@
                 "font_size_line_height": 0.9,
                 "html_tag": "p",
                 "indent": "none",
-                "highlight_effect": "default"
-              }
+                "highlight_effect": "default",
+                "highlight_accent_color": "",
+                "highlight_text_color": ""
+              },
+              "blocks": {}
             },
             "rich-text-1": {
               "type": "rich-text",
               "settings": {
                 "text": "<p>We offer comfortable basics for every sphere of daily life.</p>",
                 "content_width": "sm"
-              }
+              },
+              "blocks": {}
             }
           },
           "block_order": [
@@ -811,9 +869,11 @@
             "image-with-caption-1": {
               "type": "image-with-caption",
               "settings": {
+                "caption": "",
                 "max_width": 100,
                 "mobile_max_width": 100
-              }
+              },
+              "blocks": {}
             }
           },
           "block_order": [
@@ -842,9 +902,11 @@
             "image-with-caption-1": {
               "type": "image-with-caption",
               "settings": {
+                "caption": "",
                 "max_width": 100,
                 "mobile_max_width": 100
-              }
+              },
+              "blocks": {}
             }
           },
           "block_order": [
@@ -873,9 +935,11 @@
             "image-with-caption-1": {
               "type": "image-with-caption",
               "settings": {
+                "caption": "",
                 "max_width": 100,
                 "mobile_max_width": 100
-              }
+              },
+              "blocks": {}
             }
           },
           "block_order": [
@@ -904,9 +968,11 @@
             "image-with-caption-1": {
               "type": "image-with-caption",
               "settings": {
+                "caption": "",
                 "max_width": 100,
                 "mobile_max_width": 100
-              }
+              },
+              "blocks": {}
             }
           },
           "block_order": [
@@ -935,9 +1001,11 @@
             "image-with-caption-1": {
               "type": "image-with-caption",
               "settings": {
+                "caption": "",
                 "max_width": 100,
                 "mobile_max_width": 100
-              }
+              },
+              "blocks": {}
             }
           },
           "block_order": [
@@ -952,26 +1020,21 @@
         "dynamic-grid-item-4",
         "dynamic-grid-item-5",
         "dynamic-grid-item-6"
-      ]
+      ],
+      "settings": {
+        "color_scheme": "",
+        "allow_transparent_header": true,
+        "show_background_image_parallax": false,
+        "add_vertical_spacing": true,
+        "add_horizontal_spacing": true,
+        "gap": 8,
+        "mobile_gap": 4,
+        "overlay_color": "#000000",
+        "overlay_opacity": 20
+      }
     },
     "blog-posts": {
       "type": "blog-posts",
-      "settings": {
-        "color_scheme": "scheme-1",
-        "mobile_layout": "carousel",
-        "desktop_layout": "grid",
-        "title": "Latest news",
-        "heading_tag": "h1",
-        "scrolling_title_separator": "square",
-        "scrolling_title": false,
-        "button_text": "Read journal",
-        "button_style": "outline",
-        "blog_post_card_heading_size": "h4",
-        "separator_style": "border",
-        "show_category": true,
-        "show_date": true,
-        "show_excerpt": false
-      },
       "blocks": {
         "blog-1": {
           "type": "blog",
@@ -983,7 +1046,24 @@
       },
       "block_order": [
         "blog-1"
-      ]
+      ],
+      "settings": {
+        "color_scheme": "scheme-1",
+        "mobile_layout": "carousel",
+        "desktop_layout": "grid",
+        "title": "Latest news",
+        "heading_tag": "h1",
+        "scrolling_title_separator": "square",
+        "scrolling_title": false,
+        "button_link": "",
+        "button_text": "Read journal",
+        "button_style": "outline",
+        "blog_post_card_heading_size": "h4",
+        "separator_style": "border",
+        "show_category": true,
+        "show_date": true,
+        "show_excerpt": false
+      }
     }
   },
   "order": [
