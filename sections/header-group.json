@@ -40,19 +40,29 @@
       "type": "_blocks",
       "blocks": {
         "ai_gen_block_16befbb_c7HU3N": {
-          "type": "ai_gen_block_16befbb",
+          "type": "custom-scrolling-announcement-bar",
           "settings": {
-            "scrolling_text": "Welcome to our store â€¢ Free shipping on orders over $50 â€¢ New arrivals daily",
+            "message_1": "Free shipping on orders over $100",
+            "link_1": "",
+            "message_2": "New arrivals just landed",
+            "link_2": "",
+            "message_3": "Bandit Spring 2026 Drop 2",
+            "link_3": "",
+            "message_4": "",
+            "link_4": "",
+            "message_5": "",
+            "link_5": "",
             "scroll_speed": 20,
             "pause_on_hover": "paused",
             "font_size": 16,
             "font_weight": "400",
             "text_transform": "none",
             "letter_spacing": 0,
-            "text_spacing": 50,
-            "padding_vertical": 15,
+            "text_spacing": 60,
+            "padding_vertical": 10,
             "background_color": "#1c1c1c",
             "text_color": "#ffffff",
+            "link_color": "#ffffff",
             "desktop_width_percent": 100
           },
           "blocks": {}

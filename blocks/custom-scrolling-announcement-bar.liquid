@@ -1,8 +1,13 @@
 {% doc %}
   @prompt
-    Can you create a scrolling announcement bar that works as a theme block in the header group.
+    Create a linked scrolling text block for the header that supports multiple messages and optional links.
 {% enddoc %}
 {% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% liquid
+  assign message_count = 0
+  assign has_links = false
+%}
 
 {% style %}
   .ai-scrolling-text-{{ ai_gen_id }} {
@@ -24,17 +29,22 @@
   .ai-scrolling-text-content-{{ ai_gen_id }} {
     display: flex;
     align-items: center;
+    gap: {{ block.settings.text_spacing }}px;
     white-space: nowrap;
     padding-right: {{ block.settings.text_spacing }}px;
   }
 
   .ai-scrolling-text-item-{{ ai_gen_id }} {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     font-size: {{ block.settings.font_size }}px;
     color: {{ block.settings.text_color }};
     font-weight: {{ block.settings.font_weight }};
     text-transform: {{ block.settings.text_transform }};
     letter-spacing: {{ block.settings.letter_spacing }}px;
     line-height: 1;
+    text-decoration: none;
   }
 
   .ai-scrolling-text-item-{{ ai_gen_id }} > * {
@@ -43,6 +53,16 @@
 
   .ai-scrolling-text-item-{{ ai_gen_id }} p {
     margin: 0;
+  }
+
+  .ai-scrolling-text-item-{{ ai_gen_id }} a,
+  .ai-scrolling-text-item-{{ ai_gen_id }}--link {
+    color: {{ block.settings.link_color }};
+    text-decoration: none;
+  }
+
+  .ai-scrolling-text-item-{{ ai_gen_id }}--link:hover {
+    opacity: 0.75;
   }
 
   @keyframes ai-scroll-{{ ai_gen_id }} {
@@ -61,12 +81,32 @@
 
 <scrolling-text-{{ ai_gen_id }} class="ai-scrolling-text-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
   <div class="ai-scrolling-text-wrapper-{{ ai_gen_id }}">
-    <div class="ai-scrolling-text-content-{{ ai_gen_id }}">
-      <span class="ai-scrolling-text-item-{{ ai_gen_id }}">{{ block.settings.scrolling_text }}</span>
-    </div>
-    <div class="ai-scrolling-text-content-{{ ai_gen_id }}" aria-hidden="true">
-      <span class="ai-scrolling-text-item-{{ ai_gen_id }}">{{ block.settings.scrolling_text }}</span>
-    </div>
+    {% for duplicate in (1..2) %}
+      <div class="ai-scrolling-text-content-{{ ai_gen_id }}" {% if duplicate > 1 %}aria-hidden="true"{% endif %}>
+        {% for index in (1..5) %}
+          {% liquid
+            assign text_key = 'message_' | append: index
+            assign link_key = 'link_' | append: index
+            assign message_text = block.settings[text_key]
+            assign message_link = block.settings[link_key]
+          %}
+
+          {% if message_text != blank %}
+            {% assign message_count = message_count | plus: 1 %}
+
+            {% if message_link != blank %}
+              <a href="{{ message_link }}" class="ai-scrolling-text-item-{{ ai_gen_id }} ai-scrolling-text-item-{{ ai_gen_id }}--link">
+                {{ message_text }}
+              </a>
+            {% else %}
+              <span class="ai-scrolling-text-item-{{ ai_gen_id }}">
+                {{ message_text }}
+              </span>
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% endfor %}
   </div>
 </scrolling-text-{{ ai_gen_id }}>
 
@@ -107,17 +147,64 @@
 
 {% schema %}
 {
-  "name": "Scrolling text",
+  "name": "Linked scrolling text",
   "settings": [
     {
       "type": "header",
-      "content": "Content"
+      "content": "Messages"
     },
     {
       "type": "inline_richtext",
-      "id": "scrolling_text",
-      "label": "Text",
-      "default": "Free shipping on orders over $100 | New arrivals just landed | Bandit Spring 2026 Drop 2"
+      "id": "message_1",
+      "label": "Message 1",
+      "default": "Free shipping on orders over $100"
+    },
+    {
+      "type": "url",
+      "id": "link_1",
+      "label": "Link 1"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "message_2",
+      "label": "Message 2",
+      "default": "New arrivals just landed"
+    },
+    {
+      "type": "url",
+      "id": "link_2",
+      "label": "Link 2"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "message_3",
+      "label": "Message 3",
+      "default": "Bandit Spring 2026 Drop 2"
+    },
+    {
+      "type": "url",
+      "id": "link_3",
+      "label": "Link 3"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "message_4",
+      "label": "Message 4"
+    },
+    {
+      "type": "url",
+      "id": "link_4",
+      "label": "Link 4"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "message_5",
+      "label": "Message 5"
+    },
+    {
+      "type": "url",
+      "id": "link_5",
+      "label": "Link 5"
     },
     {
       "type": "header",
@@ -158,7 +245,7 @@
       "id": "font_size",
       "label": "Font size",
       "min": 12,
-      "max": 48,
+      "max": 32,
       "step": 2,
       "unit": "px",
       "default": 16
@@ -224,20 +311,20 @@
     {
       "type": "range",
       "id": "text_spacing",
-      "label": "Text spacing",
+      "label": "Spacing between messages",
       "min": 20,
       "max": 200,
       "step": 10,
       "unit": "px",
-      "default": 50
+      "default": 60
     },
     {
       "type": "range",
       "id": "padding_vertical",
       "label": "Vertical padding",
-      "min": 5,
-      "max": 50,
-      "step": 5,
+      "min": 4,
+      "max": 30,
+      "step": 2,
       "unit": "px",
       "default": 10
     },
@@ -254,6 +341,12 @@
       "default": "#ffffff"
     },
     {
+      "type": "color",
+      "id": "link_color",
+      "label": "Link color",
+      "default": "#ffffff"
+    },
+    {
       "type": "range",
       "id": "desktop_width_percent",
       "label": "Desktop width",
@@ -266,7 +359,7 @@
   ],
   "presets": [
     {
-      "name": "Scrolling text"
+      "name": "Linked scrolling text"
     }
   ]
 }
