@@ -78,20 +78,20 @@
     "header": {
       "type": "header",
       "blocks": {
-        "mega_menu_cHmxXC": {
+        "mega_menu_tyNzjb": {
           "type": "mega_menu",
+          "name": "Women Mega Menu",
           "settings": {
-            "menu_item": "Gear",
-            "mega_menu_justify_content": "justify-center",
-            "stretch_promo_blocks": true,
-            "promo_column_gap": "4px",
+            "menu_item": "Women",
+            "mega_menu_justify_content": "justify-between",
+            "stretch_promo_blocks": false,
+            "promo_column_gap": "0px",
             "promo_text_alignment": "left",
-            "promo_heading_tag": "h6",
+            "promo_heading_tag": "subheading",
             "promo_text_color": "#ffffff",
             "promo_1_product": "",
-            "promo_1_image": "shopify://shop_images/Screenshot_2026-03-26_164742.jpg",
-            "promo_1_heading": "Digital Gift Card",
-            "promo_1_text": "test text",
+            "promo_1_heading": "",
+            "promo_1_text": "",
             "promo_1_link": "",
             "promo_2_product": "",
             "promo_2_heading": "",
@@ -117,6 +117,7 @@
         },
         "mega_menu_UKCUXQ": {
           "type": "mega_menu",
+          "name": "Men Mega Menu",
           "settings": {
             "menu_item": "Men",
             "mega_menu_justify_content": "justify-between",
@@ -151,19 +152,21 @@
             "promo_6_link": ""
           }
         },
-        "mega_menu_tyNzjb": {
+        "mega_menu_cHmxXC": {
           "type": "mega_menu",
+          "name": "Gear Mega Menu",
           "settings": {
-            "menu_item": "Women",
-            "mega_menu_justify_content": "justify-between",
-            "stretch_promo_blocks": false,
-            "promo_column_gap": "0px",
+            "menu_item": "Gear",
+            "mega_menu_justify_content": "justify-center",
+            "stretch_promo_blocks": true,
+            "promo_column_gap": "4px",
             "promo_text_alignment": "left",
-            "promo_heading_tag": "subheading",
+            "promo_heading_tag": "h6",
             "promo_text_color": "#ffffff",
             "promo_1_product": "",
-            "promo_1_heading": "",
-            "promo_1_text": "",
+            "promo_1_image": "shopify://shop_images/Screenshot_2026-03-26_164742.jpg",
+            "promo_1_heading": "Digital Gift Card",
+            "promo_1_text": "test text",
             "promo_1_link": "",
             "promo_2_product": "",
             "promo_2_heading": "",
@@ -189,9 +192,9 @@
         }
       },
       "block_order": [
-        "mega_menu_cHmxXC",
+        "mega_menu_tyNzjb",
         "mega_menu_UKCUXQ",
-        "mega_menu_tyNzjb"
+        "mega_menu_cHmxXC"
       ],
       "settings": {
         "color_scheme": "scheme-1",
