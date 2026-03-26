@@ -253,6 +253,80 @@
 
     <nav class="header__secondary-nav" aria-label="{{ 'header.general.secondary_navigation' | t | escape }}">
       <ul class="contents unstyled-list">
+        {%- if section.settings.secondary_menu.links.size > 0 -%}
+          <li class="hidden md:block">
+            <ul class="h-stack gap-6 unstyled-list">
+              {%- for link in section.settings.secondary_menu.links -%}
+                {% liquid
+                  assign link_title_downcase = link.title | strip | downcase
+                  assign mega_menu_block = ''
+
+                  for block in section.blocks
+                    assign menu_item_downcase = block.settings.menu_item | strip | downcase
+
+                    if menu_item_downcase == link_title_downcase
+                      assign mega_menu_block = block
+                      break
+                    endif
+
+                  endfor
+                %}
+
+                <li class="relative">
+                  {%- liquid
+                    assign has_dropdown_menu = false
+                    assign menu_id = 'header-secondary-menu-dropdown-' | append: forloop.index
+
+                    if link.levels > 0 or mega_menu_block != ''
+                      assign has_dropdown_menu = true
+                    endif
+                  -%}
+
+                  <a href="{{ link.url }}" class="block subheading link-reversed" {% if link.current %}aria-current="page"{% endif %} {% if has_dropdown_menu %}aria-expanded="false" aria-controls="{{ menu_id }}" {% if section.settings.menu_open_trigger == 'hover' %}data-open-on-hover{% endif %}{% endif %}>
+                    {{- link.title -}}
+                  </a>
+
+                  {%- if has_dropdown_menu -%}
+                    {%- if mega_menu_block == '' -%}
+                      <header-dropdown-menu class="header__dropdown-menu color-scheme color-scheme--{{ section.settings.color_scheme.id }}" id="{{ menu_id }}">
+                        <ul class="unstyled-list">
+                          {%- for sub_link in link.links -%}
+                            {%- assign sub_menu_id = menu_id | append: '-' | append: forloop.index -%}
+
+                            <li>
+                              <a href="{{ sub_link.url }}" class="subheading link-faded-reverse" {% if sub_link.current %}aria-current="page"{% endif %} {% if sub_link.levels > 0 %}aria-expanded="false" aria-controls="{{ sub_menu_id }}" {% if section.settings.menu_open_trigger == 'hover' %}data-open-on-hover{% endif %}{% endif %}>
+                                {{- sub_link.title -}}
+
+                                {%- if sub_link.levels > 0 -%}
+                                  {%- render 'icon' with 'chevron-right', direction_aware: true -%}
+                                {%- endif -%}
+                              </a>
+
+                              {%- if sub_link.levels > 0 -%}
+                                <header-dropdown-menu class="header__dropdown-menu color-scheme color-scheme--{{ section.settings.color_scheme.id }}" id="{{ sub_menu_id }}">
+                                  <ul class="unstyled-list">
+                                    {%- for sub_sub_link in sub_link.links -%}
+                                      <li>
+                                        <a href="{{ sub_sub_link.url }}" class="subheading link-faded-reverse" {% if sub_sub_link.current %}aria-current="page"{% endif %}>{{ sub_sub_link.title }}</a>
+                                      </li>
+                                    {%- endfor -%}
+                                  </ul>
+                                </header-dropdown-menu>
+                              {%- endif -%}
+                            </li>
+                          {%- endfor -%}
+                        </ul>
+                      </header-dropdown-menu>
+                    {%- else -%}
+                      {%- render 'mega-menu', link: link, color_scheme: section.settings.color_scheme, id: menu_id, block: mega_menu_block -%}
+                    {%- endif -%}
+                  {%- endif -%}
+                </li>
+              {%- endfor -%}
+            </ul>
+          </li>
+        {%- endif -%}
+
         {%- if show_country_selector or show_locale_selector -%}
           <li class="hidden md:contents">
             <div class="h-stack justify-between">
