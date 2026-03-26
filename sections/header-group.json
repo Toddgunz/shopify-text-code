@@ -82,8 +82,8 @@
           "type": "mega_menu",
           "settings": {
             "menu_item": "Gear",
-            "mega_menu_justify_content": "justify-between",
-            "stretch_promo_blocks": false,
+            "mega_menu_justify_content": "justify-center",
+            "stretch_promo_blocks": true,
             "promo_column_gap": "4px",
             "promo_text_alignment": "left",
             "promo_heading_tag": "h6",
