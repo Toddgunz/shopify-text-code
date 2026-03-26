@@ -90,6 +90,20 @@
   .ai-scrolling-text-wrapper-{{ ai_gen_id }}:hover {
     animation-play-state: {{ block.settings.pause_on_hover }};
   }
+
+  @media screen and (max-width: 749px) {
+    .ai-scrolling-text-{{ ai_gen_id }} {
+      padding: {{ block.settings.mobile_padding_vertical }}px 0;
+    }
+
+    .ai-scrolling-text-item-{{ ai_gen_id }}--spaced {
+      margin-right: {{ block.settings.mobile_text_spacing }}px;
+    }
+
+    .ai-scrolling-text-separator-{{ ai_gen_id }} {
+      margin: 0 {{ block.settings.mobile_text_spacing }}px;
+    }
+  }
 {% endstyle %}
 
 <scrolling-text-{{ ai_gen_id }} class="ai-scrolling-text-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
@@ -332,7 +346,7 @@
     {
       "type": "range",
       "id": "text_spacing",
-      "label": "Spacing between messages",
+      "label": "Desktop spacing between messages",
       "min": 20,
       "max": 200,
       "step": 10,
@@ -341,13 +355,33 @@
     },
     {
       "type": "range",
+      "id": "mobile_text_spacing",
+      "label": "Mobile spacing between messages",
+      "min": 10,
+      "max": 120,
+      "step": 5,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
       "id": "padding_vertical",
-      "label": "Vertical padding",
+      "label": "Desktop vertical padding",
       "min": 4,
       "max": 30,
       "step": 2,
       "unit": "px",
       "default": 10
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_vertical",
+      "label": "Mobile vertical padding",
+      "min": 2,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "default": 8
     },
     {
       "type": "color",
