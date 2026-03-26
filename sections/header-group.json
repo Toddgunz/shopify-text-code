@@ -34,7 +34,7 @@
             "font_weight": "400",
             "text_transform": "none",
             "letter_spacing": 0,
-            "text_spacing": 60,
+            "text_spacing": 80,
             "padding_vertical": 10,
             "background_color": "#1c1c1c",
             "text_color": "#ffffff",
