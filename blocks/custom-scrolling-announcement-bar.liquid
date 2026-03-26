@@ -6,16 +6,6 @@
 
 {% liquid
   assign separator_text = block.settings.separator
-  assign total_message_count = 0
-
-  for index in (1..5)
-    assign text_key = 'message_' | append: index
-    assign message_text = block.settings[text_key]
-
-    if message_text != blank
-      assign total_message_count = total_message_count | plus: 1
-    endif
-  endfor
 %}
 
 {% style %}
@@ -106,7 +96,6 @@
 <scrolling-text-{{ ai_gen_id }} class="ai-scrolling-text-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
   <div class="ai-scrolling-text-wrapper-{{ ai_gen_id }}">
     {% for duplicate in (1..2) %}
-      {% assign rendered_message_count = 0 %}
       <div class="ai-scrolling-text-content-{{ ai_gen_id }}" {% if duplicate > 1 %}aria-hidden="true"{% endif %}>
         {% for index in (1..5) %}
           {% liquid
@@ -117,23 +106,17 @@
           %}
 
           {% if message_text != blank %}
-            {% assign rendered_message_count = rendered_message_count | plus: 1 %}
-            {% assign is_last_message = false %}
-            {% if rendered_message_count == total_message_count %}
-              {% assign is_last_message = true %}
-            {% endif %}
-
             {% if message_link != blank %}
-              <a href="{{ message_link }}" class="ai-scrolling-text-item-{{ ai_gen_id }} ai-scrolling-text-item-{{ ai_gen_id }}--link{% if separator_text == blank and is_last_message == false %} ai-scrolling-text-item-{{ ai_gen_id }}--spaced{% endif %}">
+              <a href="{{ message_link }}" class="ai-scrolling-text-item-{{ ai_gen_id }} ai-scrolling-text-item-{{ ai_gen_id }}--link{% if separator_text == blank %} ai-scrolling-text-item-{{ ai_gen_id }}--spaced{% endif %}">
                 {{ message_text }}
               </a>
             {% else %}
-              <span class="ai-scrolling-text-item-{{ ai_gen_id }}{% if separator_text == blank and is_last_message == false %} ai-scrolling-text-item-{{ ai_gen_id }}--spaced{% endif %}">
+              <span class="ai-scrolling-text-item-{{ ai_gen_id }}{% if separator_text == blank %} ai-scrolling-text-item-{{ ai_gen_id }}--spaced{% endif %}">
                 {{ message_text }}
               </span>
             {% endif %}
 
-            {% if separator_text != blank and is_last_message == false %}
+            {% if separator_text != blank %}
               <span class="ai-scrolling-text-separator-{{ ai_gen_id }}">{{ separator_text | escape }}</span>
             {% endif %}
           {% endif %}
