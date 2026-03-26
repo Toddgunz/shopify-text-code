@@ -1,93 +1,51 @@
 {% doc %}
   @prompt
-    I'd like a bar on the top that scrolls horizontally between different messages and allows me to add multiple messages and choose between different schemes, I'd like the only height of this custom section to be the height of the announcement bar.
+    Can you create a scrolling announcement bar that works as a theme block in the header group.
 {% enddoc %}
 {% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
-{% liquid
-  assign bar_background = block.settings.background_color
-  assign bar_text = block.settings.text_color
-  assign bar_link = block.settings.link_color
-  assign bar_separator = block.settings.separator_color
-
-  case block.settings.color_scheme
-    when 'default'
-      assign bar_background = ''
-      assign bar_text = ''
-      assign bar_link = ''
-      assign bar_separator = ''
-    when 'accent'
-      assign bar_background = '#ecebe9'
-      assign bar_text = '#1c1c1c'
-      assign bar_link = '#1c1c1c'
-      assign bar_separator = '#1c1c1c'
-    when 'dark'
-      assign bar_background = '#1c1c1c'
-      assign bar_text = '#ffffff'
-      assign bar_link = '#ffffff'
-      assign bar_separator = '#ffffff'
-  endcase
-%}
 
 {% style %}
-  .ai-announcement-bar-{{ ai_gen_id }} {
+  .ai-scrolling-text-{{ ai_gen_id }} {
     display: block;
-    width: 100%;
+    width: {{ block.settings.desktop_width_percent }}%;
+    max-width: 100%;
     overflow: hidden;
-    {% if bar_background != blank %}background-color: {{ bar_background }};{% endif %}
-    position: relative;
-    margin: 0;
-    padding: 0;
+    background-color: {{ block.settings.background_color }};
+    padding: {{ block.settings.padding_vertical }}px 0;
   }
 
-  .ai-announcement-bar__wrapper-{{ ai_gen_id }} {
+  .ai-scrolling-text-wrapper-{{ ai_gen_id }} {
     display: flex;
-    animation: ai-announcement-scroll-{{ ai_gen_id }} {{ block.settings.scroll_speed }}s linear infinite;
+    width: max-content;
+    animation: ai-scroll-{{ ai_gen_id }} {{ block.settings.scroll_speed }}s linear infinite;
     will-change: transform;
   }
 
-  .ai-announcement-bar__wrapper-{{ ai_gen_id }}:hover {
-    animation-play-state: paused;
-  }
-
-  .ai-announcement-bar__message-{{ ai_gen_id }} {
-    flex-shrink: 0;
-    padding: {{ block.settings.bar_height }}px {{ block.settings.horizontal_padding }}px;
-    {% if bar_text != blank %}color: {{ bar_text }};{% endif %}
-    font-size: {{ block.settings.font_size }}px;
-    text-align: center;
-    white-space: nowrap;
+  .ai-scrolling-text-content-{{ ai_gen_id }} {
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 8px;
-    line-height: 1.2;
+    white-space: nowrap;
+    padding-right: {{ block.settings.text_spacing }}px;
   }
 
-  .ai-announcement-bar__message-{{ ai_gen_id }} > * {
+  .ai-scrolling-text-item-{{ ai_gen_id }} {
+    font-size: {{ block.settings.font_size }}px;
+    color: {{ block.settings.text_color }};
+    font-weight: {{ block.settings.font_weight }};
+    text-transform: {{ block.settings.text_transform }};
+    letter-spacing: {{ block.settings.letter_spacing }}px;
+    line-height: 1;
+  }
+
+  .ai-scrolling-text-item-{{ ai_gen_id }} > * {
     margin: 0;
   }
 
-  .ai-announcement-bar__message-{{ ai_gen_id }} p {
+  .ai-scrolling-text-item-{{ ai_gen_id }} p {
     margin: 0;
   }
 
-  .ai-announcement-bar__message-{{ ai_gen_id }} a {
-    {% if bar_link != blank %}color: {{ bar_link }};{% endif %}
-    text-decoration: underline;
-  }
-
-  .ai-announcement-bar__message-{{ ai_gen_id }} a:hover {
-    opacity: 0.8;
-  }
-
-  .ai-announcement-bar__separator-{{ ai_gen_id }} {
-    display: inline-block;
-    margin: 0 {{ block.settings.message_spacing }}px;
-    {% if bar_separator != blank %}color: {{ bar_separator }};{% endif %}
-    opacity: 0.5;
-  }
-
-  @keyframes ai-announcement-scroll-{{ ai_gen_id }} {
+  @keyframes ai-scroll-{{ ai_gen_id }} {
     0% {
       transform: translateX(0);
     }
@@ -96,187 +54,192 @@
     }
   }
 
-  @media screen and (max-width: 749px) {
-    .ai-announcement-bar__message-{{ ai_gen_id }} {
-      font-size: {{ block.settings.font_size | times: 0.9 }}px;
-      padding: {{ block.settings.bar_height | times: 0.8 }}px {{ block.settings.horizontal_padding | times: 0.8 }}px;
-    }
+  .ai-scrolling-text-wrapper-{{ ai_gen_id }}:hover {
+    animation-play-state: {{ block.settings.pause_on_hover }};
   }
 {% endstyle %}
 
-<announcement-bar-{{ ai_gen_id }}
-  class="ai-announcement-bar-{{ ai_gen_id }}"
-  {{ block.shopify_attributes }}
->
-  <div class="ai-announcement-bar__wrapper-{{ ai_gen_id }}">
-    {% liquid
-      assign messages = ''
-      assign message_count = 0
-
-      if block.settings.message_1 != blank
-        assign messages = messages | append: block.settings.message_1
-        assign message_count = message_count | plus: 1
-      endif
-
-      if block.settings.message_2 != blank
-        if message_count > 0
-          assign messages = messages | append: '|||'
-        endif
-        assign messages = messages | append: block.settings.message_2
-        assign message_count = message_count | plus: 1
-      endif
-
-      if block.settings.message_3 != blank
-        if message_count > 0
-          assign messages = messages | append: '|||'
-        endif
-        assign messages = messages | append: block.settings.message_3
-        assign message_count = message_count | plus: 1
-      endif
-
-      if block.settings.message_4 != blank
-        if message_count > 0
-          assign messages = messages | append: '|||'
-        endif
-        assign messages = messages | append: block.settings.message_4
-        assign message_count = message_count | plus: 1
-      endif
-
-      if block.settings.message_5 != blank
-        if message_count > 0
-          assign messages = messages | append: '|||'
-        endif
-        assign messages = messages | append: block.settings.message_5
-        assign message_count = message_count | plus: 1
-      endif
-
-      assign message_array = messages | split: '|||'
-    %}
-
-    {% if message_count > 0 %}
-      {% for i in (1..2) %}
-        {% for message in message_array %}
-          <div class="ai-announcement-bar__message-{{ ai_gen_id }}">
-            {{ message }}
-          </div>
-          {% unless forloop.last and forloop.parentloop.last %}
-            <span class="ai-announcement-bar__separator-{{ ai_gen_id }}">{{ block.settings.separator }}</span>
-          {% endunless %}
-        {% endfor %}
-      {% endfor %}
-    {% else %}
-      <div class="ai-announcement-bar__message-{{ ai_gen_id }}">
-        Add your announcement messages in the block settings
-      </div>
-    {% endif %}
+<scrolling-text-{{ ai_gen_id }} class="ai-scrolling-text-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-scrolling-text-wrapper-{{ ai_gen_id }}">
+    <div class="ai-scrolling-text-content-{{ ai_gen_id }}">
+      <span class="ai-scrolling-text-item-{{ ai_gen_id }}">{{ block.settings.scrolling_text }}</span>
+    </div>
+    <div class="ai-scrolling-text-content-{{ ai_gen_id }}" aria-hidden="true">
+      <span class="ai-scrolling-text-item-{{ ai_gen_id }}">{{ block.settings.scrolling_text }}</span>
+    </div>
   </div>
-</announcement-bar-{{ ai_gen_id }}>
+</scrolling-text-{{ ai_gen_id }}>
 
 <script>
   (function() {
-    class AnnouncementBar{{ ai_gen_id }} extends HTMLElement {
+    class ScrollingText{{ ai_gen_id }} extends HTMLElement {
       constructor() {
         super();
       }
 
       connectedCallback() {
-        this.wrapper = this.querySelector('.ai-announcement-bar__wrapper-{{ ai_gen_id }}');
-        this.adjustAnimation();
-        this.handleResize = this.adjustAnimation.bind(this);
-        window.addEventListener('resize', this.handleResize);
+        this.duplicateContent();
       }
 
-      disconnectedCallback() {
-        if (this.handleResize) {
-          window.removeEventListener('resize', this.handleResize);
-        }
-      }
+      duplicateContent() {
+        const wrapper = this.querySelector('.ai-scrolling-text-wrapper-{{ ai_gen_id }}');
+        const content = this.querySelector('.ai-scrolling-text-content-{{ ai_gen_id }}');
 
-      adjustAnimation() {
-        if (!this.wrapper) return;
-        
-        const firstMessage = this.wrapper.querySelector('.ai-announcement-bar__message-{{ ai_gen_id }}');
-        if (!firstMessage) return;
+        if (wrapper && content) {
+          const contentWidth = content.offsetWidth;
+          const viewportWidth = this.offsetWidth;
+          const duplicatesNeeded = Math.ceil(viewportWidth / Math.max(contentWidth, 1)) + 2;
 
-        const containerWidth = this.offsetWidth;
-        const contentWidth = this.wrapper.scrollWidth / 2;
-
-        if (contentWidth <= containerWidth) {
-          this.wrapper.style.animation = 'none';
-          this.wrapper.style.justifyContent = 'center';
+          for (let i = wrapper.children.length; i < duplicatesNeeded; i++) {
+            const clone = content.cloneNode(true);
+            clone.setAttribute('aria-hidden', 'true');
+            wrapper.appendChild(clone);
+          }
         }
       }
     }
 
-    if (!customElements.get('announcement-bar-{{ ai_gen_id }}')) {
-      customElements.define('announcement-bar-{{ ai_gen_id }}', AnnouncementBar{{ ai_gen_id }});
+    if (!customElements.get('scrolling-text-{{ ai_gen_id }}')) {
+      customElements.define('scrolling-text-{{ ai_gen_id }}', ScrollingText{{ ai_gen_id }});
     }
   })();
 </script>
 
 {% schema %}
 {
-  "name": "Custom scrolling announcement bar",
+  "name": "Scrolling text",
   "settings": [
     {
       "type": "header",
-      "content": "Messages"
+      "content": "Content"
     },
     {
       "type": "inline_richtext",
-      "id": "message_1",
-      "label": "Message 1",
-      "default": "Free shipping on orders over $50"
+      "id": "scrolling_text",
+      "label": "Text",
+      "default": "Free shipping on orders over $100 | New arrivals just landed | Bandit Spring 2026 Drop 2"
     },
     {
-      "type": "inline_richtext",
-      "id": "message_2",
-      "label": "Message 2",
-      "default": "New arrivals just landed"
+      "type": "header",
+      "content": "Animation"
     },
     {
-      "type": "inline_richtext",
-      "id": "message_3",
-      "label": "Message 3",
-      "default": "Shop now and save 20%"
+      "type": "range",
+      "id": "scroll_speed",
+      "label": "Scroll speed",
+      "min": 5,
+      "max": 50,
+      "step": 5,
+      "unit": "s",
+      "default": 20
     },
     {
-      "type": "inline_richtext",
-      "id": "message_4",
-      "label": "Message 4"
-    },
-    {
-      "type": "inline_richtext",
-      "id": "message_5",
-      "label": "Message 5"
+      "type": "select",
+      "id": "pause_on_hover",
+      "label": "Pause on hover",
+      "options": [
+        {
+          "value": "paused",
+          "label": "Yes"
+        },
+        {
+          "value": "running",
+          "label": "No"
+        }
+      ],
+      "default": "paused"
     },
     {
       "type": "header",
       "content": "Style"
     },
     {
+      "type": "range",
+      "id": "font_size",
+      "label": "Font size",
+      "min": 12,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
       "type": "select",
-      "id": "color_scheme",
-      "label": "Color scheme",
+      "id": "font_weight",
+      "label": "Font weight",
       "options": [
         {
-          "value": "default",
-          "label": "Inherit section colors"
+          "value": "400",
+          "label": "Normal"
         },
         {
-          "value": "accent",
-          "label": "Light accent"
+          "value": "500",
+          "label": "Medium"
         },
         {
-          "value": "dark",
-          "label": "Dark"
+          "value": "600",
+          "label": "Semi-bold"
         },
         {
-          "value": "custom",
-          "label": "Custom"
+          "value": "700",
+          "label": "Bold"
         }
       ],
-      "default": "default"
+      "default": "400"
+    },
+    {
+      "type": "select",
+      "id": "text_transform",
+      "label": "Text transform",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "uppercase",
+          "label": "Uppercase"
+        },
+        {
+          "value": "lowercase",
+          "label": "Lowercase"
+        },
+        {
+          "value": "capitalize",
+          "label": "Capitalize"
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "letter_spacing",
+      "label": "Letter spacing",
+      "min": 0,
+      "max": 5,
+      "step": 0.5,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "text_spacing",
+      "label": "Text spacing",
+      "min": 20,
+      "max": 200,
+      "step": 10,
+      "unit": "px",
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "padding_vertical",
+      "label": "Vertical padding",
+      "min": 5,
+      "max": 50,
+      "step": 5,
+      "unit": "px",
+      "default": 10
     },
     {
       "type": "color",
@@ -291,81 +254,19 @@
       "default": "#ffffff"
     },
     {
-      "type": "color",
-      "id": "link_color",
-      "label": "Link color",
-      "default": "#ffffff"
-    },
-    {
-      "type": "color",
-      "id": "separator_color",
-      "label": "Separator color",
-      "default": "#ffffff"
-    },
-    {
-      "type": "header",
-      "content": "Layout"
-    },
-    {
       "type": "range",
-      "id": "bar_height",
-      "label": "Vertical padding",
-      "min": 8,
-      "max": 30,
-      "step": 2,
-      "unit": "px",
-      "default": 12
-    },
-    {
-      "type": "text",
-      "id": "separator",
-      "label": "Separator",
-      "default": "•"
-    },
-    {
-      "type": "range",
-      "id": "message_spacing",
-      "label": "Message spacing",
-      "min": 10,
+      "id": "desktop_width_percent",
+      "label": "Desktop width",
+      "min": 50,
       "max": 100,
       "step": 5,
-      "unit": "px",
-      "default": 40
-    },
-    {
-      "type": "range",
-      "id": "font_size",
-      "label": "Font size",
-      "min": 10,
-      "max": 24,
-      "step": 1,
-      "unit": "px",
-      "default": 12
-    },
-    {
-      "type": "range",
-      "id": "horizontal_padding",
-      "label": "Horizontal padding",
-      "min": 10,
-      "max": 50,
-      "step": 5,
-      "unit": "px",
-      "default": 20
-    },
-    {
-      "type": "range",
-      "id": "scroll_speed",
-      "label": "Scroll speed",
-      "min": 10,
-      "max": 60,
-      "step": 5,
-      "unit": "s",
-      "default": 30
+      "unit": "%",
+      "default": 100
     }
   ],
   "presets": [
     {
-      "name": "Custom scrolling announcement bar"
+      "name": "Scrolling text"
     }
   ]
 }
