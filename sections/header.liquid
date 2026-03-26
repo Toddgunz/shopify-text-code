@@ -254,7 +254,7 @@
     <nav class="header__secondary-nav" aria-label="{{ 'header.general.secondary_navigation' | t | escape }}">
       <ul class="contents unstyled-list">
         {%- if section.settings.secondary_menu.links.size > 0 -%}
-          <li class="hidden md:block">
+          <li class="header__secondary-nav-menu-wrapper hidden md:block">
             <ul class="h-stack gap-6 unstyled-list">
               {%- for link in section.settings.secondary_menu.links -%}
                 {% liquid

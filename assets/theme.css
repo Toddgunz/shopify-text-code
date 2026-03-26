@@ -6535,6 +6535,12 @@ product-rerender {
   display: flex;
 }
 
+@media screen and (min-width: 1000px) {
+  .header__secondary-nav-menu-wrapper + * {
+    margin-inline-start: 1.5rem;
+  }
+}
+
 .header__secondary-nav-separator {
   background: rgb(var(--text-color) / .3);
   border: none;
