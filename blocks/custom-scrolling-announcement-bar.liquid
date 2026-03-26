@@ -5,8 +5,17 @@
 {% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
 
 {% liquid
-  assign message_count = 0
-  assign has_links = false
+  assign separator_text = block.settings.separator
+  assign total_message_count = 0
+
+  for index in (1..5)
+    assign text_key = 'message_' | append: index
+    assign message_text = block.settings[text_key]
+
+    if message_text != blank
+      assign total_message_count = total_message_count | plus: 1
+    endif
+  endfor
 %}
 
 {% style %}
@@ -29,7 +38,6 @@
   .ai-scrolling-text-content-{{ ai_gen_id }} {
     display: flex;
     align-items: center;
-    gap: {{ block.settings.text_spacing }}px;
     white-space: nowrap;
     padding-right: {{ block.settings.text_spacing }}px;
   }
@@ -47,6 +55,10 @@
     text-decoration: none;
   }
 
+  .ai-scrolling-text-item-{{ ai_gen_id }}--spaced {
+    margin-right: {{ block.settings.text_spacing }}px;
+  }
+
   .ai-scrolling-text-item-{{ ai_gen_id }} > * {
     margin: 0;
   }
@@ -62,7 +74,19 @@
   }
 
   .ai-scrolling-text-item-{{ ai_gen_id }}--link:hover {
-    opacity: 0.75;
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+  }
+
+  .ai-scrolling-text-separator-{{ ai_gen_id }} {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 {{ block.settings.text_spacing }}px;
+    color: {{ block.settings.text_color }};
+    font-size: {{ block.settings.font_size }}px;
+    font-weight: {{ block.settings.font_weight }};
+    line-height: 1;
   }
 
   @keyframes ai-scroll-{{ ai_gen_id }} {
@@ -82,6 +106,7 @@
 <scrolling-text-{{ ai_gen_id }} class="ai-scrolling-text-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
   <div class="ai-scrolling-text-wrapper-{{ ai_gen_id }}">
     {% for duplicate in (1..2) %}
+      {% assign rendered_message_count = 0 %}
       <div class="ai-scrolling-text-content-{{ ai_gen_id }}" {% if duplicate > 1 %}aria-hidden="true"{% endif %}>
         {% for index in (1..5) %}
           {% liquid
@@ -92,16 +117,24 @@
           %}
 
           {% if message_text != blank %}
-            {% assign message_count = message_count | plus: 1 %}
+            {% assign rendered_message_count = rendered_message_count | plus: 1 %}
+            {% assign is_last_message = false %}
+            {% if rendered_message_count == total_message_count %}
+              {% assign is_last_message = true %}
+            {% endif %}
 
             {% if message_link != blank %}
-              <a href="{{ message_link }}" class="ai-scrolling-text-item-{{ ai_gen_id }} ai-scrolling-text-item-{{ ai_gen_id }}--link">
+              <a href="{{ message_link }}" class="ai-scrolling-text-item-{{ ai_gen_id }} ai-scrolling-text-item-{{ ai_gen_id }}--link{% if separator_text == blank and is_last_message == false %} ai-scrolling-text-item-{{ ai_gen_id }}--spaced{% endif %}">
                 {{ message_text }}
               </a>
             {% else %}
-              <span class="ai-scrolling-text-item-{{ ai_gen_id }}">
+              <span class="ai-scrolling-text-item-{{ ai_gen_id }}{% if separator_text == blank and is_last_message == false %} ai-scrolling-text-item-{{ ai_gen_id }}--spaced{% endif %}">
                 {{ message_text }}
               </span>
+            {% endif %}
+
+            {% if separator_text != blank and is_last_message == false %}
+              <span class="ai-scrolling-text-separator-{{ ai_gen_id }}">{{ separator_text | escape }}</span>
             {% endif %}
           {% endif %}
         {% endfor %}
@@ -207,6 +240,12 @@
       "label": "Link 5"
     },
     {
+      "type": "text",
+      "id": "separator",
+      "label": "Separator",
+      "default": "|"
+    },
+    {
       "type": "header",
       "content": "Animation"
     },
@@ -214,11 +253,11 @@
       "type": "range",
       "id": "scroll_speed",
       "label": "Scroll speed",
-      "min": 5,
-      "max": 50,
+      "min": 20,
+      "max": 100,
       "step": 5,
       "unit": "s",
-      "default": 20
+      "default": 60
     },
     {
       "type": "select",
