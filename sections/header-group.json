@@ -209,7 +209,7 @@
         "logo_mobile_max_width": 70,
         "menu": "mega-menu",
         "drawer_menu": "",
-        "secondary_menu": "",
+        "secondary_menu": "secondary-menu",
         "desktop_dropdown_menu_style": "below",
         "menu_open_trigger": "hover",
         "desktop_icon_size": 16,
