@@ -6699,6 +6699,12 @@ product-rerender {
   inset-block-start: calc(var(--announcement-bar-height, 0px) + var(--header-height, 0px) + var(--countdown-condensed-height, 0px));
 }
 
+@media screen and (min-width: 1000px) {
+  .mega-menu:after {
+    display: none;
+  }
+}
+
 .mega-menu .link-reversed {
   padding-block: 0;
 }
