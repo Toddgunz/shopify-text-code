@@ -6440,6 +6440,10 @@ product-rerender {
     --header-nav-icon-gap: 1rem;
     --header-column-gap: 2.5rem;
   }
+
+  .header:has(.mega-menu[open]) {
+    transition: background 0s linear, color .2s ease-in-out;
+  }
 }
 
 .header__active-dot {
