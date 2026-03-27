@@ -5427,7 +5427,7 @@ var HeaderDropdownMenu = class extends DialogElement {
 };
 var HeaderMegaMenu = class extends DialogElement {
   createEnterAnimationControls() {
-    const timelineSteps = [[this, { opacity: [0, 1] }, { duration: 0.2, ease: "easeInOut" }]];
+    const timelineSteps = [[this, { opacity: [1, 1] }, { duration: 0 }]];
     const links = this.querySelectorAll(".mega-menu__navigation > *");
     if (links.length > 0 && window.matchMedia("(prefers-reduced-motion: no-preference)").matches) {
       timelineSteps.push(
