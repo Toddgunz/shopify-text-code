@@ -6398,7 +6398,7 @@ product-rerender {
 
 .header {
   --header-show-transparent-logo: 0;
-  --header-padding-block: 1.875rem;
+  --header-padding-block: 1.25rem;
   --header-padding-inline: min(1.75rem, var(--container-gutter));
   --header-column-gap: 1.25rem;
   --header-nav-icon-gap: 1.5rem;
@@ -6436,7 +6436,7 @@ product-rerender {
 
 @media screen and (min-width: 1000px) {
   .header {
-    --header-padding-block: 2.1rem;
+    --header-padding-block: 1.4rem;
     --header-nav-icon-gap: 1rem;
     --header-column-gap: 2.5rem;
   }
@@ -6498,6 +6498,18 @@ product-rerender {
 .header__primary-nav .link-reversed {
   background-position-y: bottom;
   padding-block: 2px;
+}
+
+.header__primary-nav > .contents > li > a,
+.header__secondary-nav > .contents > li > ul > li > a {
+  font-size: 1rem;
+}
+
+@media screen and (min-width: 1000px) {
+  .header__primary-nav > .contents > li > a,
+  .header__secondary-nav > .contents > li > ul > li > a {
+    font-size: 1.125rem;
+  }
 }
 
 .header__primary-nav--open-menu-in-sidebar {
