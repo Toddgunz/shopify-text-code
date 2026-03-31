@@ -192,7 +192,7 @@
         },
         "mega_menu_cHmxXC": {
           "type": "mega_menu",
-          "name": "Gear Mega Menu",
+          "name": "Gear",
           "settings": {
             "menu_item": "Gear",
             "mega_menu_justify_content": "justify-center",
