@@ -197,7 +197,7 @@
           "name": "Community",
           "settings": {
             "menu_item": "Community",
-            "mega_menu_justify_content": "justify-between",
+            "mega_menu_justify_content": "justify-center",
             "stretch_promo_blocks": false,
             "promo_column_gap": "0px",
             "promo_text_alignment": "left",
@@ -234,7 +234,7 @@
           "name": "Learn",
           "settings": {
             "menu_item": "Learn",
-            "mega_menu_justify_content": "justify-between",
+            "mega_menu_justify_content": "justify-center",
             "stretch_promo_blocks": false,
             "promo_column_gap": "0px",
             "promo_text_alignment": "left",
@@ -271,7 +271,7 @@
           "name": "About Us",
           "settings": {
             "menu_item": "About Us",
-            "mega_menu_justify_content": "justify-between",
+            "mega_menu_justify_content": "justify-center",
             "stretch_promo_blocks": false,
             "promo_column_gap": "0px",
             "promo_text_alignment": "left",
