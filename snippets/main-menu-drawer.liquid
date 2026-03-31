@@ -71,8 +71,34 @@ mobile, and for desktop on "drawer" mode.
       {%- if secondary_menu.links.size > 0 -%}
         <ul class="v-stack gap-3 unstyled-list">
           {%- for link in secondary_menu.links -%}
+            {%- liquid
+              assign link_title_downcase = link.title | strip | downcase
+              assign mega_menu_block = ''
+
+              for block in section.blocks
+                assign menu_item_downcase = block.settings.menu_item | strip | downcase
+
+                if menu_item_downcase == link_title_downcase
+                  assign mega_menu_block = block
+                  break
+                endif
+              endfor
+            -%}
+
             <li>
-              <a href="{{ link.url }}" class="h4 w-full link-reversed">{{ link.title }}</a>
+              {%- if link.levels == 0 and mega_menu_block == '' -%}
+                <a href="{{ link.url }}" class="h4 w-full link-reversed">{{ link.title }}</a>
+              {%- else -%}
+                <button type="button" class="h4 text-start w-full" data-panel-toggle aria-controls="menu-drawer-panel-secondary-{{ forloop.index }}">
+                  <div class="h-stack gap-3 sm:gap-5">
+                    {{- link.title -}}
+
+                    {%- if show_nested_menu_indicator -%}
+                      {%- render 'icon' with 'big-arrow-right', class: 'shrink-0 capped-icon' -%}
+                    {%- endif -%}
+                  </div>
+                </button>
+              {%- endif -%}
             </li>
           {%- endfor -%}
         </ul>
@@ -147,6 +173,71 @@ mobile, and for desktop on "drawer" mode.
 
     {%- if link.levels > 0 or mega_menu_block != '' -%}
       <header-menu-drawer-panel id="menu-drawer-panel-{{ forloop.index }}" class="menu-drawer__panel color-scheme color-scheme--{{ color_scheme.id }}">
+        <div class="menu-drawer__panel-body">
+          <div class="v-stack gap-5.5">
+            <button type="button" class="back-button justify-self-start" data-panel-toggle aria-controls="menu-drawer-panel-main">
+              {%- render 'icon' with 'back-arrow', direction_aware: true -%}
+              <span class="subheading">{{- 'header.general.navigation_back' | t -}}</span>
+            </button>
+
+            <div class="v-stack gap-8">
+              {%- if link.levels > 0 -%}
+                {%- if link.levels == 1 -%}
+                  <ul class="v-stack gap-2.5 unstyled-list">
+                    {%- for sub_link in link.links -%}
+                      <li>
+                        <a href="{{ sub_link.url }}" class="link-reversed">{{ sub_link.title }}</a>
+                      </li>
+                    {%- endfor -%}
+                  </ul>
+                {%- else -%}
+                  <div class="v-stack gap-8">
+                    {%- for sub_link in link.links -%}
+                      <div class="v-stack justify-items-start gap-4">
+                        <a href="{{ sub_link.url }}" class="subheading text-subdued link-reversed">{{ sub_link.title }}</a>
+
+                        {%- if sub_link.links.size > 0 -%}
+                          <ul class="v-stack gap-2.5 unstyled-list">
+                            {%- for sub_sub_link in sub_link.links -%}
+                              <li>
+                                <a href="{{ sub_sub_link.url }}" class="link-reversed">{{ sub_sub_link.title }}</a>
+                              </li>
+                            {%- endfor -%}
+                          </ul>
+                        {%- endif -%}
+                      </div>
+                    {%- endfor -%}
+                  </div>
+                {%- endif -%}
+              {%- endif -%}
+
+              {%- if mega_menu_block != blank -%}
+                {%- render 'menu-promo', block: mega_menu_block, context: 'drawer' -%}
+              {%- endif -%}
+            </div>
+          </div>
+        </div>
+      </header-menu-drawer-panel>
+    {%- endif -%}
+  {%- endfor -%}
+
+  {%- for link in secondary_menu.links -%}
+    {%- liquid
+      assign link_title_downcase = link.title | strip | downcase
+      assign mega_menu_block = ''
+
+      for block in section.blocks
+        assign menu_item_downcase = block.settings.menu_item | strip | downcase
+
+        if menu_item_downcase == link_title_downcase
+          assign mega_menu_block = block
+          break
+        endif
+      endfor
+    -%}
+
+    {%- if link.levels > 0 or mega_menu_block != '' -%}
+      <header-menu-drawer-panel id="menu-drawer-panel-secondary-{{ forloop.index }}" class="menu-drawer__panel color-scheme color-scheme--{{ color_scheme.id }}">
         <div class="menu-drawer__panel-body">
           <div class="v-stack gap-5.5">
             <button type="button" class="back-button justify-self-start" data-panel-toggle aria-controls="menu-drawer-panel-main">
