@@ -6738,9 +6738,9 @@ product-rerender {
 
 .mega-menu--secondary {
   width: max-content;
-  min-width: min(20rem, calc(100vw - 2 * var(--header-padding-inline)));
-  max-width: min(42rem, calc(100vw - 2 * var(--header-padding-inline)));
-  padding-inline: 0.5rem;
+  min-width: min(17rem, calc(100vw - 2 * var(--header-padding-inline)));
+  max-width: min(36rem, calc(100vw - 2 * var(--header-padding-inline)));
+  padding-inline: 0.25rem;
   padding-block: 1.25rem 1.75rem;
   column-gap: 2rem;
   inset-inline-start: 50%;
