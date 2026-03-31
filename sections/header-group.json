@@ -233,7 +233,7 @@
           "type": "mega_menu",
           "name": "Learn",
           "settings": {
-            "menu_item": "Community",
+            "menu_item": "Learn",
             "mega_menu_justify_content": "justify-between",
             "stretch_promo_blocks": false,
             "promo_column_gap": "0px",
@@ -270,7 +270,7 @@
           "type": "mega_menu",
           "name": "About Us",
           "settings": {
-            "menu_item": "Community",
+            "menu_item": "About Us",
             "mega_menu_justify_content": "justify-between",
             "stretch_promo_blocks": false,
             "promo_column_gap": "0px",
