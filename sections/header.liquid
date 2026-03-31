@@ -272,7 +272,7 @@
                   endfor
                 %}
 
-                <li>
+                <li class="{% if mega_menu_block != '' %}header__secondary-nav-item header__secondary-nav-item--mega{% endif %}">
                   {%- liquid
                     assign has_dropdown_menu = false
                     assign menu_id = 'header-secondary-menu-dropdown-' | append: forloop.index
@@ -318,7 +318,7 @@
                         </ul>
                       </header-dropdown-menu>
                     {%- else -%}
-                      {%- render 'mega-menu', link: link, color_scheme: section.settings.color_scheme, id: menu_id, block: mega_menu_block -%}
+                      {%- render 'mega-menu', link: link, color_scheme: section.settings.color_scheme, id: menu_id, block: mega_menu_block, extra_class: 'mega-menu--secondary' -%}
                     {%- endif -%}
                   {%- endif -%}
                 </li>

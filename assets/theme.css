@@ -6551,6 +6551,10 @@ product-rerender {
   display: flex;
 }
 
+.header__secondary-nav-item--mega {
+  position: relative;
+}
+
 @media screen and (min-width: 1000px) {
   .header__secondary-nav-menu-wrapper + * {
     margin-inline-start: 1.5rem;
@@ -6730,6 +6734,22 @@ product-rerender {
 
 .mega-menu__navigation:only-of-type {
   max-width: none;
+}
+
+.mega-menu--secondary {
+  width: max-content;
+  min-width: min(24rem, calc(100vw - 2 * var(--header-padding-inline)));
+  max-width: min(42rem, calc(100vw - 2 * var(--header-padding-inline)));
+  padding-inline: 1.5rem;
+  padding-block: 1.25rem 1.75rem;
+  column-gap: 2rem;
+  inset-inline-start: 50%;
+  transform: translateX(-50%);
+}
+
+.mega-menu--secondary .mega-menu__navigation {
+  max-width: none;
+  gap: 1rem 2.5rem;
 }
 
 .mega-menu__linklist {

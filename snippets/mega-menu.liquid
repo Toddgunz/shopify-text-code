@@ -8,7 +8,7 @@ columns.
 @param {object} [block] - the block containing all the information about the menu to render
 {%- enddoc -%}
 
-<header-mega-menu id="{{ id }}" class="mega-menu {{ block.settings.mega_menu_justify_content }} color-scheme color-scheme--{{ color_scheme.id }}" {{ block.shopify_attributes }}>
+<header-mega-menu id="{{ id }}" class="mega-menu {{ block.settings.mega_menu_justify_content }} {% if extra_class != blank %}{{ extra_class }}{% endif %} color-scheme color-scheme--{{ color_scheme.id }}" {{ block.shopify_attributes }}>
   {%- if link.links.size > 0 -%}
     {%- comment -%}When there is only one level, we just show the links stacked{%- endcomment -%}
     <div class="mega-menu__navigation">
