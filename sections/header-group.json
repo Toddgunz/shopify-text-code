@@ -78,11 +78,47 @@
     "header": {
       "type": "header",
       "blocks": {
+        "mega_menu_hp8Ktb": {
+          "type": "mega_menu",
+          "settings": {
+            "menu_item": "",
+            "mega_menu_justify_content": "justify-between",
+            "stretch_promo_blocks": false,
+            "promo_column_gap": "0px",
+            "promo_text_alignment": "left",
+            "promo_heading_tag": "subheading",
+            "promo_text_color": "#ffffff",
+            "promo_1_product": "",
+            "promo_1_heading": "",
+            "promo_1_text": "",
+            "promo_1_link": "",
+            "promo_2_product": "",
+            "promo_2_heading": "",
+            "promo_2_text": "",
+            "promo_2_link": "",
+            "promo_3_product": "",
+            "promo_3_heading": "",
+            "promo_3_text": "",
+            "promo_3_link": "",
+            "promo_4_product": "",
+            "promo_4_heading": "",
+            "promo_4_text": "",
+            "promo_4_link": "",
+            "promo_5_product": "",
+            "promo_5_heading": "",
+            "promo_5_text": "",
+            "promo_5_link": "",
+            "promo_6_product": "",
+            "promo_6_heading": "",
+            "promo_6_text": "",
+            "promo_6_link": ""
+          }
+        },
         "mega_menu_tyNzjb": {
           "type": "mega_menu",
-          "name": "Women Mega Menu",
+          "name": "Shoes",
           "settings": {
-            "menu_item": "Women",
+            "menu_item": "Shoes",
             "mega_menu_justify_content": "justify-center",
             "stretch_promo_blocks": true,
             "promo_column_gap": "4px",
@@ -118,9 +154,9 @@
         },
         "mega_menu_UKCUXQ": {
           "type": "mega_menu",
-          "name": "Men Mega Menu",
+          "name": "Apparel",
           "settings": {
-            "menu_item": "Men",
+            "menu_item": "Apparel",
             "mega_menu_justify_content": "justify-center",
             "stretch_promo_blocks": true,
             "promo_column_gap": "0px",
@@ -194,6 +230,7 @@
         }
       },
       "block_order": [
+        "mega_menu_hp8Ktb",
         "mega_menu_tyNzjb",
         "mega_menu_UKCUXQ",
         "mega_menu_cHmxXC"
@@ -207,7 +244,7 @@
         "logo": "{{shop.brand.logo}}",
         "logo_max_width": 300,
         "logo_mobile_max_width": 70,
-        "menu": "mega-menu",
+        "menu": "shoes-apparel-gear",
         "drawer_menu": "",
         "secondary_menu": "secondary-menu",
         "desktop_dropdown_menu_style": "below",
