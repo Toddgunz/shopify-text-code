@@ -166,7 +166,7 @@
     align-items: center;
     gap: 0;
     white-space: nowrap;
-    color: rgb(var(--text-color));
+    color: #111111;
     pointer-events: none;
   }
 
@@ -175,21 +175,20 @@
   }
 
   #shopify-section-{{ section.id }} .store-locations__map-callout-label {
-    font-size: 0.85rem;
-    font-weight: 600;
+    font-size: 0.95rem;
+    font-weight: 700;
     letter-spacing: 0.02em;
-    background: rgb(var(--background) / 0.92);
-    padding: 0.22rem 0.45rem;
-    border-radius: 999px;
-    border: 1px solid rgb(var(--border-color));
-    backdrop-filter: blur(4px);
+    line-height: 1;
+    text-shadow:
+      0 0 2px rgba(255, 255, 255, 0.95),
+      0 0 8px rgba(255, 255, 255, 0.95);
   }
 
   #shopify-section-{{ section.id }} .store-locations__map-callout-connector {
     display: inline-flex;
     align-items: center;
     gap: 0;
-    margin-inline: 0.3rem;
+    margin-inline: 0.24rem;
   }
 
   #shopify-section-{{ section.id }} .store-locations__map-callout--left .store-locations__map-callout-connector {
@@ -206,22 +205,22 @@
   }
 
   #shopify-section-{{ section.id }} .store-locations__map-callout-diagonal {
-    width: 0.9rem;
-    transform: rotate(-35deg);
+    width: 0.78rem;
+    transform: rotate(-30deg);
   }
 
   #shopify-section-{{ section.id }} .store-locations__map-callout--left .store-locations__map-callout-diagonal {
-    transform: rotate(35deg);
+    transform: rotate(30deg);
   }
 
   #shopify-section-{{ section.id }} .store-locations__map-callout-line {
-    width: 1.4rem;
-    margin-inline-start: -0.08rem;
+    width: 1.85rem;
+    margin-inline-start: -0.04rem;
   }
 
   #shopify-section-{{ section.id }} .store-locations__map-callout--left .store-locations__map-callout-line {
     margin-inline-start: 0;
-    margin-inline-end: -0.08rem;
+    margin-inline-end: -0.04rem;
   }
 
   #shopify-section-{{ section.id }} .store-locations__map-callout-dot {
@@ -520,15 +519,15 @@
       html: `<span style="
         --store-callout-dot-scale:${isActive ? '1.18' : '1'};
       " class="store-locations__map-callout ${index % 2 === 0 ? 'store-locations__map-callout--right' : 'store-locations__map-callout--left'}">
-        <span class="store-locations__map-callout-label">${title}</span>
+        <span class="store-locations__map-callout-dot"></span>
         <span class="store-locations__map-callout-connector" aria-hidden="true">
           <span class="store-locations__map-callout-diagonal"></span>
           <span class="store-locations__map-callout-line"></span>
-          <span class="store-locations__map-callout-dot"></span>
         </span>
+        <span class="store-locations__map-callout-label">${title}</span>
       </span>`,
-      iconSize: [isActive ? 154 : 146, 34],
-      iconAnchor: [index % 2 === 0 ? 12 : 134, 18]
+      iconSize: [isActive ? 156 : 148, 30],
+      iconAnchor: [index % 2 === 0 ? 6 : 142, 15]
     });
 
     const getSectionSignature = (section, styleMode, markerMode, cards) => {
