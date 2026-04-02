@@ -17,7 +17,7 @@
         "custom_scrolling_announcement_bar_i8Ffe4": {
           "type": "custom-scrolling-announcement-bar",
           "settings": {
-            "message_1": "Git sync test - Free shipping on orders over $100",
+            "message_1": "Free shipping on orders over $100",
             "link_1": "shopify://pages/accessories",
             "message_2": "New arrivals just landed",
             "link_2": "",
