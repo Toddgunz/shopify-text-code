@@ -191,6 +191,10 @@
     backdrop-filter: blur(4px);
   }
 
+  #shopify-section-{{ section.id }} [data-map-style='light'] .leaflet-tile {
+    filter: invert(1) hue-rotate(180deg) saturate(0.9) brightness(1.08) contrast(0.92);
+  }
+
   #shopify-section-{{ section.id }} .leaflet-bar {
     border: 1px solid rgb(var(--border-color));
     box-shadow: none;
