@@ -188,14 +188,13 @@
     display: inline-flex;
     align-items: center;
     gap: 0;
-    margin-inline: 0.24rem;
+    margin-inline: 0.32rem;
   }
 
   #shopify-section-{{ section.id }} .store-locations__map-callout--left .store-locations__map-callout-connector {
     flex-direction: row-reverse;
   }
 
-  #shopify-section-{{ section.id }} .store-locations__map-callout-diagonal,
   #shopify-section-{{ section.id }} .store-locations__map-callout-line {
     display: block;
     height: 1px;
@@ -204,32 +203,22 @@
     flex-shrink: 0;
   }
 
-  #shopify-section-{{ section.id }} .store-locations__map-callout-diagonal {
-    width: 0.78rem;
-    transform: rotate(-30deg);
-  }
-
-  #shopify-section-{{ section.id }} .store-locations__map-callout--left .store-locations__map-callout-diagonal {
-    transform: rotate(30deg);
-  }
-
   #shopify-section-{{ section.id }} .store-locations__map-callout-line {
-    width: 1.85rem;
-    margin-inline-start: -0.04rem;
+    width: 2rem;
   }
 
   #shopify-section-{{ section.id }} .store-locations__map-callout--left .store-locations__map-callout-line {
     margin-inline-start: 0;
-    margin-inline-end: -0.04rem;
   }
 
   #shopify-section-{{ section.id }} .store-locations__map-callout-dot {
     display: block;
-    width: 0.7rem;
-    height: 0.7rem;
+    width: 0.85rem;
+    height: 0.85rem;
     border-radius: 999px;
     background: #111111;
-    box-shadow: 0 0 0 2px #ffffff;
+    border: 2px solid rgba(255, 255, 255, 0.95);
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.12);
     flex-shrink: 0;
     transform: scale(var(--store-callout-dot-scale, 1));
     transition: transform 0.2s ease;
@@ -521,13 +510,12 @@
       " class="store-locations__map-callout ${index % 2 === 0 ? 'store-locations__map-callout--right' : 'store-locations__map-callout--left'}">
         <span class="store-locations__map-callout-dot"></span>
         <span class="store-locations__map-callout-connector" aria-hidden="true">
-          <span class="store-locations__map-callout-diagonal"></span>
           <span class="store-locations__map-callout-line"></span>
         </span>
         <span class="store-locations__map-callout-label">${title}</span>
       </span>`,
-      iconSize: [isActive ? 156 : 148, 30],
-      iconAnchor: [index % 2 === 0 ? 6 : 142, 15]
+      iconSize: [isActive ? 158 : 150, 26],
+      iconAnchor: [index % 2 === 0 ? 8 : 142, 13]
     });
 
     const getSectionSignature = (section, styleMode, markerMode, cards) => {
