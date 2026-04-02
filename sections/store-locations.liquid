@@ -47,6 +47,14 @@
     align-items: stretch;
   }
 
+  #shopify-section-{{ section.id }} .store-locations__layout--mobile {
+    display: grid;
+  }
+
+  #shopify-section-{{ section.id }} .store-locations__layout--desktop {
+    display: none;
+  }
+
   #shopify-section-{{ section.id }} .store-locations__list {
     display: grid;
     align-content: start;
@@ -183,6 +191,14 @@
   }
 
   @media screen and (min-width: 1000px) {
+    #shopify-section-{{ section.id }} .store-locations__layout--mobile {
+      display: none;
+    }
+
+    #shopify-section-{{ section.id }} .store-locations__layout--desktop {
+      display: grid;
+    }
+
     #shopify-section-{{ section.id }} .store-locations__layout {
       grid-template-columns: minmax(20rem, var(--store-locations-column-width)) minmax(0, var(--store-map-column-width));
     }
@@ -226,7 +242,111 @@
         </div>
       </div>
 
-      <div class="store-locations__layout">
+      <div class="store-locations__layout store-locations__layout--mobile">
+        {%- if section.blocks.size > 0 -%}
+          {%- for block in section.blocks -%}
+            {%- liquid
+              assign block_map_src = block.settings.map_embed | strip
+
+              if block_map_src contains 'src="'
+                assign block_map_src = block_map_src | split: 'src="' | last | split: '"' | first
+              elsif block_map_src contains "src='"
+                assign block_map_src = block_map_src | split: "src='" | last | split: "'" | first
+              endif
+
+              if block_map_src == blank
+                assign block_map_src = fallback_map_src
+              endif
+            -%}
+
+            <article
+              class="store-locations__item"
+              {% if block.settings.background_color != blank or block.settings.text_color != blank %}
+                style="
+                  {%- if block.settings.background_color != blank and block.settings.background_color != 'rgba(0,0,0,0)' -%}
+                    --store-location-bg: {{ block.settings.background_color.rgb }};
+                  {%- endif -%}
+                  {%- if block.settings.text_color != blank and block.settings.text_color != 'rgba(0,0,0,0)' -%}
+                    --store-location-text: {{ block.settings.text_color.rgb }};
+                  {%- endif -%}
+                "
+              {% endif %}
+              {{ block.shopify_attributes }}
+            >
+              <div class="store-locations__content">
+                {%- if block.settings.location_name != blank -%}
+                  <h3 class="store-locations__name {{ section.settings.location_heading_size }}">{{ block.settings.location_name }}</h3>
+                {%- endif -%}
+
+                {%- if block.settings.address != blank -%}
+                  <div class="prose">
+                    {{- block.settings.address -}}
+                  </div>
+                {%- endif -%}
+
+                {%- if block.settings.hours != blank -%}
+                  <div class="prose">
+                    {{- block.settings.hours -}}
+                  </div>
+                {%- endif -%}
+              </div>
+
+              {%- if block.settings.directions_url != blank -%}
+                {%- render 'button',
+                  content: block.settings.directions_label,
+                  href: block.settings.directions_url,
+                  style: 'outline',
+                  external: true
+                -%}
+              {%- endif -%}
+            </article>
+
+            <div class="store-locations__map-pane">
+              {%- if block.settings.location_name != blank -%}
+                <div class="store-locations__map-label">{{ block.settings.location_name }}</div>
+              {%- endif -%}
+
+              {%- if block.settings.latitude != blank and block.settings.longitude != blank -%}
+                <div
+                  class="store-locations__map-canvas"
+                  data-store-map
+                  data-lat="{{ block.settings.latitude | escape }}"
+                  data-lng="{{ block.settings.longitude | escape }}"
+                  data-zoom="{{ block.settings.map_zoom }}"
+                  data-title="{{ block.settings.location_name | escape }}"
+                ></div>
+              {%- elsif block_map_src != blank -%}
+                <iframe
+                  class="store-locations__map-frame"
+                  src="{{ block_map_src | escape }}"
+                  title="{{ block.settings.location_name | default: 'Store location map' | escape }}"
+                  loading="lazy"
+                  referrerpolicy="no-referrer-when-downgrade"
+                  allowfullscreen
+                ></iframe>
+              {%- else -%}
+                <div class="store-locations__map-empty prose">
+                  <p>Add coordinates for the Leaflet map, or paste a map embed for this location.</p>
+                </div>
+              {%- endif -%}
+            </div>
+          {%- endfor -%}
+        {%- else -%}
+          <div class="store-locations__item">
+            <div class="prose">
+              <p>Add up to two location blocks to build this section.</p>
+            </div>
+          </div>
+
+          <div class="store-locations__map-pane">
+            <div class="store-locations__map-empty prose">
+              <p>Your maps will appear here once you add location blocks.</p>
+            </div>
+          </div>
+        {%- endif -%}
+      </div>
+
+      <div class="store-locations__layout store-locations__layout--desktop">
         <div class="store-locations__list">
           {%- if section.blocks.size > 0 -%}
             {%- for block in section.blocks -%}
