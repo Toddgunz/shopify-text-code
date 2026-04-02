@@ -27,7 +27,7 @@
             "location_name": "Northeast",
             "background_color": "",
             "text_color": "",
-            "address": "<p>411 E Hennepin Ave, Minneapolis, MN <br/>Minneapolis, MN 55414</p>",
+            "address": "<p>411 E Hennepin Ave<br/>Minneapolis, MN 55414</p>",
             "hours": "<p>Mon - Thu, 11am - 7pm<br/>Friday, 11am - 6pm<br/>Saturday, 10am - 5pm<br/>Sunday, 11am - 5pm</p>",
             "directions_url": "https://maps.app.goo.gl/pzshCJcSfzA4puTF6",
             "directions_label": "Directions",
