@@ -125,7 +125,7 @@
     position: absolute;
     inset-block-start: 1rem;
     inset-inline-start: 1rem;
-    z-index: 1;
+    z-index: 500;
     padding: 0.5rem 0.75rem;
     background: rgb(var(--background) / 0.88);
     color: rgb(var(--text-color));
@@ -134,6 +134,33 @@
     letter-spacing: 0.14em;
     text-transform: uppercase;
     line-height: 1;
+    pointer-events: none;
+  }
+
+  #shopify-section-{{ section.id }} .leaflet-control-attribution,
+  #shopify-section-{{ section.id }} .leaflet-control-attribution a {
+    color: rgb(var(--text-color) / 0.75);
+  }
+
+  #shopify-section-{{ section.id }} .leaflet-control-attribution {
+    background: rgb(var(--background) / 0.82);
+    backdrop-filter: blur(4px);
+  }
+
+  #shopify-section-{{ section.id }} .leaflet-bar {
+    border: 1px solid rgb(var(--border-color));
+    box-shadow: none;
+  }
+
+  #shopify-section-{{ section.id }} .leaflet-bar a {
+    background: rgb(var(--background));
+    color: rgb(var(--text-color));
+    border-bottom-color: rgb(var(--border-color));
+  }
+
+  #shopify-section-{{ section.id }} .leaflet-bar a:hover {
+    background: rgb(var(--background));
+    color: rgb(var(--text-color));
   }
 
   @media screen and (min-width: 1000px) {
@@ -157,9 +184,8 @@
 <div
   class="color-scheme color-scheme--{{ section.settings.color_scheme.id }}"
   data-store-locations-section
-  data-api-key="{{ section.settings.google_maps_api_key | escape }}"
   data-map-style="{{ section.settings.map_style }}"
-  data-marker-color="{{ section.settings.marker_color }}"
+  data-marker-color="{{ section.settings.marker_color | escape }}"
 >
   <div class="container section-spacing">
     <div class="store-locations">
@@ -245,7 +271,7 @@
                   <div class="store-locations__map-label">{{ block.settings.location_name }}</div>
                 {%- endif -%}
 
-                {%- if section.settings.google_maps_api_key != blank and block.settings.latitude != blank and block.settings.longitude != blank -%}
+                {%- if block.settings.latitude != blank and block.settings.longitude != blank -%}
                   <div
                     class="store-locations__map-canvas"
                     data-store-map
@@ -265,7 +291,7 @@
                   ></iframe>
                 {%- else -%}
                   <div class="store-locations__map-empty prose">
-                    <p>Add coordinates and a Google Maps API key, or paste a map embed for this location.</p>
+                    <p>Add coordinates for the Leaflet map, or paste a map embed for this location.</p>
                   </div>
                 {%- endif -%}
               </div>
@@ -292,89 +318,97 @@
     }
 
     const mapElements = Array.from(section.querySelectorAll('[data-store-map]'));
-    const apiKey = section.dataset.apiKey;
 
-    if (!apiKey || mapElements.length === 0) {
+    if (mapElements.length === 0) {
       return;
     }
 
     const styleMode = section.dataset.mapStyle || 'dark';
     const markerColor = section.dataset.markerColor || '#ef4434';
 
-    const mapStyles = {
-      standard: null,
-      light: [
-        { featureType: 'administrative', elementType: 'labels.text.fill', stylers: [{ color: '#606060' }] },
-        { featureType: 'landscape', elementType: 'geometry', stylers: [{ color: '#f4f1ec' }] },
-        { featureType: 'poi', stylers: [{ visibility: 'off' }] },
-        { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#ffffff' }] },
-        { featureType: 'road', elementType: 'labels.text.fill', stylers: [{ color: '#7a7a7a' }] },
-        { featureType: 'transit', stylers: [{ visibility: 'off' }] },
-        { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#d7dbe2' }] }
-      ],
-      muted: [
-        { featureType: 'all', elementType: 'labels.text.fill', stylers: [{ saturation: 36 }, { color: '#5b5b5b' }, { lightness: 40 }] },
-        { featureType: 'all', elementType: 'labels.text.stroke', stylers: [{ visibility: 'on' }, { color: '#f5f5f5' }, { lightness: 16 }] },
-        { featureType: 'administrative', elementType: 'geometry.fill', stylers: [{ color: '#f3f0ea' }] },
-        { featureType: 'landscape', elementType: 'geometry', stylers: [{ color: '#efebe5' }] },
-        { featureType: 'poi', stylers: [{ visibility: 'off' }] },
-        { featureType: 'road.highway', elementType: 'geometry', stylers: [{ color: '#ded5c8' }] },
-        { featureType: 'road.arterial', elementType: 'geometry', stylers: [{ color: '#ffffff' }] },
-        { featureType: 'road.local', elementType: 'geometry', stylers: [{ color: '#fbfaf7' }] },
-        { featureType: 'transit', stylers: [{ visibility: 'off' }] },
-        { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#cfd8dc' }] }
-      ],
-      dark: [
-        { elementType: 'geometry', stylers: [{ color: '#212121' }] },
-        { elementType: 'labels.icon', stylers: [{ visibility: 'off' }] },
-        { elementType: 'labels.text.fill', stylers: [{ color: '#757575' }] },
-        { elementType: 'labels.text.stroke', stylers: [{ color: '#212121' }] },
-        { featureType: 'administrative', elementType: 'geometry', stylers: [{ color: '#757575' }] },
-        { featureType: 'administrative.land_parcel', stylers: [{ visibility: 'off' }] },
-        { featureType: 'administrative.neighborhood', stylers: [{ visibility: 'off' }] },
-        { featureType: 'poi', stylers: [{ visibility: 'off' }] },
-        { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#2c2c2c' }] },
-        { featureType: 'road', elementType: 'geometry.stroke', stylers: [{ color: '#1f1f1f' }] },
-        { featureType: 'road', elementType: 'labels.text.fill', stylers: [{ color: '#8a8a8a' }] },
-        { featureType: 'transit', stylers: [{ visibility: 'off' }] },
-        { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#181818' }] },
-        { featureType: 'water', elementType: 'labels.text.fill', stylers: [{ color: '#616161' }] }
-      ]
+    const tileConfigs = {
+      standard: {
+        url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+        options: {
+          maxZoom: 19,
+          subdomains: ['a', 'b', 'c'],
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }
+      },
+      light: {
+        url: 'https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png',
+        options: {
+          maxZoom: 20,
+          subdomains: 'abcd',
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+        }
+      },
+      muted: {
+        url: 'https://{s}.basemaps.cartocdn.com/voyager_nolabels/{z}/{x}/{y}{r}.png',
+        options: {
+          maxZoom: 20,
+          subdomains: 'abcd',
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+        }
+      },
+      dark: {
+        url: 'https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',
+        options: {
+          maxZoom: 20,
+          subdomains: 'abcd',
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+        }
+      }
     };
 
-    const loadGoogleMapsApi = (key) => {
-      if (window.google && window.google.maps) {
-        return Promise.resolve(window.google.maps);
+    const tileConfig = Object.prototype.hasOwnProperty.call(tileConfigs, styleMode) ? tileConfigs[styleMode] : tileConfigs.dark;
+
+    const loadLeaflet = () => {
+      if (window.L) {
+        return Promise.resolve(window.L);
       }
 
-      if (window.__codexGoogleMapsPromise) {
-        return window.__codexGoogleMapsPromise;
+      if (window.__codexLeafletPromise) {
+        return window.__codexLeafletPromise;
       }
 
-      window.__codexGoogleMapsPromise = new Promise((resolve, reject) => {
-        const callbackName = `codexGoogleMapsInit_${Math.random().toString(36).slice(2)}`;
+      window.__codexLeafletPromise = new Promise((resolve, reject) => {
+        const stylesheetId = 'codex-leaflet-stylesheet';
+
+        if (!document.getElementById(stylesheetId)) {
+          const link = document.createElement('link');
+          link.id = stylesheetId;
+          link.rel = 'stylesheet';
+          link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+          link.integrity = 'sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=';
+          link.crossOrigin = '';
+          document.head.appendChild(link);
+        }
+
         const script = document.createElement('script');
-
-        window[callbackName] = () => {
-          resolve(window.google.maps);
-          delete window[callbackName];
-        };
-
-        script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(key)}&callback=${callbackName}`;
+        script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+        script.integrity = 'sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=';
+        script.crossOrigin = '';
         script.async = true;
-        script.defer = true;
-        script.onerror = () => {
-          reject(new Error('Google Maps failed to load.'));
-          delete window[callbackName];
-        };
+        script.onload = () => resolve(window.L);
+        script.onerror = () => reject(new Error('Leaflet failed to load.'));
 
         document.head.appendChild(script);
       });
 
-      return window.__codexGoogleMapsPromise;
+      return window.__codexLeafletPromise;
     };
 
-    const renderMaps = (googleMaps) => {
+    const createIcon = (leaflet) => leaflet.divIcon({
+      className: 'store-locations__leaflet-marker',
+      html: `<span style="display:block;width:18px;height:18px;border-radius:999px;background:${markerColor};border:2px solid #ffffff;box-shadow:0 0 0 1px rgba(0,0,0,.15);"></span>`,
+      iconSize: [18, 18],
+      iconAnchor: [9, 9]
+    });
+
+    const renderMaps = (leaflet) => {
+      const markerIcon = createIcon(leaflet);
+
       mapElements.forEach((mapElement) => {
         const lat = Number.parseFloat(mapElement.dataset.lat || '');
         const lng = Number.parseFloat(mapElement.dataset.lng || '');
@@ -384,39 +418,27 @@
           return;
         }
 
-        const center = { lat, lng };
-        const resolvedStyles = Object.prototype.hasOwnProperty.call(mapStyles, styleMode) ? mapStyles[styleMode] : mapStyles.dark;
-        const map = new googleMaps.Map(mapElement, {
-          center,
-          zoom,
-          disableDefaultUI: true,
+        const map = leaflet.map(mapElement, {
           zoomControl: true,
-          clickableIcons: false,
-          gestureHandling: 'cooperative',
-          styles: resolvedStyles
-        });
+          scrollWheelZoom: false,
+          dragging: true,
+          attributionControl: true
+        }).setView([lat, lng], zoom);
 
-        new googleMaps.Marker({
-          map,
-          position: center,
-          title: mapElement.dataset.title || 'Location',
-          icon: {
-            path: googleMaps.SymbolPath.CIRCLE,
-            scale: 9,
-            fillColor: markerColor,
-            fillOpacity: 1,
-            strokeColor: '#ffffff',
-            strokeWeight: 2
-          }
-        });
+        leaflet.tileLayer(tileConfig.url, tileConfig.options).addTo(map);
+
+        leaflet.marker([lat, lng], {
+          icon: markerIcon,
+          title: mapElement.dataset.title || 'Location'
+        }).addTo(map);
       });
     };
 
-    loadGoogleMapsApi(apiKey).then(renderMaps).catch(() => {
+    loadLeaflet().then(renderMaps).catch(() => {
       mapElements.forEach((mapElement) => {
         mapElement.replaceWith(Object.assign(document.createElement('div'), {
           className: 'store-locations__map-empty prose',
-          innerHTML: '<p>Google Maps could not load. Check the API key for this section.</p>'
+          innerHTML: '<p>Leaflet could not load for this section.</p>'
         }));
       });
     });
@@ -506,12 +528,6 @@
       "default": 320
     },
     {
-      "type": "text",
-      "id": "google_maps_api_key",
-      "label": "Google Maps API key",
-      "info": "Required for the styled interactive maps. If this is blank, the section falls back to each block's embed map."
-    },
-    {
       "type": "select",
       "id": "map_style",
       "label": "Map style",
@@ -533,7 +549,7 @@
       "type": "textarea",
       "id": "default_map_embed",
       "label": "Default map embed URL or iframe code",
-      "info": "Optional fallback used when a location does not have custom map coordinates or its own embed."
+      "info": "Optional fallback used when a location does not have coordinates or its own embed."
     },
     {
       "type": "select",
@@ -586,13 +602,13 @@
           "type": "text",
           "id": "latitude",
           "label": "Latitude",
-          "info": "Needed for the custom styled map."
+          "info": "Used for the Leaflet map."
         },
         {
           "type": "text",
           "id": "longitude",
           "label": "Longitude",
-          "info": "Needed for the custom styled map."
+          "info": "Used for the Leaflet map."
         },
         {
           "type": "range",
@@ -607,7 +623,7 @@
           "type": "textarea",
           "id": "map_embed",
           "label": "Fallback map embed URL or iframe code",
-          "info": "Used only if the API key or coordinates are missing."
+          "info": "Used only if coordinates are missing."
         }
       ]
     }
