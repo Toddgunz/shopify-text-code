@@ -66,10 +66,55 @@
         "desktop_text_position": "sm:place-self-center",
         "mobile_text_position": "place-self-center"
       }
+    },
+    "store_locations_3LM9UY": {
+      "type": "store-locations",
+      "blocks": {
+        "location_eh7RCb": {
+          "type": "location",
+          "settings": {
+            "location_name": "Downtown",
+            "address": "<p>123 Main Street<br/>Minneapolis, Minnesota 55401</p>",
+            "hours": "<p>Mon - Fri, 10am - 7pm<br/>Saturday, 9am - 5pm<br/>Sunday, 11am - 4pm</p>",
+            "directions_url": "",
+            "directions_label": "Directions",
+            "map_embed": "<iframe src=\"https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2821.779463939326!2d-93.25441900000001!3d44.988791!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x52b32d785345cabd%3A0x3b17067aa0631506!2sMill%20City%20Running!5e0!3m2!1sen!2sus!4v1775150536490!5m2!1sen!2sus\" width=\"600\" height=\"450\" style=\"border:0;\" allowfullscreen=\"\" loading=\"lazy\" referrerpolicy=\"no-referrer-when-downgrade\"></iframe>"
+          }
+        },
+        "location_dYq4TK": {
+          "type": "location",
+          "settings": {
+            "location_name": "Uptown",
+            "address": "<p>123 Main Street<br/>Minneapolis, Minnesota 55401</p>",
+            "hours": "<p>Mon - Fri, 10am - 7pm<br/>Saturday, 9am - 5pm<br/>Sunday, 11am - 4pm</p>",
+            "directions_url": "",
+            "directions_label": "Directions",
+            "map_embed": ""
+          }
+        }
+      },
+      "block_order": [
+        "location_eh7RCb",
+        "location_dYq4TK"
+      ],
+      "name": "Store locations",
+      "settings": {
+        "color_scheme": "scheme-4",
+        "subheading": "",
+        "title": "Meet us in store",
+        "heading_size": "h2",
+        "content": "<p>Share your store locations, hours, and directions in one clean section.</p>",
+        "location_panel_width": 40,
+        "desktop_map_height": 720,
+        "mobile_map_height": 360,
+        "default_map_embed": "",
+        "location_heading_size": "h3"
+      }
     }
   },
   "order": [
     "main",
-    "image_with_text_overlay_9wXPYD"
+    "image_with_text_overlay_9wXPYD",
+    "store_locations_3LM9UY"
   ]
 }
