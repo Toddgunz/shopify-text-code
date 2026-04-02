@@ -411,30 +411,51 @@
       iconAnchor: [9, 9]
     });
 
+    const getSectionSignature = (section, styleMode, markerColor, mapElements) => {
+      const mapSignature = mapElements.map((mapElement) => [
+        mapElement.dataset.lat || '',
+        mapElement.dataset.lng || '',
+        mapElement.dataset.zoom || '',
+        mapElement.dataset.title || ''
+      ].join(':')).join('|');
+
+      return [styleMode, markerColor, mapSignature].join('||');
+    };
+
+    const destroyMap = (mapElement) => {
+      if (mapElement.__storeLocationsMap) {
+        mapElement.__storeLocationsMap.remove();
+        mapElement.__storeLocationsMap = null;
+      }
+
+      mapElement.dataset.storeMapReady = 'false';
+      mapElement.innerHTML = '';
+    };
+
     const initializeSection = (section) => {
-      if (!section || section.dataset.storeLocationsInitialized === 'true') {
+      if (!section) {
         return;
       }
 
       const mapElements = Array.from(section.querySelectorAll('[data-store-map]'));
 
       if (mapElements.length === 0) {
-        section.dataset.storeLocationsInitialized = 'true';
         return;
       }
 
       const styleMode = section.dataset.mapStyle || 'dark';
       const markerColor = section.dataset.markerColor || '#ef4434';
       const tileConfig = Object.prototype.hasOwnProperty.call(tileConfigs, styleMode) ? tileConfigs[styleMode] : tileConfigs.dark;
+      const signature = getSectionSignature(section, styleMode, markerColor, mapElements);
+
+      if (section.dataset.storeLocationsSignature === signature) {
+        return;
+      }
 
       loadLeaflet().then((leaflet) => {
         const markerIcon = createIcon(leaflet, markerColor);
 
         mapElements.forEach((mapElement) => {
-          if (mapElement.dataset.storeMapReady === 'true') {
-            return;
-          }
-
           const lat = Number.parseFloat(mapElement.dataset.lat || '');
           const lng = Number.parseFloat(mapElement.dataset.lng || '');
           const zoom = Number.parseInt(mapElement.dataset.zoom || '14', 10);
@@ -442,6 +463,8 @@
           if (Number.isNaN(lat) || Number.isNaN(lng)) {
             return;
           }
+
+          destroyMap(mapElement);
 
           const map = leaflet.map(mapElement, {
             zoomControl: true,
@@ -457,23 +480,20 @@
             title: mapElement.dataset.title || 'Location'
           }).addTo(map);
 
+          mapElement.__storeLocationsMap = map;
           mapElement.dataset.storeMapReady = 'true';
         });
 
-        section.dataset.storeLocationsInitialized = 'true';
+        section.dataset.storeLocationsSignature = signature;
       }).catch(() => {
         mapElements.forEach((mapElement) => {
-          if (mapElement.dataset.storeMapReady === 'true') {
-            return;
-          }
+          destroyMap(mapElement);
 
           mapElement.replaceWith(Object.assign(document.createElement('div'), {
             className: 'store-locations__map-empty prose',
             innerHTML: '<p>Leaflet could not load for this section.</p>'
           }));
         });
-
-        section.dataset.storeLocationsInitialized = 'true';
       });
     };
 
