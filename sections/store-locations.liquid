@@ -152,22 +152,71 @@
   #shopify-section-{{ section.id }} .store-locations__legend-item {
     display: flex;
     align-items: center;
-    gap: 0.65rem;
+    justify-content: space-between;
+    gap: 1rem;
     font-size: 0.85rem;
     line-height: 1.2;
   }
 
-  #shopify-section-{{ section.id }} .store-locations__legend-badge {
-    display: inline-grid;
-    place-items: center;
-    width: 1.5rem;
-    height: 1.5rem;
-    border-radius: 999px;
-    background: rgb(var(--text-color));
-    color: rgb(var(--background));
-    font-size: 0.75rem;
+  #shopify-section-{{ section.id }} .store-locations__legend-name {
     font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+
+  #shopify-section-{{ section.id }} .store-locations__legend-connector {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0;
     flex-shrink: 0;
+  }
+
+  #shopify-section-{{ section.id }} .store-locations__legend-diagonal,
+  #shopify-section-{{ section.id }} .store-locations__legend-line {
+    display: block;
+    height: 1px;
+    background: rgb(var(--text-color));
+    transform-origin: center;
+    flex-shrink: 0;
+  }
+
+  #shopify-section-{{ section.id }} .store-locations__legend-diagonal {
+    width: 0.9rem;
+    transform: rotate(-35deg);
+  }
+
+  #shopify-section-{{ section.id }} .store-locations__legend-line {
+    width: 1.4rem;
+    margin-inline-start: -0.08rem;
+  }
+
+  #shopify-section-{{ section.id }} .store-locations__legend-dot {
+    display: block;
+    width: 0.6rem;
+    height: 0.6rem;
+    border-radius: 999px;
+    margin-inline-start: 0.35rem;
+    background: var(--store-map-dot-color, rgb(var(--text-color)));
+    flex-shrink: 0;
+  }
+
+  #shopify-section-{{ section.id }} .store-locations__legend-actions {
+    margin-block-start: 0.35rem;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  #shopify-section-{{ section.id }} .store-locations__legend-reset {
+    appearance: none;
+    background: transparent;
+    border: 0;
+    padding: 0;
+    color: rgb(var(--text-color));
+    font-size: 0.8rem;
+    line-height: 1;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+    cursor: pointer;
   }
 
   #shopify-section-{{ section.id }} .leaflet-control-attribution,
@@ -277,7 +326,7 @@
           {%- if section.blocks.size > 0 -%}
             {%- for block in section.blocks -%}
               <article
-                class="store-locations__item{% if forloop.first %} is-active{% endif %}"
+                class="store-locations__item"
                 data-store-location-card
                 data-location-index="{{ forloop.index0 }}"
                 data-lat="{{ block.settings.latitude | escape }}"
@@ -295,7 +344,7 @@
                 {% endif %}
                 tabindex="0"
                 role="button"
-                aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}"
+                aria-pressed="false"
                 {{ block.shopify_attributes }}
               >
                 <div class="store-locations__content">
@@ -342,10 +391,19 @@
             <div class="store-locations__map-legend">
               {%- for block in section.blocks -%}
                 <div class="store-locations__legend-item">
-                  <span class="store-locations__legend-badge">{{ forloop.index }}</span>
-                  <span>{{ block.settings.location_name | default: 'Location' }}</span>
+                  <span class="store-locations__legend-name">{{ block.settings.location_name | default: 'Location' }}</span>
+                  <span class="store-locations__legend-connector" aria-hidden="true">
+                    <span class="store-locations__legend-diagonal"></span>
+                    <span class="store-locations__legend-line"></span>
+                    <span class="store-locations__legend-dot"></span>
+                  </span>
                 </div>
               {%- endfor -%}
+              {%- if section.blocks.size > 1 -%}
+                <div class="store-locations__legend-actions">
+                  <button type="button" class="store-locations__legend-reset" data-store-location-reset>View all locations</button>
+                </div>
+              {%- endif -%}
             </div>
           {%- endif -%}
 
@@ -454,25 +512,22 @@
       return window.__codexLeafletPromise;
     };
 
-    const createIcon = (leaflet, markerColor, label, isActive) => leaflet.divIcon({
+    const createIcon = (leaflet, markerColor, isActive) => leaflet.divIcon({
       className: 'store-locations__leaflet-marker',
       html: `<span style="
         display:grid;
         place-items:center;
-        width:${isActive ? 30 : 26}px;
-        height:${isActive ? 30 : 26}px;
+        width:${isActive ? 22 : 16}px;
+        height:${isActive ? 22 : 16}px;
         border-radius:999px;
         background:${markerColor};
-        color:#ffffff;
         border:2px solid #ffffff;
         box-shadow:0 0 0 1px rgba(0,0,0,.15);
-        font-size:${isActive ? 13 : 12}px;
-        font-weight:700;
         transform:${isActive ? 'scale(1.06)' : 'scale(1)'};
         transition:transform .2s ease;
-      ">${label}</span>`,
-      iconSize: [isActive ? 30 : 26, isActive ? 30 : 26],
-      iconAnchor: [isActive ? 15 : 13, isActive ? 15 : 13]
+      "></span>`,
+      iconSize: [isActive ? 22 : 16, isActive ? 22 : 16],
+      iconAnchor: [isActive ? 11 : 8, isActive ? 11 : 8]
     });
 
     const getSectionSignature = (section, styleMode, markerColor, cards) => {
@@ -511,6 +566,7 @@
 
       const mapElement = section.querySelector('[data-store-map]');
       const cards = Array.from(section.querySelectorAll('[data-store-location-card]'));
+      const resetButton = section.querySelector('[data-store-location-reset]');
 
       if (!mapElement || cards.length === 0) {
         return;
@@ -539,7 +595,6 @@
           lat,
           lng,
           zoom: Number.parseInt(card.dataset.zoom || '13', 10),
-          label: String(index + 1),
           title: card.querySelector('.store-locations__name')?.textContent?.trim() || `Location ${index + 1}`
         };
       }).filter(Boolean);
@@ -563,6 +618,16 @@
         const bounds = leaflet.latLngBounds(locations.map((location) => [location.lat, location.lng]));
         const markers = [];
 
+        const fitToOverview = () => {
+          if (locations.length > 1) {
+            map.fitBounds(bounds, {
+              padding: [48, 48]
+            });
+          } else {
+            map.setView([locations[0].lat, locations[0].lng], Number.parseInt(mapElement.dataset.defaultZoom || '13', 10));
+          }
+        };
+
         const setActiveLocation = (activeIndex) => {
           locations.forEach((location) => {
             const isActive = location.index === activeIndex;
@@ -571,7 +636,7 @@
 
             const marker = markers[location.index];
             if (marker) {
-              marker.setIcon(createIcon(leaflet, markerColor, location.label, isActive));
+              marker.setIcon(createIcon(leaflet, markerColor, isActive));
               marker.setZIndexOffset(isActive ? 500 : 0);
             }
           });
@@ -586,9 +651,24 @@
           }
         };
 
+        const showOverview = () => {
+          locations.forEach((location) => {
+            location.card.classList.remove('is-active');
+            location.card.setAttribute('aria-pressed', 'false');
+
+            const marker = markers[location.index];
+            if (marker) {
+              marker.setIcon(createIcon(leaflet, markerColor, false));
+              marker.setZIndexOffset(0);
+            }
+          });
+
+          fitToOverview();
+        };
+
         locations.forEach((location) => {
           const marker = leaflet.marker([location.lat, location.lng], {
-            icon: createIcon(leaflet, markerColor, location.label, location.index === 0),
+            icon: createIcon(leaflet, markerColor, false),
             title: location.title
           }).addTo(map);
 
@@ -625,14 +705,16 @@
           location.card.addEventListener('keydown', activateCardWithKeyboard);
         });
 
-        if (locations.length > 1) {
-          map.fitBounds(bounds, {
-            padding: [48, 48]
-          });
-        } else {
-          map.setView([locations[0].lat, locations[0].lng], Number.parseInt(mapElement.dataset.defaultZoom || '13', 10));
+        if (resetButton) {
+          if (resetButton.__storeLocationResetHandler) {
+            resetButton.removeEventListener('click', resetButton.__storeLocationResetHandler);
+          }
+
+          resetButton.__storeLocationResetHandler = () => showOverview();
+          resetButton.addEventListener('click', resetButton.__storeLocationResetHandler);
         }
 
+        showOverview();
         window.setTimeout(() => map.invalidateSize(), 150);
         mapElement.__storeLocationsMap = map;
         section.dataset.storeLocationsSignature = signature;
