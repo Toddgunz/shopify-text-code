@@ -367,6 +367,7 @@
             <div
               class="store-locations__map-canvas"
               data-store-map
+              data-overview-zoom="{{ section.settings.overview_zoom }}"
               data-default-zoom="{{ section.blocks.first.settings.map_zoom }}"
             ></div>
           {%- elsif fallback_map_src != blank -%}
@@ -561,10 +562,10 @@
         let activeLocationIndex = null;
 
         const fitToOverview = () => {
+          const overviewZoom = Number.parseInt(mapElement.dataset.overviewZoom || '11', 10);
+
           if (locations.length > 1) {
-            map.fitBounds(bounds, {
-              padding: [48, 48]
-            });
+            map.setView(bounds.getCenter(), overviewZoom);
           } else {
             map.setView([locations[0].lat, locations[0].lng], Number.parseInt(mapElement.dataset.defaultZoom || '13', 10));
           }
@@ -747,6 +748,15 @@
       "id": "content",
       "label": "Intro text",
       "default": "<p>Share your store locations, hours, and directions in one clean section.</p>"
+    },
+    {
+      "type": "range",
+      "id": "overview_zoom",
+      "min": 9,
+      "max": 15,
+      "step": 1,
+      "label": "Default overview zoom",
+      "default": 11
     },
     {
       "type": "range",
