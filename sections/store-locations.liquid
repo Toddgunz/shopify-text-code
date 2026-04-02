@@ -333,21 +333,6 @@
 
 <script>
   (() => {
-    const section = document.getElementById('shopify-section-{{ section.id }}');
-
-    if (!section) {
-      return;
-    }
-
-    const mapElements = Array.from(section.querySelectorAll('[data-store-map]'));
-
-    if (mapElements.length === 0) {
-      return;
-    }
-
-    const styleMode = section.dataset.mapStyle || 'dark';
-    const markerColor = section.dataset.markerColor || '#ef4434';
-
     const tileConfigs = {
       standard: {
         url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
@@ -382,8 +367,6 @@
         }
       }
     };
-
-    const tileConfig = Object.prototype.hasOwnProperty.call(tileConfigs, styleMode) ? tileConfigs[styleMode] : tileConfigs.dark;
 
     const loadLeaflet = () => {
       if (window.L) {
@@ -421,49 +404,92 @@
       return window.__codexLeafletPromise;
     };
 
-    const createIcon = (leaflet) => leaflet.divIcon({
+    const createIcon = (leaflet, markerColor) => leaflet.divIcon({
       className: 'store-locations__leaflet-marker',
       html: `<span style="display:block;width:18px;height:18px;border-radius:999px;background:${markerColor};border:2px solid #ffffff;box-shadow:0 0 0 1px rgba(0,0,0,.15);"></span>`,
       iconSize: [18, 18],
       iconAnchor: [9, 9]
     });
 
-    const renderMaps = (leaflet) => {
-      const markerIcon = createIcon(leaflet);
+    const initializeSection = (section) => {
+      if (!section || section.dataset.storeLocationsInitialized === 'true') {
+        return;
+      }
 
-      mapElements.forEach((mapElement) => {
-        const lat = Number.parseFloat(mapElement.dataset.lat || '');
-        const lng = Number.parseFloat(mapElement.dataset.lng || '');
-        const zoom = Number.parseInt(mapElement.dataset.zoom || '14', 10);
+      const mapElements = Array.from(section.querySelectorAll('[data-store-map]'));
 
-        if (Number.isNaN(lat) || Number.isNaN(lng)) {
-          return;
-        }
+      if (mapElements.length === 0) {
+        section.dataset.storeLocationsInitialized = 'true';
+        return;
+      }
 
-        const map = leaflet.map(mapElement, {
-          zoomControl: true,
-          scrollWheelZoom: true,
-          dragging: true,
-          attributionControl: true
-        }).setView([lat, lng], zoom);
+      const styleMode = section.dataset.mapStyle || 'dark';
+      const markerColor = section.dataset.markerColor || '#ef4434';
+      const tileConfig = Object.prototype.hasOwnProperty.call(tileConfigs, styleMode) ? tileConfigs[styleMode] : tileConfigs.dark;
 
-        leaflet.tileLayer(tileConfig.url, tileConfig.options).addTo(map);
+      loadLeaflet().then((leaflet) => {
+        const markerIcon = createIcon(leaflet, markerColor);
 
-        leaflet.marker([lat, lng], {
-          icon: markerIcon,
-          title: mapElement.dataset.title || 'Location'
-        }).addTo(map);
+        mapElements.forEach((mapElement) => {
+          if (mapElement.dataset.storeMapReady === 'true') {
+            return;
+          }
+
+          const lat = Number.parseFloat(mapElement.dataset.lat || '');
+          const lng = Number.parseFloat(mapElement.dataset.lng || '');
+          const zoom = Number.parseInt(mapElement.dataset.zoom || '14', 10);
+
+          if (Number.isNaN(lat) || Number.isNaN(lng)) {
+            return;
+          }
+
+          const map = leaflet.map(mapElement, {
+            zoomControl: true,
+            scrollWheelZoom: true,
+            dragging: true,
+            attributionControl: true
+          }).setView([lat, lng], zoom);
+
+          leaflet.tileLayer(tileConfig.url, tileConfig.options).addTo(map);
+
+          leaflet.marker([lat, lng], {
+            icon: markerIcon,
+            title: mapElement.dataset.title || 'Location'
+          }).addTo(map);
+
+          mapElement.dataset.storeMapReady = 'true';
+        });
+
+        section.dataset.storeLocationsInitialized = 'true';
+      }).catch(() => {
+        mapElements.forEach((mapElement) => {
+          if (mapElement.dataset.storeMapReady === 'true') {
+            return;
+          }
+
+          mapElement.replaceWith(Object.assign(document.createElement('div'), {
+            className: 'store-locations__map-empty prose',
+            innerHTML: '<p>Leaflet could not load for this section.</p>'
+          }));
+        });
+
+        section.dataset.storeLocationsInitialized = 'true';
       });
     };
 
-    loadLeaflet().then(renderMaps).catch(() => {
-      mapElements.forEach((mapElement) => {
-        mapElement.replaceWith(Object.assign(document.createElement('div'), {
-          className: 'store-locations__map-empty prose',
-          innerHTML: '<p>Leaflet could not load for this section.</p>'
-        }));
+    if (!window.__codexStoreLocationsBootstrapped) {
+      window.__codexStoreLocationsBootstrapped = true;
+
+      document.addEventListener('shopify:section:load', (event) => {
+        const loadedSection = event.target?.querySelector?.('[data-store-locations-section]') || event.target;
+
+        if (loadedSection?.matches?.('[data-store-locations-section]')) {
+          initializeSection(loadedSection);
+        }
       });
-    });
+    }
+
+    initializeSection(document.getElementById('shopify-section-{{ section.id }}'));
   })();
 </script>
 
