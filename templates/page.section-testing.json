@@ -117,7 +117,7 @@
         "location_panel_width": 40,
         "desktop_map_height": 760,
         "mobile_map_height": 320,
-        "map_style": "dark",
+        "map_style": "standard",
         "marker_color": "#ef4434",
         "default_map_embed": "",
         "location_heading_size": "h3"
