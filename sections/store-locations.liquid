@@ -51,6 +51,19 @@
     display: grid;
   }
 
+  #shopify-section-{{ section.id }} .store-locations__layout--mobile .store-locations__item {
+    justify-items: center;
+    text-align: center;
+  }
+
+  #shopify-section-{{ section.id }} .store-locations__layout--mobile .store-locations__content {
+    justify-items: center;
+  }
+
+  #shopify-section-{{ section.id }} .store-locations__layout--mobile .store-locations__content .prose {
+    text-align: center;
+  }
+
   #shopify-section-{{ section.id }} .store-locations__layout--desktop {
     display: none;
   }
@@ -729,6 +742,7 @@
       "type": "select",
       "id": "map_style",
       "label": "Map style",
+      "info": "If this setting does not persist reliably in the editor, it can be changed manually in the template JSON.",
       "options": [
         { "value": "dark", "label": "Dark" },
         { "value": "muted", "label": "Muted" },
