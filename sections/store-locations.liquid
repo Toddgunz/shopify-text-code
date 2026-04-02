@@ -574,7 +574,16 @@
         mapElement.__storeLocationsMap = null;
       }
 
-      mapElement.dataset.storeMapReady = 'false';
+      if (mapElement._leaflet_id) {
+        try {
+          delete mapElement._leaflet_id;
+        } catch (error) {
+          mapElement._leaflet_id = undefined;
+        }
+      }
+
+      mapElement.removeAttribute('style');
+      mapElement.removeAttribute('data-store-map-ready');
       mapElement.innerHTML = '';
       mapElement.className = 'store-locations__map-canvas';
     };
@@ -644,19 +653,22 @@
       });
     };
 
+    window.__codexInitializeStoreLocationsSection = initializeSection;
+
     if (!window.__codexStoreLocationsBootstrapped) {
       window.__codexStoreLocationsBootstrapped = true;
 
       document.addEventListener('shopify:section:load', (event) => {
         const loadedSection = event.target?.querySelector?.('[data-store-locations-section]') || event.target;
+        const initializeLoadedSection = window.__codexInitializeStoreLocationsSection;
 
-        if (loadedSection?.matches?.('[data-store-locations-section]')) {
-          initializeSection(loadedSection);
+        if (loadedSection?.matches?.('[data-store-locations-section]') && typeof initializeLoadedSection === 'function') {
+          initializeLoadedSection(loadedSection);
         }
       });
     }
 
-    initializeSection(document.getElementById('shopify-section-{{ section.id }}'));
+    window.__codexInitializeStoreLocationsSection(document.getElementById('shopify-section-{{ section.id }}'));
   })();
 </script>
 
