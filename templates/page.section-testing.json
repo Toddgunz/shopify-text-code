@@ -110,14 +110,14 @@
       "name": "Store locations",
       "settings": {
         "color_scheme": "scheme-4",
-        "subheading": "Visit us",
+        "subheading": "",
         "title": "Meet us in store",
         "heading_size": "h2",
-        "content": "<p>Share your store locations, hours, and directions in one clean section.</p>",
+        "content": "<p>Visit us for expert fittings, personalized service, and trusted gear guidance.</p>",
         "location_panel_width": 40,
-        "desktop_map_height": 760,
+        "desktop_map_height": 720,
         "mobile_map_height": 320,
-        "map_style": "standard",
+        "map_style": "light",
         "marker_color": "#ef4434",
         "default_map_embed": "",
         "location_heading_size": "h3"
