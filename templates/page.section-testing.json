@@ -73,7 +73,7 @@
         "location_eh7RCb": {
           "type": "location",
           "settings": {
-            "location_name": "Downtown",
+            "location_name": "Northeast",
             "address": "<p>123 Main Street<br/>Minneapolis, Minnesota 55401</p>",
             "hours": "<p>Mon - Fri, 10am - 7pm<br/>Saturday, 9am - 5pm<br/>Sunday, 11am - 4pm</p>",
             "directions_url": "",
@@ -84,12 +84,12 @@
         "location_dYq4TK": {
           "type": "location",
           "settings": {
-            "location_name": "Uptown",
+            "location_name": "Highland",
             "address": "<p>123 Main Street<br/>Minneapolis, Minnesota 55401</p>",
             "hours": "<p>Mon - Fri, 10am - 7pm<br/>Saturday, 9am - 5pm<br/>Sunday, 11am - 4pm</p>",
             "directions_url": "",
             "directions_label": "Directions",
-            "map_embed": ""
+            "map_embed": "<iframe src=\"https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2825.242748354169!2d-93.19011592524302!3d44.91839876969185!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x87f62937a477db6f%3A0x36c469876de92ce9!2sMill%20City%20Running!5e0!3m2!1sen!2sus!4v1775150601090!5m2!1sen!2sus\" width=\"600\" height=\"450\" style=\"border:0;\" allowfullscreen=\"\" loading=\"lazy\" referrerpolicy=\"no-referrer-when-downgrade\"></iframe>"
           }
         }
       },
