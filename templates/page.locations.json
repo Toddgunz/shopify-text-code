@@ -17,6 +17,50 @@
         "content_width": "md"
       }
     },
+    "before_after_KzUVxq": {
+      "type": "before-after",
+      "blocks": {
+        "before_dMWqiU": {
+          "type": "before",
+          "settings": {
+            "color_scheme": "",
+            "text": "Before",
+            "text_size": "h7",
+            "text_position": "start"
+          }
+        },
+        "after_igxtAe": {
+          "type": "after",
+          "settings": {
+            "color_scheme": "",
+            "text": "After",
+            "text_size": "h7",
+            "text_position": "start"
+          }
+        }
+      },
+      "block_order": [
+        "before_dMWqiU",
+        "after_igxtAe"
+      ],
+      "name": "t:sections.before_after.name",
+      "settings": {
+        "color_scheme": "",
+        "layout": "stacked",
+        "add_comparison_spacing": true,
+        "subheading": "",
+        "title": "Before/after",
+        "title_tag": "h3",
+        "content": "<p>Showcase your product benefit by using before/after image comparison.</p>",
+        "button_text": "Learn more",
+        "button_url": "",
+        "button_style": "solid",
+        "cursor_direction": "horizontal",
+        "cursor_initial_position": 50,
+        "cursor_background": "#ffffff",
+        "cursor_arrows_color": "#000000"
+      }
+    },
     "image_with_text_overlay_9wXPYD": {
       "type": "image-with-text-overlay",
       "blocks": {
@@ -70,6 +114,7 @@
   },
   "order": [
     "main",
+    "before_after_KzUVxq",
     "image_with_text_overlay_9wXPYD"
   ]
 }

@@ -7,7 +7,7 @@
  * made to this file may be overwritten.
  * ------------------------------------------------------------
  */
- {
+{
   "current": {
     "section_spacing": "loose",
     "icon_stroke_width": 1,
@@ -16,20 +16,22 @@
     "input_border_radius": 0,
     "dialog_backdrop_blur": 12,
     "product_custom_badge_background": "#e04837",
-    "text_font": "inter_n4",
+    "text_font": "roboto_condensed_n4",
     "text_font_size_mobile": 11,
     "text_font_size_desktop": 12,
-    "text_font_text_transform": "uppercase",
+    "text_font_text_transform": "none",
     "text_font_letter_spacing": 4,
-    "heading_font": "inter_n4",
-    "heading_font_size_factor": 0.9,
-    "heading_letter_spacing": -5,
-    "heading_line_height": 0.9,
-    "subheading_font": "inter_n4",
+    "heading_font": "bebas_neue_n4",
+    "heading_font_size_factor": 1,
+    "heading_letter_spacing": 0,
+    "heading_line_height": 1,
+    "subheading_font": "roboto_mono_n4",
     "subheading_text_transform": "uppercase",
     "subheading_letter_spacing": 4,
-    "subheading_icon": "square",
-    "heading_default_highlight_effect": "marker",
+    "subheading_icon": "none",
+    "button_text_font": "body",
+    "button_letter_spacing": 5,
+    "heading_default_highlight_effect": "none",
     "heading_italic_font": "inter_n4",
     "button_animation": "up",
     "image_hover_animation": "zoom_filter",
