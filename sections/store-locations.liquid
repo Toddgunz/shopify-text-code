@@ -58,6 +58,8 @@
     gap: var(--store-location-gap);
     padding: var(--store-location-card-padding);
     border-block-start: 1px solid rgb(var(--border-color));
+    background: rgb(var(--store-location-bg, var(--background)));
+    color: rgb(var(--store-location-text, var(--text-color)));
   }
 
   #shopify-section-{{ section.id }} .store-locations__item:first-child {
@@ -82,6 +84,11 @@
 
   #shopify-section-{{ section.id }} .store-locations__content .prose > * + * {
     margin-top: 0.85rem;
+  }
+
+  #shopify-section-{{ section.id }} .store-locations__item .button--outline {
+    --button-text-color: rgb(var(--store-location-text, var(--text-color)));
+    box-shadow: inset 0 0 0 1px rgb(var(--store-location-text, var(--text-color)));
   }
 
   #shopify-section-{{ section.id }} .store-locations__maps {
@@ -124,7 +131,7 @@
   #shopify-section-{{ section.id }} .store-locations__map-label {
     position: absolute;
     inset-block-start: 1rem;
-    inset-inline-start: 1rem;
+    inset-inline-end: 1rem;
     z-index: 500;
     padding: 0.5rem 0.75rem;
     background: rgb(var(--background) / 0.88);
@@ -134,6 +141,7 @@
     letter-spacing: 0.14em;
     text-transform: uppercase;
     line-height: 1;
+    text-align: end;
     pointer-events: none;
   }
 
@@ -211,7 +219,20 @@
         <div class="store-locations__list">
           {%- if section.blocks.size > 0 -%}
             {%- for block in section.blocks -%}
-              <article class="store-locations__item" {{ block.shopify_attributes }}>
+              <article
+                class="store-locations__item"
+                {% if block.settings.background_color != blank or block.settings.text_color != blank %}
+                  style="
+                    {%- if block.settings.background_color != blank and block.settings.background_color != 'rgba(0,0,0,0)' -%}
+                      --store-location-bg: {{ block.settings.background_color.rgb }};
+                    {%- endif -%}
+                    {%- if block.settings.text_color != blank and block.settings.text_color != 'rgba(0,0,0,0)' -%}
+                      --store-location-text: {{ block.settings.text_color.rgb }};
+                    {%- endif -%}
+                  "
+                {% endif %}
+                {{ block.shopify_attributes }}
+              >
                 <div class="store-locations__content">
                   {%- if block.settings.location_name != blank -%}
                     <h3 class="store-locations__name {{ section.settings.location_heading_size }}">{{ block.settings.location_name }}</h3>
@@ -420,7 +441,7 @@
 
         const map = leaflet.map(mapElement, {
           zoomControl: true,
-          scrollWheelZoom: false,
+          scrollWheelZoom: true,
           dragging: true,
           attributionControl: true
         }).setView([lat, lng], zoom);
@@ -574,6 +595,16 @@
           "id": "location_name",
           "label": "Location name",
           "default": "Downtown"
+        },
+        {
+          "type": "color",
+          "id": "background_color",
+          "label": "Card background color"
+        },
+        {
+          "type": "color",
+          "id": "text_color",
+          "label": "Card text color"
         },
         {
           "type": "richtext",
