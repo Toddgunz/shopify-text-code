@@ -103,6 +103,8 @@
     overflow: hidden;
     background: rgb(var(--text-color) / 0.06);
     border-block-start: 1px solid rgb(var(--border-color));
+    isolation: isolate;
+    z-index: 0;
   }
 
   #shopify-section-{{ section.id }} .store-locations__map-pane:first-child {
@@ -149,6 +151,14 @@
   #shopify-section-{{ section.id }} .leaflet-control-attribution,
   #shopify-section-{{ section.id }} .leaflet-control-attribution a {
     color: rgb(var(--text-color) / 0.75);
+  }
+
+  #shopify-section-{{ section.id }} .leaflet-container,
+  #shopify-section-{{ section.id }} .leaflet-pane,
+  #shopify-section-{{ section.id }} .leaflet-top,
+  #shopify-section-{{ section.id }} .leaflet-bottom,
+  #shopify-section-{{ section.id }} .leaflet-control {
+    z-index: 1;
   }
 
   #shopify-section-{{ section.id }} .leaflet-control-attribution {
