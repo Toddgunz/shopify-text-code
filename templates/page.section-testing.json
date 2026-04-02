@@ -82,7 +82,7 @@
             "directions_label": "Directions",
             "latitude": "44.98894655207931",
             "longitude": "-93.25409713492299",
-            "map_zoom": 13,
+            "map_zoom": 12,
             "map_embed": ""
           }
         },
@@ -98,7 +98,7 @@
             "directions_label": "Directions",
             "latitude": "44.918524123842886",
             "longitude": "-93.18753027579086",
-            "map_zoom": 13,
+            "map_zoom": 12,
             "map_embed": ""
           }
         }
