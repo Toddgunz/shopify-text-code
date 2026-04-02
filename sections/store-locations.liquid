@@ -1,0 +1,478 @@
+{%- liquid
+  assign fallback_map_src = section.settings.default_map_embed | strip
+
+  if fallback_map_src contains 'src="'
+    assign fallback_map_src = fallback_map_src | split: 'src="' | last | split: '"' | first
+  elsif fallback_map_src contains "src='"
+    assign fallback_map_src = fallback_map_src | split: "src='" | last | split: "'" | first
+  endif
+
+  assign active_block_id = blank
+  assign active_location_name = blank
+  assign initial_map_src = fallback_map_src
+
+  if section.blocks.size > 0
+    assign active_block_id = section.blocks.first.id
+    assign active_location_name = section.blocks.first.settings.location_name | default: 'Location'
+  endif
+
+  for block in section.blocks
+    if block.id == active_block_id
+      assign initial_block_map_src = block.settings.map_embed | strip
+
+      if initial_block_map_src contains 'src="'
+        assign initial_block_map_src = initial_block_map_src | split: 'src="' | last | split: '"' | first
+      elsif initial_block_map_src contains "src='"
+        assign initial_block_map_src = initial_block_map_src | split: "src='" | last | split: "'" | first
+      endif
+
+      if initial_block_map_src != blank
+        assign initial_map_src = initial_block_map_src
+      endif
+    endif
+  endfor
+-%}
+
+<style>
+  #shopify-section-{{ section.id }} {
+    --store-locations-column-width: {{ section.settings.location_panel_width }}fr;
+    --store-map-column-width: {{ 100 | minus: section.settings.location_panel_width }}fr;
+    --store-map-height-desktop: {{ section.settings.desktop_map_height }}px;
+    --store-map-height-mobile: {{ section.settings.mobile_map_height }}px;
+    --store-location-card-padding: clamp(1.5rem, 2vw, 2.5rem);
+    --store-location-gap: clamp(1rem, 2vw, 1.5rem);
+  }
+
+  #shopify-section-{{ section.id }} + .shopify-section {
+    --section-enable-padding-collapsing: 0;
+  }
+
+  #shopify-section-{{ section.id }} .store-locations {
+    display: grid;
+    gap: 0;
+    border: 1px solid rgb(var(--border-color));
+    overflow: hidden;
+  }
+
+  #shopify-section-{{ section.id }} .store-locations__header {
+    max-width: 42rem;
+    margin-inline: auto;
+    margin-block-end: clamp(2rem, 4vw, 3.5rem);
+    text-align: center;
+  }
+
+  #shopify-section-{{ section.id }} .store-locations__layout {
+    display: grid;
+    gap: 0;
+    align-items: stretch;
+  }
+
+  #shopify-section-{{ section.id }} .store-locations__list {
+    display: grid;
+    align-content: start;
+    background: rgb(var(--background));
+  }
+
+  #shopify-section-{{ section.id }} .store-locations__item {
+    display: grid;
+    gap: var(--store-location-gap);
+    padding: var(--store-location-card-padding);
+    border-block-start: 1px solid rgb(var(--border-color));
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
+  #shopify-section-{{ section.id }} .store-locations__item:first-child {
+    border-block-start: 0;
+  }
+
+  #shopify-section-{{ section.id }} .store-locations__item[data-map-src] {
+    cursor: pointer;
+  }
+
+  #shopify-section-{{ section.id }} .store-locations__item.is-active {
+    background: rgb(var(--text-color));
+    color: rgb(var(--background));
+  }
+
+  #shopify-section-{{ section.id }} .store-locations__item.is-active .button--outline {
+    --button-text-color: var(--background);
+    box-shadow: inset 0 0 0 1px rgb(var(--background));
+  }
+
+  #shopify-section-{{ section.id }} .store-locations__eyebrow {
+    font-size: 0.85rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    opacity: 0.75;
+  }
+
+  #shopify-section-{{ section.id }} .store-locations__name {
+    margin: 0;
+  }
+
+  #shopify-section-{{ section.id }} .store-locations__content {
+    display: grid;
+    gap: 1rem;
+  }
+
+  #shopify-section-{{ section.id }} .store-locations__content .prose > * + * {
+    margin-top: 0.85rem;
+  }
+
+  #shopify-section-{{ section.id }} .store-locations__map-panel {
+    position: relative;
+    min-height: var(--store-map-height-mobile);
+    background: rgb(var(--text-color) / 0.06);
+    border-block-start: 1px solid rgb(var(--border-color));
+  }
+
+  #shopify-section-{{ section.id }} .store-locations__map-frame,
+  #shopify-section-{{ section.id }} .store-locations__map-empty {
+    width: 100%;
+    min-height: inherit;
+    height: 100%;
+  }
+
+  #shopify-section-{{ section.id }} .store-locations__map-frame {
+    border: 0;
+  }
+
+  #shopify-section-{{ section.id }} .store-locations__map-empty {
+    display: grid;
+    place-items: center;
+    padding: 2rem;
+    text-align: center;
+  }
+
+  @media screen and (min-width: 1000px) {
+    #shopify-section-{{ section.id }} .store-locations__layout {
+      grid-template-columns: minmax(20rem, var(--store-locations-column-width)) minmax(0, var(--store-map-column-width));
+    }
+
+    #shopify-section-{{ section.id }} .store-locations__map-panel {
+      min-height: var(--store-map-height-desktop);
+      border-block-start: 0;
+      border-inline-start: 1px solid rgb(var(--border-color));
+    }
+  }
+</style>
+
+<div class="color-scheme color-scheme--{{ section.settings.color_scheme.id }}">
+  <div class="container section-spacing">
+    <div class="store-locations">
+      <div class="store-locations__header">
+        <div class="v-stack gap-4 sm:gap-6">
+          {%- if section.settings.subheading != blank -%}
+            <p class="store-locations__eyebrow">{{ section.settings.subheading }}</p>
+          {%- endif -%}
+
+          {%- if section.settings.title != blank -%}
+            {%- render 'heading', content: section.settings.title, balance_text: true, style: section.settings.heading_size, html_tag: 'h2' -%}
+          {%- endif -%}
+
+          {%- if section.settings.content != blank -%}
+            <div class="prose prose-justify-center mx-auto max-w-lg">
+              {{- section.settings.content -}}
+            </div>
+          {%- endif -%}
+        </div>
+      </div>
+
+      <div class="store-locations__layout">
+        <div class="store-locations__list">
+          {%- if section.blocks.size > 0 -%}
+            {%- for block in section.blocks -%}
+              {%- liquid
+                assign block_map_src = block.settings.map_embed | strip
+
+                if block_map_src contains 'src="'
+                  assign block_map_src = block_map_src | split: 'src="' | last | split: '"' | first
+                elsif block_map_src contains "src='"
+                  assign block_map_src = block_map_src | split: "src='" | last | split: "'" | first
+                endif
+
+                if block_map_src == blank
+                  assign block_map_src = fallback_map_src
+                endif
+              -%}
+
+              <article
+                class="store-locations__item {% if block.id == active_block_id %}is-active{% endif %}"
+                {% if block_map_src != blank %}data-location-card data-map-src="{{ block_map_src | escape }}" data-location-name="{{ block.settings.location_name | default: 'Location' | escape }}" role="button" tabindex="0" aria-pressed="{% if block.id == active_block_id %}true{% else %}false{% endif %}"{% endif %}
+                {{ block.shopify_attributes }}
+              >
+                <div class="store-locations__content">
+                  {%- if block.settings.location_name != blank -%}
+                    <h3 class="store-locations__name {{ section.settings.location_heading_size }}">{{ block.settings.location_name }}</h3>
+                  {%- endif -%}
+
+                  {%- if block.settings.address != blank -%}
+                    <div class="prose">
+                      {{- block.settings.address -}}
+                    </div>
+                  {%- endif -%}
+
+                  {%- if block.settings.hours != blank -%}
+                    <div class="prose">
+                      {{- block.settings.hours -}}
+                    </div>
+                  {%- endif -%}
+                </div>
+
+                {%- if block.settings.directions_url != blank -%}
+                  {%- render 'button',
+                    content: block.settings.directions_label,
+                    href: block.settings.directions_url,
+                    style: 'outline',
+                    external: true
+                  -%}
+                {%- endif -%}
+              </article>
+            {%- endfor -%}
+          {%- else -%}
+            <div class="store-locations__item">
+              <div class="prose">
+                <p>Add location blocks to show store details here.</p>
+              </div>
+            </div>
+          {%- endif -%}
+        </div>
+
+        <div class="store-locations__map-panel">
+          {%- if initial_map_src != blank -%}
+            <iframe
+              class="store-locations__map-frame"
+              data-location-map
+              data-default-map-src="{{ fallback_map_src | escape }}"
+              src="{{ initial_map_src | escape }}"
+              title="{{ active_location_name | default: section.settings.title | default: 'Store location map' | escape }}"
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+              allowfullscreen
+            ></iframe>
+          {%- else -%}
+            <div class="store-locations__map-empty prose">
+              <p>Add a Google Maps embed URL or iframe code to a location block to show the map.</p>
+            </div>
+          {%- endif -%}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  (() => {
+    const section = document.getElementById('shopify-section-{{ section.id }}');
+
+    if (!section) {
+      return;
+    }
+
+    const mapFrame = section.querySelector('[data-location-map]');
+    const locationCards = Array.from(section.querySelectorAll('[data-location-card]'));
+
+    if (!mapFrame || locationCards.length === 0) {
+      return;
+    }
+
+    const setActiveCard = (card) => {
+      const mapSrc = card.dataset.mapSrc || mapFrame.dataset.defaultMapSrc;
+
+      if (mapSrc) {
+        mapFrame.src = mapSrc;
+      }
+
+      if (card.dataset.locationName) {
+        mapFrame.title = `${card.dataset.locationName} map`;
+      }
+
+      locationCards.forEach((locationCard) => {
+        const isActive = locationCard === card;
+        locationCard.classList.toggle('is-active', isActive);
+        locationCard.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+      });
+    };
+
+    locationCards.forEach((card) => {
+      card.addEventListener('click', (event) => {
+        if (event.target.closest('a')) {
+          return;
+        }
+
+        setActiveCard(card);
+      });
+
+      card.addEventListener('keydown', (event) => {
+        if (event.key !== 'Enter' && event.key !== ' ') {
+          return;
+        }
+
+        event.preventDefault();
+        setActiveCard(card);
+      });
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Store locations",
+  "tag": "section",
+  "class": "shopify-section--store-locations",
+  "disabled_on": {
+    "groups": ["header", "custom.overlay"]
+  },
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Visit us"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "title",
+      "label": "Heading",
+      "default": "Meet us in store"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "Heading size",
+      "options": [
+        { "value": "display-xl", "label": "Display XL" },
+        { "value": "display-l", "label": "Display L" },
+        { "value": "display-m", "label": "Display M" },
+        { "value": "h1", "label": "XX-Large" },
+        { "value": "h2", "label": "X-Large" },
+        { "value": "h3", "label": "Large" },
+        { "value": "h4", "label": "Medium" },
+        { "value": "h5", "label": "Small" },
+        { "value": "h6", "label": "X-Small" },
+        { "value": "h7", "label": "XX-Small" }
+      ],
+      "default": "h2"
+    },
+    {
+      "type": "richtext",
+      "id": "content",
+      "label": "Intro text",
+      "default": "<p>Share your store locations, hours, and directions in one clean section.</p>"
+    },
+    {
+      "type": "range",
+      "id": "location_panel_width",
+      "min": 30,
+      "max": 60,
+      "step": 5,
+      "unit": "%",
+      "label": "Desktop width for location list",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "desktop_map_height",
+      "min": 420,
+      "max": 900,
+      "step": 20,
+      "unit": "px",
+      "label": "Desktop map height",
+      "default": 720
+    },
+    {
+      "type": "range",
+      "id": "mobile_map_height",
+      "min": 260,
+      "max": 640,
+      "step": 20,
+      "unit": "px",
+      "label": "Mobile map height",
+      "default": 360
+    },
+    {
+      "type": "textarea",
+      "id": "default_map_embed",
+      "label": "Default map embed URL or iframe code",
+      "info": "Optional. Paste either the Google Maps embed URL or the full iframe code. This is used as a fallback when a location does not have its own map embed."
+    },
+    {
+      "type": "select",
+      "id": "location_heading_size",
+      "label": "Location heading size",
+      "options": [
+        { "value": "h2", "label": "X-Large" },
+        { "value": "h3", "label": "Large" },
+        { "value": "h4", "label": "Medium" },
+        { "value": "h5", "label": "Small" }
+      ],
+      "default": "h3"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "location",
+      "name": "Location",
+      "settings": [
+        {
+          "type": "text",
+          "id": "location_name",
+          "label": "Location name",
+          "default": "Downtown"
+        },
+        {
+          "type": "richtext",
+          "id": "address",
+          "label": "Address",
+          "default": "<p>123 Main Street<br>Minneapolis, Minnesota 55401</p>"
+        },
+        {
+          "type": "richtext",
+          "id": "hours",
+          "label": "Hours",
+          "default": "<p>Mon - Fri, 10am - 7pm<br>Saturday, 9am - 5pm<br>Sunday, 11am - 4pm</p>"
+        },
+        {
+          "type": "url",
+          "id": "directions_url",
+          "label": "Directions link"
+        },
+        {
+          "type": "text",
+          "id": "directions_label",
+          "label": "Directions label",
+          "default": "Directions"
+        },
+        {
+          "type": "textarea",
+          "id": "map_embed",
+          "label": "Map embed URL or iframe code",
+          "info": "Paste either the Google Maps embed URL or the full iframe code for this location."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Store locations",
+      "blocks": [
+        {
+          "type": "location"
+        },
+        {
+          "type": "location",
+          "settings": {
+            "location_name": "Uptown"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
