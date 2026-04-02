@@ -41,6 +41,10 @@
     text-align: center;
   }
 
+  #shopify-section-{{ section.id }} .store-locations__header--no-subheading {
+    padding-block-start: 0.75rem;
+  }
+
   #shopify-section-{{ section.id }} .store-locations__layout {
     display: grid;
     gap: 0;
@@ -237,7 +241,7 @@
 >
   <div class="container section-spacing">
     <div class="store-locations">
-      <div class="store-locations__header">
+      <div class="store-locations__header{% if section.settings.subheading == blank %} store-locations__header--no-subheading{% endif %}">
         <div class="v-stack gap-4 sm:gap-6">
           {%- if section.settings.subheading != blank -%}
             <p class="store-locations__eyebrow">{{ section.settings.subheading }}</p>
