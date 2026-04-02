@@ -7,38 +7,20 @@
     assign fallback_map_src = fallback_map_src | split: "src='" | last | split: "'" | first
   endif
 
-  assign active_block_id = blank
-  assign active_location_name = blank
-  assign initial_map_src = fallback_map_src
-
   if section.blocks.size > 0
-    assign active_block_id = section.blocks.first.id
-    assign active_location_name = section.blocks.first.settings.location_name | default: 'Location'
+    assign map_count = section.blocks.size
+  else
+    assign map_count = 1
   endif
-
-  for block in section.blocks
-    if block.id == active_block_id
-      assign initial_block_map_src = block.settings.map_embed | strip
-
-      if initial_block_map_src contains 'src="'
-        assign initial_block_map_src = initial_block_map_src | split: 'src="' | last | split: '"' | first
-      elsif initial_block_map_src contains "src='"
-        assign initial_block_map_src = initial_block_map_src | split: "src='" | last | split: "'" | first
-      endif
-
-      if initial_block_map_src != blank
-        assign initial_map_src = initial_block_map_src
-      endif
-    endif
-  endfor
 -%}
 
 <style>
   #shopify-section-{{ section.id }} {
     --store-locations-column-width: {{ section.settings.location_panel_width }}fr;
     --store-map-column-width: {{ 100 | minus: section.settings.location_panel_width }}fr;
-    --store-map-height-desktop: {{ section.settings.desktop_map_height }}px;
+    --store-map-stack-height-desktop: {{ section.settings.desktop_map_height }}px;
     --store-map-height-mobile: {{ section.settings.mobile_map_height }}px;
+    --store-map-count: {{ map_count }};
     --store-location-card-padding: clamp(1.5rem, 2vw, 2.5rem);
     --store-location-gap: clamp(1rem, 2vw, 1.5rem);
   }
@@ -48,8 +30,6 @@
   }
 
   #shopify-section-{{ section.id }} .store-locations {
-    display: grid;
-    gap: 0;
     border: 1px solid rgb(var(--border-color));
     overflow: hidden;
   }
@@ -78,25 +58,10 @@
     gap: var(--store-location-gap);
     padding: var(--store-location-card-padding);
     border-block-start: 1px solid rgb(var(--border-color));
-    transition: background-color 0.2s ease, color 0.2s ease;
   }
 
   #shopify-section-{{ section.id }} .store-locations__item:first-child {
     border-block-start: 0;
-  }
-
-  #shopify-section-{{ section.id }} .store-locations__item[data-map-src] {
-    cursor: pointer;
-  }
-
-  #shopify-section-{{ section.id }} .store-locations__item.is-active {
-    background: rgb(var(--text-color));
-    color: rgb(var(--background));
-  }
-
-  #shopify-section-{{ section.id }} .store-locations__item.is-active .button--outline {
-    --button-text-color: var(--background);
-    box-shadow: inset 0 0 0 1px rgb(var(--background));
   }
 
   #shopify-section-{{ section.id }} .store-locations__eyebrow {
@@ -119,18 +84,30 @@
     margin-top: 0.85rem;
   }
 
-  #shopify-section-{{ section.id }} .store-locations__map-panel {
+  #shopify-section-{{ section.id }} .store-locations__maps {
+    display: grid;
+    grid-auto-rows: minmax(var(--store-map-height-mobile), 1fr);
+    border-block-start: 1px solid rgb(var(--border-color));
+  }
+
+  #shopify-section-{{ section.id }} .store-locations__map-pane {
     position: relative;
     min-height: var(--store-map-height-mobile);
+    overflow: hidden;
     background: rgb(var(--text-color) / 0.06);
     border-block-start: 1px solid rgb(var(--border-color));
   }
 
+  #shopify-section-{{ section.id }} .store-locations__map-pane:first-child {
+    border-block-start: 0;
+  }
+
+  #shopify-section-{{ section.id }} .store-locations__map-canvas,
   #shopify-section-{{ section.id }} .store-locations__map-frame,
   #shopify-section-{{ section.id }} .store-locations__map-empty {
     width: 100%;
-    min-height: inherit;
     height: 100%;
+    min-height: inherit;
   }
 
   #shopify-section-{{ section.id }} .store-locations__map-frame {
@@ -144,20 +121,46 @@
     text-align: center;
   }
 
+  #shopify-section-{{ section.id }} .store-locations__map-label {
+    position: absolute;
+    inset-block-start: 1rem;
+    inset-inline-start: 1rem;
+    z-index: 1;
+    padding: 0.5rem 0.75rem;
+    background: rgb(var(--background) / 0.88);
+    color: rgb(var(--text-color));
+    border: 1px solid rgb(var(--border-color));
+    font-size: 0.8rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    line-height: 1;
+  }
+
   @media screen and (min-width: 1000px) {
     #shopify-section-{{ section.id }} .store-locations__layout {
       grid-template-columns: minmax(20rem, var(--store-locations-column-width)) minmax(0, var(--store-map-column-width));
     }
 
-    #shopify-section-{{ section.id }} .store-locations__map-panel {
-      min-height: var(--store-map-height-desktop);
+    #shopify-section-{{ section.id }} .store-locations__maps {
+      min-height: var(--store-map-stack-height-desktop);
+      grid-template-rows: repeat(var(--store-map-count), minmax(0, 1fr));
       border-block-start: 0;
       border-inline-start: 1px solid rgb(var(--border-color));
+    }
+
+    #shopify-section-{{ section.id }} .store-locations__map-pane {
+      min-height: 0;
     }
   }
 </style>
 
-<div class="color-scheme color-scheme--{{ section.settings.color_scheme.id }}">
+<div
+  class="color-scheme color-scheme--{{ section.settings.color_scheme.id }}"
+  data-store-locations-section
+  data-api-key="{{ section.settings.google_maps_api_key | escape }}"
+  data-map-style="{{ section.settings.map_style }}"
+  data-marker-color="{{ section.settings.marker_color }}"
+>
   <div class="container section-spacing">
     <div class="store-locations">
       <div class="store-locations__header">
@@ -182,25 +185,7 @@
         <div class="store-locations__list">
           {%- if section.blocks.size > 0 -%}
             {%- for block in section.blocks -%}
-              {%- liquid
-                assign block_map_src = block.settings.map_embed | strip
-
-                if block_map_src contains 'src="'
-                  assign block_map_src = block_map_src | split: 'src="' | last | split: '"' | first
-                elsif block_map_src contains "src='"
-                  assign block_map_src = block_map_src | split: "src='" | last | split: "'" | first
-                endif
-
-                if block_map_src == blank
-                  assign block_map_src = fallback_map_src
-                endif
-              -%}
-
-              <article
-                class="store-locations__item {% if block.id == active_block_id %}is-active{% endif %}"
-                {% if block_map_src != blank %}data-location-card data-map-src="{{ block_map_src | escape }}" data-location-name="{{ block.settings.location_name | default: 'Location' | escape }}" role="button" tabindex="0" aria-pressed="{% if block.id == active_block_id %}true{% else %}false{% endif %}"{% endif %}
-                {{ block.shopify_attributes }}
-              >
+              <article class="store-locations__item" {{ block.shopify_attributes }}>
                 <div class="store-locations__content">
                   {%- if block.settings.location_name != blank -%}
                     <h3 class="store-locations__name {{ section.settings.location_heading_size }}">{{ block.settings.location_name }}</h3>
@@ -232,27 +217,64 @@
           {%- else -%}
             <div class="store-locations__item">
               <div class="prose">
-                <p>Add location blocks to show store details here.</p>
+                <p>Add up to two location blocks to build this section.</p>
               </div>
             </div>
           {%- endif -%}
         </div>
 
-        <div class="store-locations__map-panel">
-          {%- if initial_map_src != blank -%}
-            <iframe
-              class="store-locations__map-frame"
-              data-location-map
-              data-default-map-src="{{ fallback_map_src | escape }}"
-              src="{{ initial_map_src | escape }}"
-              title="{{ active_location_name | default: section.settings.title | default: 'Store location map' | escape }}"
-              loading="lazy"
-              referrerpolicy="no-referrer-when-downgrade"
-              allowfullscreen
-            ></iframe>
+        <div class="store-locations__maps">
+          {%- if section.blocks.size > 0 -%}
+            {%- for block in section.blocks -%}
+              {%- liquid
+                assign block_map_src = block.settings.map_embed | strip
+
+                if block_map_src contains 'src="'
+                  assign block_map_src = block_map_src | split: 'src="' | last | split: '"' | first
+                elsif block_map_src contains "src='"
+                  assign block_map_src = block_map_src | split: "src='" | last | split: "'" | first
+                endif
+
+                if block_map_src == blank
+                  assign block_map_src = fallback_map_src
+                endif
+              -%}
+
+              <div class="store-locations__map-pane">
+                {%- if block.settings.location_name != blank -%}
+                  <div class="store-locations__map-label">{{ block.settings.location_name }}</div>
+                {%- endif -%}
+
+                {%- if section.settings.google_maps_api_key != blank and block.settings.latitude != blank and block.settings.longitude != blank -%}
+                  <div
+                    class="store-locations__map-canvas"
+                    data-store-map
+                    data-lat="{{ block.settings.latitude | escape }}"
+                    data-lng="{{ block.settings.longitude | escape }}"
+                    data-zoom="{{ block.settings.map_zoom }}"
+                    data-title="{{ block.settings.location_name | escape }}"
+                  ></div>
+                {%- elsif block_map_src != blank -%}
+                  <iframe
+                    class="store-locations__map-frame"
+                    src="{{ block_map_src | escape }}"
+                    title="{{ block.settings.location_name | default: 'Store location map' | escape }}"
+                    loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade"
+                    allowfullscreen
+                  ></iframe>
+                {%- else -%}
+                  <div class="store-locations__map-empty prose">
+                    <p>Add coordinates and a Google Maps API key, or paste a map embed for this location.</p>
+                  </div>
+                {%- endif -%}
+              </div>
+            {%- endfor -%}
           {%- else -%}
-            <div class="store-locations__map-empty prose">
-              <p>Add a Google Maps embed URL or iframe code to a location block to show the map.</p>
+            <div class="store-locations__map-pane">
+              <div class="store-locations__map-empty prose">
+                <p>Your maps will appear here once you add location blocks.</p>
+              </div>
             </div>
           {%- endif -%}
         </div>
@@ -269,47 +291,133 @@
       return;
     }
 
-    const mapFrame = section.querySelector('[data-location-map]');
-    const locationCards = Array.from(section.querySelectorAll('[data-location-card]'));
+    const mapElements = Array.from(section.querySelectorAll('[data-store-map]'));
+    const apiKey = section.dataset.apiKey;
 
-    if (!mapFrame || locationCards.length === 0) {
+    if (!apiKey || mapElements.length === 0) {
       return;
     }
 
-    const setActiveCard = (card) => {
-      const mapSrc = card.dataset.mapSrc || mapFrame.dataset.defaultMapSrc;
+    const styleMode = section.dataset.mapStyle || 'dark';
+    const markerColor = section.dataset.markerColor || '#ef4434';
 
-      if (mapSrc) {
-        mapFrame.src = mapSrc;
+    const mapStyles = {
+      standard: null,
+      light: [
+        { featureType: 'administrative', elementType: 'labels.text.fill', stylers: [{ color: '#606060' }] },
+        { featureType: 'landscape', elementType: 'geometry', stylers: [{ color: '#f4f1ec' }] },
+        { featureType: 'poi', stylers: [{ visibility: 'off' }] },
+        { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#ffffff' }] },
+        { featureType: 'road', elementType: 'labels.text.fill', stylers: [{ color: '#7a7a7a' }] },
+        { featureType: 'transit', stylers: [{ visibility: 'off' }] },
+        { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#d7dbe2' }] }
+      ],
+      muted: [
+        { featureType: 'all', elementType: 'labels.text.fill', stylers: [{ saturation: 36 }, { color: '#5b5b5b' }, { lightness: 40 }] },
+        { featureType: 'all', elementType: 'labels.text.stroke', stylers: [{ visibility: 'on' }, { color: '#f5f5f5' }, { lightness: 16 }] },
+        { featureType: 'administrative', elementType: 'geometry.fill', stylers: [{ color: '#f3f0ea' }] },
+        { featureType: 'landscape', elementType: 'geometry', stylers: [{ color: '#efebe5' }] },
+        { featureType: 'poi', stylers: [{ visibility: 'off' }] },
+        { featureType: 'road.highway', elementType: 'geometry', stylers: [{ color: '#ded5c8' }] },
+        { featureType: 'road.arterial', elementType: 'geometry', stylers: [{ color: '#ffffff' }] },
+        { featureType: 'road.local', elementType: 'geometry', stylers: [{ color: '#fbfaf7' }] },
+        { featureType: 'transit', stylers: [{ visibility: 'off' }] },
+        { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#cfd8dc' }] }
+      ],
+      dark: [
+        { elementType: 'geometry', stylers: [{ color: '#212121' }] },
+        { elementType: 'labels.icon', stylers: [{ visibility: 'off' }] },
+        { elementType: 'labels.text.fill', stylers: [{ color: '#757575' }] },
+        { elementType: 'labels.text.stroke', stylers: [{ color: '#212121' }] },
+        { featureType: 'administrative', elementType: 'geometry', stylers: [{ color: '#757575' }] },
+        { featureType: 'administrative.land_parcel', stylers: [{ visibility: 'off' }] },
+        { featureType: 'administrative.neighborhood', stylers: [{ visibility: 'off' }] },
+        { featureType: 'poi', stylers: [{ visibility: 'off' }] },
+        { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#2c2c2c' }] },
+        { featureType: 'road', elementType: 'geometry.stroke', stylers: [{ color: '#1f1f1f' }] },
+        { featureType: 'road', elementType: 'labels.text.fill', stylers: [{ color: '#8a8a8a' }] },
+        { featureType: 'transit', stylers: [{ visibility: 'off' }] },
+        { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#181818' }] },
+        { featureType: 'water', elementType: 'labels.text.fill', stylers: [{ color: '#616161' }] }
+      ]
+    };
+
+    const loadGoogleMapsApi = (key) => {
+      if (window.google && window.google.maps) {
+        return Promise.resolve(window.google.maps);
       }
 
-      if (card.dataset.locationName) {
-        mapFrame.title = `${card.dataset.locationName} map`;
+      if (window.__codexGoogleMapsPromise) {
+        return window.__codexGoogleMapsPromise;
       }
 
-      locationCards.forEach((locationCard) => {
-        const isActive = locationCard === card;
-        locationCard.classList.toggle('is-active', isActive);
-        locationCard.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+      window.__codexGoogleMapsPromise = new Promise((resolve, reject) => {
+        const callbackName = `codexGoogleMapsInit_${Math.random().toString(36).slice(2)}`;
+        const script = document.createElement('script');
+
+        window[callbackName] = () => {
+          resolve(window.google.maps);
+          delete window[callbackName];
+        };
+
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(key)}&callback=${callbackName}`;
+        script.async = true;
+        script.defer = true;
+        script.onerror = () => {
+          reject(new Error('Google Maps failed to load.'));
+          delete window[callbackName];
+        };
+
+        document.head.appendChild(script);
+      });
+
+      return window.__codexGoogleMapsPromise;
+    };
+
+    const renderMaps = (googleMaps) => {
+      mapElements.forEach((mapElement) => {
+        const lat = Number.parseFloat(mapElement.dataset.lat || '');
+        const lng = Number.parseFloat(mapElement.dataset.lng || '');
+        const zoom = Number.parseInt(mapElement.dataset.zoom || '14', 10);
+
+        if (Number.isNaN(lat) || Number.isNaN(lng)) {
+          return;
+        }
+
+        const center = { lat, lng };
+        const resolvedStyles = Object.prototype.hasOwnProperty.call(mapStyles, styleMode) ? mapStyles[styleMode] : mapStyles.dark;
+        const map = new googleMaps.Map(mapElement, {
+          center,
+          zoom,
+          disableDefaultUI: true,
+          zoomControl: true,
+          clickableIcons: false,
+          gestureHandling: 'cooperative',
+          styles: resolvedStyles
+        });
+
+        new googleMaps.Marker({
+          map,
+          position: center,
+          title: mapElement.dataset.title || 'Location',
+          icon: {
+            path: googleMaps.SymbolPath.CIRCLE,
+            scale: 9,
+            fillColor: markerColor,
+            fillOpacity: 1,
+            strokeColor: '#ffffff',
+            strokeWeight: 2
+          }
+        });
       });
     };
 
-    locationCards.forEach((card) => {
-      card.addEventListener('click', (event) => {
-        if (event.target.closest('a')) {
-          return;
-        }
-
-        setActiveCard(card);
-      });
-
-      card.addEventListener('keydown', (event) => {
-        if (event.key !== 'Enter' && event.key !== ' ') {
-          return;
-        }
-
-        event.preventDefault();
-        setActiveCard(card);
+    loadGoogleMapsApi(apiKey).then(renderMaps).catch(() => {
+      mapElements.forEach((mapElement) => {
+        mapElement.replaceWith(Object.assign(document.createElement('div'), {
+          className: 'store-locations__map-empty prose',
+          innerHTML: '<p>Google Maps could not load. Check the API key for this section.</p>'
+        }));
       });
     });
   })();
@@ -320,6 +428,7 @@
   "name": "Store locations",
   "tag": "section",
   "class": "shopify-section--store-locations",
+  "max_blocks": 2,
   "disabled_on": {
     "groups": ["header", "custom.overlay"]
   },
@@ -379,28 +488,52 @@
     {
       "type": "range",
       "id": "desktop_map_height",
-      "min": 420,
-      "max": 900,
+      "min": 480,
+      "max": 1000,
       "step": 20,
       "unit": "px",
-      "label": "Desktop map height",
-      "default": 720
+      "label": "Desktop total map height",
+      "default": 760
     },
     {
       "type": "range",
       "id": "mobile_map_height",
-      "min": 260,
+      "min": 240,
       "max": 640,
       "step": 20,
       "unit": "px",
-      "label": "Mobile map height",
-      "default": 360
+      "label": "Mobile height per map",
+      "default": 320
+    },
+    {
+      "type": "text",
+      "id": "google_maps_api_key",
+      "label": "Google Maps API key",
+      "info": "Required for the styled interactive maps. If this is blank, the section falls back to each block's embed map."
+    },
+    {
+      "type": "select",
+      "id": "map_style",
+      "label": "Map style",
+      "options": [
+        { "value": "dark", "label": "Dark" },
+        { "value": "muted", "label": "Muted" },
+        { "value": "light", "label": "Light" },
+        { "value": "standard", "label": "Standard" }
+      ],
+      "default": "dark"
+    },
+    {
+      "type": "color",
+      "id": "marker_color",
+      "label": "Marker color",
+      "default": "#ef4434"
     },
     {
       "type": "textarea",
       "id": "default_map_embed",
       "label": "Default map embed URL or iframe code",
-      "info": "Optional. Paste either the Google Maps embed URL or the full iframe code. This is used as a fallback when a location does not have its own map embed."
+      "info": "Optional fallback used when a location does not have custom map coordinates or its own embed."
     },
     {
       "type": "select",
@@ -450,10 +583,31 @@
           "default": "Directions"
         },
         {
+          "type": "text",
+          "id": "latitude",
+          "label": "Latitude",
+          "info": "Needed for the custom styled map."
+        },
+        {
+          "type": "text",
+          "id": "longitude",
+          "label": "Longitude",
+          "info": "Needed for the custom styled map."
+        },
+        {
+          "type": "range",
+          "id": "map_zoom",
+          "min": 10,
+          "max": 18,
+          "step": 1,
+          "label": "Map zoom",
+          "default": 14
+        },
+        {
           "type": "textarea",
           "id": "map_embed",
-          "label": "Map embed URL or iframe code",
-          "info": "Paste either the Google Maps embed URL or the full iframe code for this location."
+          "label": "Fallback map embed URL or iframe code",
+          "info": "Used only if the API key or coordinates are missing."
         }
       ]
     }
