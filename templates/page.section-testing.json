@@ -65,6 +65,7 @@
         "title": "Visit us in store",
         "heading_size": "h2",
         "content": "<p>Visit us for expert fittings, personalized service, and trusted gear guidance.</p>",
+        "overview_zoom": 12,
         "location_panel_width": 40,
         "desktop_map_height": 720,
         "mobile_map_height": 320,
