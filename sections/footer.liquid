@@ -140,6 +140,10 @@
     width: 100%;
   }
 
+  #shopify-section-{{ section.id }} .footer__contact-line {
+    margin: 0;
+  }
+
   #shopify-section-{{ section.id }} .footer__link-list {
     display: grid;
     gap: 0.7rem;
@@ -309,6 +313,14 @@
                 </div>
               {%- endif -%}
 
+              {%- if section.settings.location_1_phone != blank -%}
+                <p class="footer__contact-line">
+                  <a href="tel:{{ section.settings.location_1_phone | strip | replace: ' ', '' | replace: '(', '' | replace: ')', '' | replace: '-', '' | replace: '.', '' }}" class="link-reversed link-tap-area">
+                    {{- section.settings.location_1_phone -}}
+                  </a>
+                </p>
+              {%- endif -%}
+
               {%- if section.settings.location_1_directions_url != blank -%}
                 {%- render 'button',
                   content: section.settings.directions_label,
@@ -334,6 +346,14 @@
                 <div class="footer__address prose prose--compact">
                   {{- section.settings.location_2_address -}}
                 </div>
+              {%- endif -%}
+
+              {%- if section.settings.location_2_phone != blank -%}
+                <p class="footer__contact-line">
+                  <a href="tel:{{ section.settings.location_2_phone | strip | replace: ' ', '' | replace: '(', '' | replace: ')', '' | replace: '-', '' | replace: '.', '' }}" class="link-reversed link-tap-area">
+                    {{- section.settings.location_2_phone -}}
+                  </a>
+                </p>
               {%- endif -%}
 
               {%- if section.settings.location_2_directions_url != blank -%}
@@ -567,6 +587,11 @@
       "label": "Address"
     },
     {
+      "type": "text",
+      "id": "location_1_phone",
+      "label": "Phone number"
+    },
+    {
       "type": "url",
       "id": "location_1_directions_url",
       "label": "Google Maps directions link"
@@ -585,6 +610,11 @@
       "type": "richtext",
       "id": "location_2_address",
       "label": "Address"
+    },
+    {
+      "type": "text",
+      "id": "location_2_phone",
+      "label": "Phone number"
     },
     {
       "type": "url",
