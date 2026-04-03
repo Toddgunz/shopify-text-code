@@ -63,6 +63,8 @@
     --footer-text-alignment: {{ footer_text_alignment }};
     --footer-item-alignment: {{ footer_item_alignment }};
     --footer-heading-size: calc(var(--subheading-font-size) * 1.5);
+    --footer-grid-max-width-tablet: 980px;
+    --footer-grid-max-width-desktop: 1360px;
   }
 
   #shopify-section-{{ section.id }} .footer__content {
@@ -77,6 +79,8 @@
     display: grid;
     gap: 0;
     align-items: start;
+    width: 100%;
+    margin-inline: auto;
   }
 
   #shopify-section-{{ section.id }} .footer__column {
@@ -123,15 +127,15 @@
   }
 
   #shopify-section-{{ section.id }} .footer__column--location .footer__column-body {
-    max-width: 15rem;
+    max-width: 14.5rem;
   }
 
   #shopify-section-{{ section.id }} .footer__column--support .footer__column-body {
-    max-width: 18rem;
+    max-width: 15.5rem;
   }
 
   #shopify-section-{{ section.id }} .footer__column--subscribe .footer__column-body {
-    max-width: 27rem;
+    max-width: 23rem;
   }
 
   #shopify-section-{{ section.id }} .footer__address,
@@ -215,6 +219,7 @@
   @media screen and (min-width: 700px) {
     #shopify-section-{{ section.id }} .footer__columns {
       grid-template-columns: repeat(2, minmax(0, 1fr));
+      max-width: min(100%, var(--footer-grid-max-width-tablet));
     }
 
     #shopify-section-{{ section.id }} .footer__column {
@@ -244,7 +249,8 @@
 
   @media screen and (min-width: 1000px) {
     #shopify-section-{{ section.id }} .footer__columns {
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.05fr) minmax(0, 1.25fr);
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      max-width: min(100%, var(--footer-grid-max-width-desktop));
     }
 
     #shopify-section-{{ section.id }} .footer__column {
