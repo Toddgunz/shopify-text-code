@@ -11,61 +11,44 @@
   "type": "footer",
   "name": "Footer group",
   "sections": {
-    "trust-icons": {
-      "type": "trust-icons",
-      "blocks": {
-        "item-1": {
-          "type": "item",
-          "settings": {
-            "title": "Worldwide delivery",
-            "content": "Receive your order anywhere in the world."
-          }
-        },
-        "item-2": {
-          "type": "item",
-          "settings": {
-            "title": "Fast shipping",
-            "content": "Super fast shipping in 48 hours."
-          }
-        },
-        "item-3": {
-          "type": "item",
-          "settings": {
-            "title": "Customer service",
-            "content": "We are available from monday to friday to answer your questions."
-          }
-        },
-        "item-4": {
-          "type": "item",
-          "settings": {
-            "title": "Secure payment",
-            "content": "Your payment information is processed securely."
-          }
-        }
-      },
-      "block_order": [
-        "item-1",
-        "item-2",
-        "item-3",
-        "item-4"
-      ],
-      "settings": {
-        "color_scheme": "scheme-2"
-      }
-    },
     "footer": {
       "type": "footer",
       "settings": {
+        "color_scheme": "",
         "location_1_title": "Northeast",
+        "location_1_address": "<p>411 E Hennepin Avenue<br/>Minneapolis, MN 55414</p>",
+        "location_1_directions_url": "https://share.google/w462wEbLPqnjZqrtT",
         "location_2_title": "Highland",
+        "location_2_address": "<p>767 Cleveland Avenue S<br/>Saint Paul, MN 55116</p>",
+        "location_2_directions_url": "https://share.google/eb1LZNDM6hjd5BMXb",
+        "directions_label": "Directions",
+        "customer_service_title": "Customer Service",
+        "faq_label": "FAQs",
+        "faq_url": "",
+        "privacy_label": "Privacy Statement",
+        "terms_label": "Terms of Service",
+        "shipping_label": "Shipping Policy",
+        "returns_label": "Returns & Exchange Policy",
+        "contact_label": "Contact Us",
+        "contact_url": "",
         "subscribe_title": "Subscribe",
         "subscribe_content": "<p>Subscribe to product launches, running updates, and things we think are worth your time. Never spammy.</p>",
-        "customer_service_title": "Customer Service"
+        "subscribe_button_label": "Subscribe",
+        "newsletter_disclaimer_text": "<p>By subscribing, you agree to receive marketing emails from us.</p>",
+        "careers_label": "Careers",
+        "careers_url": "",
+        "bottom_brand_text": "",
+        "show_social_media": true,
+        "show_payment_icons": true,
+        "show_powered_by_shopify": true,
+        "show_country_selector": true,
+        "show_country_name": true,
+        "show_country_flag": true,
+        "show_locale_selector": true
       }
     }
   },
   "order": [
-    "trust-icons",
     "footer"
   ]
 }
