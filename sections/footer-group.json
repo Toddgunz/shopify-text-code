@@ -14,7 +14,7 @@
     "footer": {
       "type": "footer",
       "settings": {
-        "color_scheme": "",
+        "color_scheme": "scheme-2",
         "location_1_title": "Northeast",
         "location_1_address": "<p>411 E Hennepin Avenue<br/>Minneapolis, MN 55414</p>",
         "location_1_directions_url": "https://share.google/w462wEbLPqnjZqrtT",
