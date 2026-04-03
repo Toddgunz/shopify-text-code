@@ -1,18 +1,8 @@
 {%- liquid
-  assign careers_url = section.settings.careers_url
-  assign fallback_careers_page = pages['careers']
   assign brand_text = section.settings.bottom_brand_text | strip
   assign show_locale_selector = false
   assign show_country_selector = false
   assign support_link_blocks = section.blocks | where: 'type', 'service_link'
-
-  if careers_url == blank and fallback_careers_page == blank
-    assign fallback_careers_page = pages['jobs']
-  endif
-
-  if careers_url == blank and fallback_careers_page != blank
-    assign careers_url = fallback_careers_page.url
-  endif
 
   assign show_location_one = false
   if section.settings.location_1_title != blank or section.settings.location_1_address != blank or section.settings.location_1_directions_url != blank
@@ -25,7 +15,7 @@
   endif
 
   assign show_support_column = false
-  if support_link_blocks.size > 0 or careers_url != blank
+  if support_link_blocks.size > 0
     assign show_support_column = true
   endif
 
@@ -379,12 +369,6 @@
                     </li>
                   {%- endif -%}
                 {%- endfor -%}
-
-                {%- if careers_url != blank -%}
-                  <li>
-                    <a href="{{ careers_url }}" class="link-reversed link-tap-area">{{ section.settings.careers_label }}</a>
-                  </li>
-                {%- endif -%}
               </ul>
             </div>
           </div>
@@ -615,7 +599,7 @@
     },
     {
       "type": "header",
-      "content": "Customer service"
+      "content": "Information"
     },
     {
       "type": "text",
@@ -650,17 +634,6 @@
       "id": "newsletter_disclaimer_text",
       "label": "Disclaimer text",
       "default": "<p>By subscribing, you agree to receive marketing emails from us.</p>"
-    },
-    {
-      "type": "text",
-      "id": "careers_label",
-      "label": "Careers label",
-      "default": "Careers"
-    },
-    {
-      "type": "url",
-      "id": "careers_url",
-      "label": "Careers link override"
     },
     {
       "type": "header",
@@ -740,7 +713,7 @@
   "blocks": [
     {
       "type": "service_link",
-      "name": "Service link",
+      "name": "Information link",
       "limit": 12,
       "settings": [
         {
