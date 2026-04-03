@@ -1,33 +1,10 @@
 {%- liquid
-  assign faq_url = section.settings.faq_url
-  assign contact_url = section.settings.contact_url
   assign careers_url = section.settings.careers_url
-  assign fallback_faq_page = pages['faq']
-  assign fallback_contact_page = pages['contact']
   assign fallback_careers_page = pages['careers']
   assign brand_text = section.settings.bottom_brand_text | strip
   assign show_locale_selector = false
   assign show_country_selector = false
-
-  if faq_url == blank and fallback_faq_page == blank
-    assign fallback_faq_page = pages['faqs']
-  endif
-
-  if faq_url == blank and fallback_faq_page == blank
-    assign fallback_faq_page = pages['frequently-asked-questions']
-  endif
-
-  if faq_url == blank and fallback_faq_page != blank
-    assign faq_url = fallback_faq_page.url
-  endif
-
-  if contact_url == blank and fallback_contact_page == blank
-    assign fallback_contact_page = pages['contact-us']
-  endif
-
-  if contact_url == blank and fallback_contact_page != blank
-    assign contact_url = fallback_contact_page.url
-  endif
+  assign support_link_blocks = section.blocks | where: 'type', 'service_link'
 
   if careers_url == blank and fallback_careers_page == blank
     assign fallback_careers_page = pages['jobs']
@@ -47,28 +24,8 @@
     assign show_location_two = true
   endif
 
-  assign show_privacy_policy = false
-  if shop.privacy_policy.body != blank
-    assign show_privacy_policy = true
-  endif
-
-  assign show_terms_of_service = false
-  if shop.terms_of_service.body != blank
-    assign show_terms_of_service = true
-  endif
-
-  assign show_shipping_policy = false
-  if shop.shipping_policy.body != blank
-    assign show_shipping_policy = true
-  endif
-
-  assign show_refund_policy = false
-  if shop.refund_policy.body != blank
-    assign show_refund_policy = true
-  endif
-
   assign show_support_column = false
-  if faq_url != blank or show_privacy_policy or show_terms_of_service or show_shipping_policy or show_refund_policy or contact_url != blank
+  if support_link_blocks.size > 0 or careers_url != blank
     assign show_support_column = true
   endif
 
@@ -93,26 +50,54 @@
   if section.settings.show_country_selector and localization.available_countries.size > 1
     assign show_country_selector = true
   endif
+
+  assign footer_text_alignment = 'start'
+  assign footer_item_alignment = 'start'
+
+  case section.settings.content_alignment
+    when 'center'
+      assign footer_text_alignment = 'center'
+      assign footer_item_alignment = 'center'
+    when 'end'
+      assign footer_text_alignment = 'end'
+      assign footer_item_alignment = 'end'
+  endcase
 -%}
 
 <style>
+  #shopify-section-{{ section.id }} {
+    --footer-column-spacing-half: {{ section.settings.column_spacing | divided_by: 2.0 }}px;
+    --footer-section-padding-top: {{ section.settings.section_padding_top }}px;
+    --footer-section-padding-bottom: {{ section.settings.section_padding_bottom }}px;
+    --footer-desktop-side-padding: {{ section.settings.desktop_side_padding }}px;
+    --footer-text-alignment: {{ footer_text_alignment }};
+    --footer-item-alignment: {{ footer_item_alignment }};
+    --footer-heading-size: calc(var(--subheading-font-size) * 1.5);
+  }
+
   #shopify-section-{{ section.id }} .footer__content {
     display: grid;
     gap: clamp(2.5rem, 4vw, 4.75rem);
-    padding-block: clamp(2.75rem, 5vw, 5rem);
+    padding-block-start: var(--footer-section-padding-top);
+    padding-block-end: var(--footer-section-padding-bottom);
+    padding-inline: 0;
   }
 
   #shopify-section-{{ section.id }} .footer__columns {
     display: grid;
     gap: 0;
+    align-items: start;
   }
 
   #shopify-section-{{ section.id }} .footer__column {
-    display: flex;
-    flex-direction: column;
-    gap: 1.1rem;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    row-gap: 1.1rem;
+    align-content: start;
+    justify-items: var(--footer-item-alignment);
     min-width: 0;
     padding-block: 1.5rem;
+    text-align: var(--footer-text-alignment);
   }
 
   #shopify-section-{{ section.id }} .footer__column:first-child {
@@ -129,16 +114,33 @@
 
   #shopify-section-{{ section.id }} .footer__heading {
     margin: 0;
+    display: flex;
+    align-items: flex-start;
+    justify-content: var(--footer-item-alignment);
+    width: 100%;
+    min-height: calc(var(--footer-heading-size) * 1.15);
+    font-size: var(--footer-heading-size);
+    line-height: 1.1;
+  }
+
+  #shopify-section-{{ section.id }} .footer__column-body {
+    display: grid;
+    gap: 1.1rem;
+    align-content: start;
+    justify-items: var(--footer-item-alignment);
+    width: 100%;
   }
 
   #shopify-section-{{ section.id }} .footer__address,
   #shopify-section-{{ section.id }} .footer__subscribe-copy {
     max-width: 28rem;
+    width: 100%;
   }
 
   #shopify-section-{{ section.id }} .footer__link-list {
     display: grid;
     gap: 0.7rem;
+    width: 100%;
   }
 
   #shopify-section-{{ section.id }} .footer__link-list li {
@@ -147,32 +149,41 @@
 
   #shopify-section-{{ section.id }} .footer__directions {
     margin-block-start: 0.15rem;
-    align-self: flex-start;
+    justify-self: var(--footer-item-alignment);
   }
 
   #shopify-section-{{ section.id }} .footer__newsletter-shell {
     display: grid;
     gap: 1.15rem;
+    width: 100%;
   }
 
   #shopify-section-{{ section.id }} .footer__newsletter-form {
     display: grid;
     gap: 1rem;
+    width: 100%;
   }
 
   #shopify-section-{{ section.id }} .footer__newsletter-form .form-row {
     display: grid;
     gap: 0.85rem;
+    width: 100%;
   }
 
   #shopify-section-{{ section.id }} .footer__careers {
     margin-block-start: 1rem;
     padding-block-start: 1rem;
     border-block-start: 1px solid rgb(var(--border-color));
+    width: 100%;
+  }
+
+  #shopify-section-{{ section.id }} .footer__careers a {
+    display: inline-block;
   }
 
   #shopify-section-{{ section.id }} .footer__brand-mark-wrap {
     padding-block-start: clamp(0.5rem, 3vw, 1.75rem);
+    padding-inline: 0;
   }
 
   #shopify-section-{{ section.id }} .footer__brand-mark {
@@ -215,13 +226,13 @@
     }
 
     #shopify-section-{{ section.id }} .footer__column {
-      padding: 1.75rem 1.5rem 0 0;
+      padding: 1.75rem var(--footer-column-spacing-half) 0 0;
     }
 
     #shopify-section-{{ section.id }} .footer__column:nth-child(2) {
       border-block-start: 0;
       border-inline-start: 1px solid rgb(var(--border-color));
-      padding-inline: 1.5rem 0;
+      padding-inline: var(--footer-column-spacing-half) 0;
     }
 
     #shopify-section-{{ section.id }} .footer__column:nth-child(n + 3) {
@@ -230,12 +241,12 @@
     }
 
     #shopify-section-{{ section.id }} .footer__column:nth-child(3) {
-      padding-inline-end: 1.5rem;
+      padding-inline-end: var(--footer-column-spacing-half);
     }
 
     #shopify-section-{{ section.id }} .footer__column:nth-child(4) {
       border-inline-start: 1px solid rgb(var(--border-color));
-      padding-inline: 1.5rem 0;
+      padding-inline: var(--footer-column-spacing-half) 0;
     }
   }
 
@@ -246,13 +257,19 @@
 
     #shopify-section-{{ section.id }} .footer__column {
       min-height: 100%;
-      padding: 0 1.75rem 0 0;
+      padding: 0 var(--footer-column-spacing-half) 0 0;
     }
 
     #shopify-section-{{ section.id }} .footer__column + .footer__column {
       border-block-start: 0;
       border-inline-start: 1px solid rgb(var(--border-color));
-      padding-inline: 1.75rem 0;
+      padding-inline: var(--footer-column-spacing-half) 0;
+    }
+
+    #shopify-section-{{ section.id }} .footer__content,
+    #shopify-section-{{ section.id }} .footer__aside,
+    #shopify-section-{{ section.id }} .footer__brand-mark-wrap {
+      padding-inline: var(--footer-desktop-side-padding);
     }
 
     #shopify-section-{{ section.id }} .footer__aside {
@@ -288,22 +305,24 @@
               <p class="footer__heading subheading">{{ section.settings.location_1_title }}</p>
             {%- endif -%}
 
-            {%- if section.settings.location_1_address != blank -%}
-              <div class="footer__address prose prose--compact">
-                {{- section.settings.location_1_address -}}
-              </div>
-            {%- endif -%}
+            <div class="footer__column-body">
+              {%- if section.settings.location_1_address != blank -%}
+                <div class="footer__address prose prose--compact">
+                  {{- section.settings.location_1_address -}}
+                </div>
+              {%- endif -%}
 
-            {%- if section.settings.location_1_directions_url != blank -%}
-              {%- render 'button',
-                content: section.settings.directions_label,
-                href: section.settings.location_1_directions_url,
-                style: 'outline',
-                size: 'sm',
-                external: true,
-                class: 'footer__directions'
-              -%}
-            {%- endif -%}
+              {%- if section.settings.location_1_directions_url != blank -%}
+                {%- render 'button',
+                  content: section.settings.directions_label,
+                  href: section.settings.location_1_directions_url,
+                  style: 'outline',
+                  size: 'sm',
+                  external: true,
+                  class: 'footer__directions'
+                -%}
+              {%- endif -%}
+            </div>
           </div>
         {%- endif -%}
 
@@ -313,22 +332,24 @@
               <p class="footer__heading subheading">{{ section.settings.location_2_title }}</p>
             {%- endif -%}
 
-            {%- if section.settings.location_2_address != blank -%}
-              <div class="footer__address prose prose--compact">
-                {{- section.settings.location_2_address -}}
-              </div>
-            {%- endif -%}
+            <div class="footer__column-body">
+              {%- if section.settings.location_2_address != blank -%}
+                <div class="footer__address prose prose--compact">
+                  {{- section.settings.location_2_address -}}
+                </div>
+              {%- endif -%}
 
-            {%- if section.settings.location_2_directions_url != blank -%}
-              {%- render 'button',
-                content: section.settings.directions_label,
-                href: section.settings.location_2_directions_url,
-                style: 'outline',
-                size: 'sm',
-                external: true,
-                class: 'footer__directions'
-              -%}
-            {%- endif -%}
+              {%- if section.settings.location_2_directions_url != blank -%}
+                {%- render 'button',
+                  content: section.settings.directions_label,
+                  href: section.settings.location_2_directions_url,
+                  style: 'outline',
+                  size: 'sm',
+                  external: true,
+                  class: 'footer__directions'
+                -%}
+              {%- endif -%}
+            </div>
           </div>
         {%- endif -%}
 
@@ -338,43 +359,27 @@
               <p class="footer__heading subheading">{{ section.settings.customer_service_title }}</p>
             {%- endif -%}
 
-            <ul class="footer__link-list unstyled-list" role="list">
-              {%- if faq_url != blank -%}
-                <li>
-                  <a href="{{ faq_url }}" class="link-reversed link-tap-area">{{ section.settings.faq_label }}</a>
-                </li>
-              {%- endif -%}
+            <div class="footer__column-body">
+              <ul class="footer__link-list unstyled-list" role="list">
+                {%- for block in support_link_blocks -%}
+                  {%- if block.settings.label != blank -%}
+                    <li {{ block.shopify_attributes }}>
+                      {%- if block.settings.link != blank -%}
+                        <a href="{{ block.settings.link }}" class="link-reversed link-tap-area">{{ block.settings.label }}</a>
+                      {%- else -%}
+                        <span>{{ block.settings.label }}</span>
+                      {%- endif -%}
+                    </li>
+                  {%- endif -%}
+                {%- endfor -%}
+              </ul>
 
-              {%- if show_privacy_policy -%}
-                <li>
-                  <a href="{{ shop.privacy_policy.url }}" class="link-reversed link-tap-area">{{ section.settings.privacy_label }}</a>
-                </li>
+              {%- if careers_url != blank -%}
+                <div class="footer__careers">
+                  <a href="{{ careers_url }}" class="link-reversed link-tap-area">{{ section.settings.careers_label }}</a>
+                </div>
               {%- endif -%}
-
-              {%- if show_terms_of_service -%}
-                <li>
-                  <a href="{{ shop.terms_of_service.url }}" class="link-reversed link-tap-area">{{ section.settings.terms_label }}</a>
-                </li>
-              {%- endif -%}
-
-              {%- if show_shipping_policy -%}
-                <li>
-                  <a href="{{ shop.shipping_policy.url }}" class="link-reversed link-tap-area">{{ section.settings.shipping_label }}</a>
-                </li>
-              {%- endif -%}
-
-              {%- if show_refund_policy -%}
-                <li>
-                  <a href="{{ shop.refund_policy.url }}" class="link-reversed link-tap-area">{{ section.settings.returns_label }}</a>
-                </li>
-              {%- endif -%}
-
-              {%- if contact_url != blank -%}
-                <li>
-                  <a href="{{ contact_url }}" class="link-reversed link-tap-area">{{ section.settings.contact_label }}</a>
-                </li>
-              {%- endif -%}
-            </ul>
+            </div>
           </div>
         {%- endif -%}
 
@@ -384,52 +389,48 @@
               <p class="footer__heading subheading">{{ section.settings.subscribe_title }}</p>
             {%- endif -%}
 
-            <div class="footer__newsletter-shell">
-              {%- if section.settings.subscribe_content != blank -%}
-                <div class="footer__subscribe-copy prose prose--compact">
-                  {{- section.settings.subscribe_content -}}
-                </div>
-              {%- endif -%}
-
-              {%- assign newsletter_form_id = 'footer-newsletter-' | append: section.id -%}
-              {%- assign button_label = section.settings.subscribe_button_label -%}
-
-              {%- if button_label == blank -%}
-                {%- assign button_label = 'general.newsletter.subscribe' | t -%}
-              {%- endif -%}
-
-              <div class="footer__newsletter-form">
-                {%- form 'customer', id: newsletter_form_id, class: 'form-row' -%}
-                  {%- if form.posted_successfully? -%}
-                    {%- assign success_message = 'general.newsletter.subscribed_successfully' | t -%}
-                    {%- render 'banner', content: success_message, status: 'success', text_alignment: 'center' -%}
-                  {%- else -%}
-                    {%- if form.errors -%}
-                      {%- capture error_message -%}{{ form.errors.translated_fields['email'] }} {{ form.errors.messages['email'] }}{%- endcapture -%}
-                      {%- render 'banner', content: error_message, status: 'error', text_alignment: 'center' -%}
-                    {%- endif -%}
-
-                    <input type="hidden" name="contact[tags]" value="newsletter">
-
-                    {%- assign input_label = 'general.newsletter.email' | t -%}
-                    {%- render 'input', name: 'contact[email]', label: input_label, type: 'email', required: true, autocomplete: 'email', enterkeyhint: 'send' -%}
-
-                    {%- render 'button', type: 'submit', content: button_label -%}
-                  {%- endif -%}
-                {%- endform -%}
-
-                {%- if section.settings.newsletter_disclaimer_text != blank -%}
-                  <div class="prose text-subdued text-sm">
-                    {{- section.settings.newsletter_disclaimer_text -}}
+            <div class="footer__column-body">
+              <div class="footer__newsletter-shell">
+                {%- if section.settings.subscribe_content != blank -%}
+                  <div class="footer__subscribe-copy prose prose--compact">
+                    {{- section.settings.subscribe_content -}}
                   </div>
                 {%- endif -%}
-              </div>
 
-              {%- if careers_url != blank -%}
-                <div class="footer__careers">
-                  <a href="{{ careers_url }}" class="link-reversed link-tap-area">{{ section.settings.careers_label }}</a>
+                {%- assign newsletter_form_id = 'footer-newsletter-' | append: section.id -%}
+                {%- assign button_label = section.settings.subscribe_button_label -%}
+
+                {%- if button_label == blank -%}
+                  {%- assign button_label = 'general.newsletter.subscribe' | t -%}
+                {%- endif -%}
+
+                <div class="footer__newsletter-form">
+                  {%- form 'customer', id: newsletter_form_id, class: 'form-row' -%}
+                    {%- if form.posted_successfully? -%}
+                      {%- assign success_message = 'general.newsletter.subscribed_successfully' | t -%}
+                      {%- render 'banner', content: success_message, status: 'success', text_alignment: 'center' -%}
+                    {%- else -%}
+                      {%- if form.errors -%}
+                        {%- capture error_message -%}{{ form.errors.translated_fields['email'] }} {{ form.errors.messages['email'] }}{%- endcapture -%}
+                        {%- render 'banner', content: error_message, status: 'error', text_alignment: 'center' -%}
+                      {%- endif -%}
+
+                      <input type="hidden" name="contact[tags]" value="newsletter">
+
+                      {%- assign input_label = 'general.newsletter.email' | t -%}
+                      {%- render 'input', name: 'contact[email]', label: input_label, type: 'email', required: true, autocomplete: 'email', enterkeyhint: 'send' -%}
+
+                      {%- render 'button', type: 'submit', content: button_label -%}
+                    {%- endif -%}
+                  {%- endform -%}
+
+                  {%- if section.settings.newsletter_disclaimer_text != blank -%}
+                    <div class="prose text-subdued text-sm">
+                      {{- section.settings.newsletter_disclaimer_text -}}
+                    </div>
+                  {%- endif -%}
                 </div>
-              {%- endif -%}
+              </div>
             </div>
           </div>
         {%- endif -%}
@@ -497,6 +498,70 @@
     },
     {
       "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "column_spacing",
+      "min": 16,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Desktop column spacing",
+      "default": 56
+    },
+    {
+      "type": "range",
+      "id": "desktop_side_padding",
+      "min": 0,
+      "max": 96,
+      "step": 4,
+      "unit": "px",
+      "label": "Desktop side padding",
+      "default": 28
+    },
+    {
+      "type": "range",
+      "id": "section_padding_top",
+      "min": 24,
+      "max": 144,
+      "step": 4,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 76
+    },
+    {
+      "type": "range",
+      "id": "section_padding_bottom",
+      "min": 24,
+      "max": 144,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 92
+    },
+    {
+      "type": "select",
+      "id": "content_alignment",
+      "label": "Content alignment",
+      "options": [
+        {
+          "value": "start",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "end",
+          "label": "Right"
+        }
+      ],
+      "default": "start"
+    },
+    {
+      "type": "header",
       "content": "Location one"
     },
     {
@@ -550,52 +615,6 @@
       "id": "customer_service_title",
       "label": "Heading",
       "default": "Customer Service"
-    },
-    {
-      "type": "text",
-      "id": "faq_label",
-      "label": "FAQ label",
-      "default": "FAQs"
-    },
-    {
-      "type": "url",
-      "id": "faq_url",
-      "label": "FAQ link override"
-    },
-    {
-      "type": "text",
-      "id": "privacy_label",
-      "label": "Privacy label",
-      "default": "Privacy Statement"
-    },
-    {
-      "type": "text",
-      "id": "terms_label",
-      "label": "Terms label",
-      "default": "Terms of Service"
-    },
-    {
-      "type": "text",
-      "id": "shipping_label",
-      "label": "Shipping label",
-      "default": "Shipping Policy"
-    },
-    {
-      "type": "text",
-      "id": "returns_label",
-      "label": "Returns label",
-      "default": "Returns & Exchange Policy"
-    },
-    {
-      "type": "text",
-      "id": "contact_label",
-      "label": "Contact label",
-      "default": "Contact Us"
-    },
-    {
-      "type": "url",
-      "id": "contact_url",
-      "label": "Contact link override"
     },
     {
       "type": "header",
@@ -709,6 +728,26 @@
       "id": "show_locale_selector",
       "label": "t:global.localization.show_locale_selector",
       "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "service_link",
+      "name": "Service link",
+      "limit": 12,
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label",
+          "default": "FAQs"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        }
+      ]
     }
   ]
 }

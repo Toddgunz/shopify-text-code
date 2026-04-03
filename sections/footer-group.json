@@ -13,6 +13,58 @@
   "sections": {
     "footer": {
       "type": "footer",
+      "blocks": {
+        "service-link-1": {
+          "type": "service_link",
+          "settings": {
+            "label": "FAQs",
+            "link": "/pages/faq"
+          }
+        },
+        "service-link-2": {
+          "type": "service_link",
+          "settings": {
+            "label": "Privacy Statement",
+            "link": "/policies/privacy-policy"
+          }
+        },
+        "service-link-3": {
+          "type": "service_link",
+          "settings": {
+            "label": "Terms of Service",
+            "link": "/policies/terms-of-service"
+          }
+        },
+        "service-link-4": {
+          "type": "service_link",
+          "settings": {
+            "label": "Shipping Policy",
+            "link": "/policies/shipping-policy"
+          }
+        },
+        "service-link-5": {
+          "type": "service_link",
+          "settings": {
+            "label": "Returns & Exchange Policy",
+            "link": "/policies/refund-policy"
+          }
+        },
+        "service-link-6": {
+          "type": "service_link",
+          "settings": {
+            "label": "Contact Us",
+            "link": "/pages/contact"
+          }
+        }
+      },
+      "block_order": [
+        "service-link-1",
+        "service-link-2",
+        "service-link-3",
+        "service-link-4",
+        "service-link-5",
+        "service-link-6"
+      ],
       "settings": {
         "color_scheme": "scheme-2",
         "location_1_title": "Northeast",
