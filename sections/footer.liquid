@@ -73,6 +73,9 @@
     --footer-text-alignment: {{ footer_text_alignment }};
     --footer-item-alignment: {{ footer_item_alignment }};
     --footer-heading-size: calc(var(--subheading-font-size) * 1.5);
+    --footer-careers-divider-inset: 1rem;
+    --footer-careers-divider-gap: 0.45rem;
+    --footer-careers-divider-padding: 0.65rem;
   }
 
   #shopify-section-{{ section.id }} .footer__content {
@@ -125,10 +128,23 @@
 
   #shopify-section-{{ section.id }} .footer__column-body {
     display: grid;
-    gap: 1.1rem;
+    gap: 0.95rem;
     align-content: start;
     justify-items: var(--footer-item-alignment);
+    align-self: start;
     width: 100%;
+  }
+
+  #shopify-section-{{ section.id }} .footer__column--location .footer__column-body {
+    max-width: 15rem;
+  }
+
+  #shopify-section-{{ section.id }} .footer__column--support .footer__column-body {
+    max-width: 18rem;
+  }
+
+  #shopify-section-{{ section.id }} .footer__column--subscribe .footer__column-body {
+    max-width: 27rem;
   }
 
   #shopify-section-{{ section.id }} .footer__address,
@@ -154,7 +170,7 @@
 
   #shopify-section-{{ section.id }} .footer__newsletter-shell {
     display: grid;
-    gap: 1.15rem;
+    gap: 0.95rem;
     width: 100%;
   }
 
@@ -171,9 +187,22 @@
   }
 
   #shopify-section-{{ section.id }} .footer__careers {
-    margin-block-start: 1rem;
-    padding-block-start: 1rem;
+    position: relative;
+    width: 100%;
+    margin-block-start: var(--footer-careers-divider-gap);
+    padding-block-start: var(--footer-careers-divider-padding);
+  }
+
+  #shopify-section-{{ section.id }} .footer__careers::before {
+    content: "";
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: var(--footer-careers-divider-inset);
+    inset-inline-end: var(--footer-careers-divider-inset);
     border-block-start: 1px solid rgb(var(--border-color));
+  }
+
+  #shopify-section-{{ section.id }} .footer__column--support .footer__link-list {
     width: 100%;
   }
 
@@ -251,6 +280,12 @@
   }
 
   @media screen and (min-width: 1000px) {
+    #shopify-section-{{ section.id }} {
+      --footer-careers-divider-inset: 1.25rem;
+      --footer-careers-divider-gap: 0.65rem;
+      --footer-careers-divider-padding: 0.9rem;
+    }
+
     #shopify-section-{{ section.id }} .footer__columns {
       grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.05fr) minmax(0, 1.25fr);
     }
