@@ -40,22 +40,14 @@
               },
               "blocks": {}
             },
-            "subheading_78Nk94": {
-              "type": "subheading",
-              "name": "t:blocks.subheading.name",
-              "settings": {
-                "text": "Lose track of time"
-              },
-              "blocks": {}
-            },
             "button_dAThHm": {
               "type": "button",
               "name": "t:blocks.button.name",
               "settings": {
-                "text": "Button",
+                "text": "Lose Track of Time",
                 "url": "",
                 "open_in_new_tab": false,
-                "style": "solid",
+                "style": "outline",
                 "background": "",
                 "text_color": ""
               },
@@ -64,7 +56,6 @@
           },
           "block_order": [
             "heading_TjNndm",
-            "subheading_78Nk94",
             "button_dAThHm"
           ]
         },
