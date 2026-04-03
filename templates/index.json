@@ -116,10 +116,10 @@
       "settings": {
         "allow_transparent_header": true,
         "image_size": "fill",
-        "transition_type": "distortion",
+        "transition_type": "perspective",
         "autoplay": true,
-        "pause_auto_rotate_on_hover": false,
-        "cycle_speed": 8,
+        "pause_auto_rotate_on_hover": true,
+        "cycle_speed": 7,
         "background": "#c4cfcd"
       }
     },
