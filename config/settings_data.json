@@ -54,6 +54,9 @@
     "product_listing_spacing": "x-small",
     "cart_type": "drawer",
     "cart_icon": "shopping_bag",
+    "social_facebook": "https://www.facebook.com/MillCityRunning",
+    "social_twitter": "https://x.com/millcityrunning",
+    "social_instagram": "https://www.instagram.com/millcityrunning",
     "content_for_index": [],
     "color_schemes": {
       "scheme-1": {
