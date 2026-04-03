@@ -119,7 +119,7 @@
         "transition_type": "distortion",
         "autoplay": true,
         "pause_auto_rotate_on_hover": false,
-        "cycle_speed": 4,
+        "cycle_speed": 8,
         "background": "#c4cfcd"
       }
     },
