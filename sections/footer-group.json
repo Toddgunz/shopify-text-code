@@ -30,14 +30,6 @@
             "link": ""
           }
         },
-        "service_link_yCqwtj": {
-          "type": "service_link",
-          "name": "Shipping Policy",
-          "settings": {
-            "label": "Shipping Policy",
-            "link": ""
-          }
-        },
         "service_link_LVUn3c": {
           "type": "service_link",
           "name": "Terms of Service",
@@ -66,7 +58,6 @@
       "block_order": [
         "service_link_kLtbz8",
         "service_link_bXFn73",
-        "service_link_yCqwtj",
         "service_link_LVUn3c",
         "service_link_QrVYBh",
         "service_link_GbVKJy"
