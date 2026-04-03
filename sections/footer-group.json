@@ -55,32 +55,13 @@
     },
     "footer": {
       "type": "footer",
-      "blocks": {
-        "newsletter": {
-          "type": "newsletter",
-          "settings": {}
-        },
-        "links": {
-          "type": "links",
-          "settings": {
-            "menu": "footer",
-            "show_menu_title": true
-          }
-        },
-        "text": {
-          "type": "text",
-          "settings": {
-            "title": "About",
-            "content": "<p>Use this text area to tell your customers about your brand and vision. You can change it in the theme editor.</p>"
-          }
-        }
-      },
-      "block_order": [
-        "newsletter",
-        "links",
-        "text"
-      ],
-      "settings": {}
+      "settings": {
+        "location_1_title": "Northeast",
+        "location_2_title": "Highland",
+        "subscribe_title": "Subscribe",
+        "subscribe_content": "<p>Subscribe to product launches, running updates, and things we think are worth your time. Never spammy.</p>",
+        "customer_service_title": "Customer Service"
+      }
     }
   },
   "order": [
