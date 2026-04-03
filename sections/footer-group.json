@@ -19,7 +19,7 @@
           "name": "FAQs",
           "settings": {
             "label": "FAQs",
-            "link": ""
+            "link": "shopify://pages/frequent-questions"
           }
         },
         "service_link_bXFn73": {
@@ -27,7 +27,7 @@
           "name": "Privacy Policy",
           "settings": {
             "label": "Privacy Policy",
-            "link": ""
+            "link": "shopify://policies/privacy-policy"
           }
         },
         "service_link_LVUn3c": {
@@ -51,7 +51,7 @@
           "name": "Careers",
           "settings": {
             "label": "Careers",
-            "link": ""
+            "link": "shopify://pages/careers"
           }
         },
         "service_link_GbVKJy": {
@@ -59,7 +59,7 @@
           "name": "Contact Us",
           "settings": {
             "label": "Contact Us",
-            "link": ""
+            "link": "shopify://pages/contact"
           }
         }
       },
