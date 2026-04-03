@@ -14,59 +14,70 @@
     "footer": {
       "type": "footer",
       "blocks": {
-        "service-link-1": {
+        "service_link_kLtbz8": {
           "type": "service_link",
+          "name": "Return & Exchange Policy",
           "settings": {
-            "label": "FAQs",
-            "link": "/pages/faq"
+            "label": "Return & Exchange Policy",
+            "link": ""
           }
         },
-        "service-link-2": {
+        "service_link_bXFn73": {
           "type": "service_link",
+          "name": "Privacy Policy",
           "settings": {
-            "label": "Privacy Statement",
-            "link": "/policies/privacy-policy"
+            "label": "Privacy Policy",
+            "link": ""
           }
         },
-        "service-link-3": {
+        "service_link_yCqwtj": {
           "type": "service_link",
-          "settings": {
-            "label": "Terms of Service",
-            "link": "/policies/terms-of-service"
-          }
-        },
-        "service-link-4": {
-          "type": "service_link",
+          "name": "Shipping Policy",
           "settings": {
             "label": "Shipping Policy",
-            "link": "/policies/shipping-policy"
+            "link": ""
           }
         },
-        "service-link-5": {
+        "service_link_LVUn3c": {
           "type": "service_link",
+          "name": "Terms of Service",
           "settings": {
-            "label": "Returns & Exchange Policy",
-            "link": "/policies/refund-policy"
+            "label": "Terms of Service",
+            "link": ""
           }
         },
-        "service-link-6": {
+        "service_link_QrVYBh": {
           "type": "service_link",
+          "name": "FAQs",
+          "settings": {
+            "label": "FAQs",
+            "link": ""
+          }
+        },
+        "service_link_GbVKJy": {
+          "type": "service_link",
+          "name": "Contact Us",
           "settings": {
             "label": "Contact Us",
-            "link": "/pages/contact"
+            "link": ""
           }
         }
       },
       "block_order": [
-        "service-link-1",
-        "service-link-2",
-        "service-link-3",
-        "service-link-4",
-        "service-link-5",
-        "service-link-6"
+        "service_link_kLtbz8",
+        "service_link_bXFn73",
+        "service_link_yCqwtj",
+        "service_link_LVUn3c",
+        "service_link_QrVYBh",
+        "service_link_GbVKJy"
       ],
       "settings": {
         "color_scheme": "scheme-2",
+        "column_spacing": 56,
+        "desktop_side_padding": 44,
+        "section_padding_top": 76,
+        "section_padding_bottom": 92,
+        "content_alignment": "center",
         "location_1_title": "Northeast",
         "location_1_address": "<p>411 E Hennepin Avenue<br/>Minneapolis, MN 55414</p>",
         "location_1_directions_url": "https://share.google/w462wEbLPqnjZqrtT",
@@ -75,14 +86,6 @@
         "location_2_directions_url": "https://share.google/eb1LZNDM6hjd5BMXb",
         "directions_label": "Directions",
         "customer_service_title": "Customer Service",
-        "faq_label": "FAQs",
-        "faq_url": "",
-        "privacy_label": "Privacy Statement",
-        "terms_label": "Terms of Service",
-        "shipping_label": "Shipping Policy",
-        "returns_label": "Returns & Exchange Policy",
-        "contact_label": "Contact Us",
-        "contact_url": "",
         "subscribe_title": "Subscribe",
         "subscribe_content": "<p>Subscribe to product launches, running updates, and things we think are worth your time. Never spammy.</p>",
         "subscribe_button_label": "Subscribe",
