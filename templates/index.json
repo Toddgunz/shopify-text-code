@@ -16,6 +16,7 @@
           "type": "_slideshow-image-slide",
           "settings": {
             "color_scheme": "scheme-3",
+            "image": "shopify://shop_images/ROKU_Images_14.jpg",
             "slide_link": "",
             "content_max_width": 720,
             "mobile_content_position": "place-self-end-start",
@@ -24,23 +25,11 @@
             "overlay_opacity": 20
           },
           "blocks": {
-            "heading-1": {
-              "type": "heading",
-              "settings": {
-                "text": "Engineered for <em>everyday</em>",
-                "heading_size": "display-m",
-                "html_tag": "p",
-                "indent": "none",
-                "highlight_effect": "underline",
-                "highlight_accent_color": "",
-                "highlight_text_color": ""
-              },
-              "blocks": {}
-            },
-            "rich-text-1": {
+            "rich_text_tEKGyt": {
               "type": "rich-text",
+              "name": "t:blocks.rich_text.name",
               "settings": {
-                "text": "<p>Our latest clothing collection balances functionality and aesthetics in the space of traditional workwear, lifestyle and activewear.</p>",
+                "text": "<p>Discover our new collection: The On Cloudmonster 3 lineup. Engineered with premium cushioning and responsive technology, these shoes deliver the perfect balance of comfort and performance for every run.</p>",
                 "content_width": "sm"
               },
               "blocks": {}
@@ -48,7 +37,7 @@
             "button-1": {
               "type": "button",
               "settings": {
-                "text": "Shop Apparel",
+                "text": "VIEW ENTIRE LINEUP",
                 "url": "shopify://collections/all",
                 "open_in_new_tab": false,
                 "style": "solid",
@@ -59,8 +48,7 @@
             }
           },
           "block_order": [
-            "heading-1",
-            "rich-text-1",
+            "rich_text_tEKGyt",
             "button-1"
           ]
         },
