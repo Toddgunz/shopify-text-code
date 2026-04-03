@@ -30,7 +30,7 @@
   endif
 
   assign show_subscribe_column = false
-  if section.settings.subscribe_title != blank or section.settings.subscribe_content != blank or careers_url != blank
+  if section.settings.subscribe_title != blank or section.settings.subscribe_content != blank
     assign show_subscribe_column = true
   endif
 
@@ -73,9 +73,6 @@
     --footer-text-alignment: {{ footer_text_alignment }};
     --footer-item-alignment: {{ footer_item_alignment }};
     --footer-heading-size: calc(var(--subheading-font-size) * 1.5);
-    --footer-careers-divider-inset: 1rem;
-    --footer-careers-divider-gap: 0.45rem;
-    --footer-careers-divider-padding: 0.65rem;
   }
 
   #shopify-section-{{ section.id }} .footer__content {
@@ -186,30 +183,6 @@
     width: 100%;
   }
 
-  #shopify-section-{{ section.id }} .footer__careers {
-    position: relative;
-    width: 100%;
-    margin-block-start: var(--footer-careers-divider-gap);
-    padding-block-start: var(--footer-careers-divider-padding);
-  }
-
-  #shopify-section-{{ section.id }} .footer__careers::before {
-    content: "";
-    position: absolute;
-    inset-block-start: 0;
-    inset-inline-start: var(--footer-careers-divider-inset);
-    inset-inline-end: var(--footer-careers-divider-inset);
-    border-block-start: 1px solid rgb(var(--border-color));
-  }
-
-  #shopify-section-{{ section.id }} .footer__column--support .footer__link-list {
-    width: 100%;
-  }
-
-  #shopify-section-{{ section.id }} .footer__careers a {
-    display: inline-block;
-  }
-
   #shopify-section-{{ section.id }} .footer__brand-mark-wrap {
     padding-block-start: clamp(0.5rem, 3vw, 1.75rem);
     padding-inline: 0;
@@ -255,7 +228,7 @@
     }
 
     #shopify-section-{{ section.id }} .footer__column {
-      padding: 1.75rem var(--footer-column-spacing-half) 0 0;
+      padding: 0 var(--footer-column-spacing-half) 0 0;
     }
 
     #shopify-section-{{ section.id }} .footer__column:nth-child(2) {
@@ -280,12 +253,6 @@
   }
 
   @media screen and (min-width: 1000px) {
-    #shopify-section-{{ section.id }} {
-      --footer-careers-divider-inset: 1.25rem;
-      --footer-careers-divider-gap: 0.65rem;
-      --footer-careers-divider-padding: 0.9rem;
-    }
-
     #shopify-section-{{ section.id }} .footer__columns {
       grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.05fr) minmax(0, 1.25fr);
     }
@@ -299,6 +266,11 @@
       border-block-start: 0;
       border-inline-start: 1px solid rgb(var(--border-color));
       padding-inline: var(--footer-column-spacing-half) 0;
+    }
+
+    #shopify-section-{{ section.id }} .footer__column:nth-child(n + 3) {
+      border-block-start: 0;
+      padding-block-start: 0;
     }
 
     #shopify-section-{{ section.id }} .footer__content,
@@ -407,13 +379,13 @@
                     </li>
                   {%- endif -%}
                 {%- endfor -%}
-              </ul>
 
-              {%- if careers_url != blank -%}
-                <div class="footer__careers">
-                  <a href="{{ careers_url }}" class="link-reversed link-tap-area">{{ section.settings.careers_label }}</a>
-                </div>
-              {%- endif -%}
+                {%- if careers_url != blank -%}
+                  <li>
+                    <a href="{{ careers_url }}" class="link-reversed link-tap-area">{{ section.settings.careers_label }}</a>
+                  </li>
+                {%- endif -%}
+              </ul>
             </div>
           </div>
         {%- endif -%}
@@ -649,7 +621,7 @@
       "type": "text",
       "id": "customer_service_title",
       "label": "Heading",
-      "default": "Customer Service"
+      "default": "Information"
     },
     {
       "type": "header",
