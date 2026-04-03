@@ -12,6 +12,62 @@
     "slideshow": {
       "type": "slideshow",
       "blocks": {
+        "slideshow_image_slide_kRqKMw": {
+          "type": "_slideshow-image-slide",
+          "name": "t:sections.slideshow.blocks.image.name",
+          "settings": {
+            "color_scheme": "",
+            "image": "shopify://shop_images/ROKU_Images_8.jpg",
+            "mobile_image": "shopify://shop_images/ROKU_Images_8_6beadf1e-5856-41f3-bc96-f6111a18a0d1.jpg",
+            "slide_link": "",
+            "content_max_width": 1100,
+            "mobile_content_position": "place-self-start-center",
+            "desktop_content_position": "sm:place-self-start-end",
+            "overlay_color": "#000000",
+            "overlay_opacity": 20
+          },
+          "blocks": {
+            "heading_TjNndm": {
+              "type": "heading",
+              "settings": {
+                "text": "Introducing the Ellipse",
+                "heading_size": "display-m",
+                "html_tag": "h1",
+                "indent": "none",
+                "highlight_effect": "none",
+                "highlight_accent_color": "",
+                "highlight_text_color": ""
+              },
+              "blocks": {}
+            },
+            "subheading_78Nk94": {
+              "type": "subheading",
+              "name": "t:blocks.subheading.name",
+              "settings": {
+                "text": "Lose track of time"
+              },
+              "blocks": {}
+            },
+            "button_dAThHm": {
+              "type": "button",
+              "name": "t:blocks.button.name",
+              "settings": {
+                "text": "Button",
+                "url": "",
+                "open_in_new_tab": false,
+                "style": "solid",
+                "background": "",
+                "text_color": ""
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "heading_TjNndm",
+            "subheading_78Nk94",
+            "button_dAThHm"
+          ]
+        },
         "slideshow-image-slide-1": {
           "type": "_slideshow-image-slide",
           "settings": {
@@ -63,6 +119,7 @@
         }
       },
       "block_order": [
+        "slideshow_image_slide_kRqKMw",
         "slideshow-image-slide-1"
       ],
       "settings": {
