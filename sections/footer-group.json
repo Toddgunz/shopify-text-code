@@ -14,11 +14,11 @@
     "footer": {
       "type": "footer",
       "blocks": {
-        "service_link_kLtbz8": {
+        "service_link_QrVYBh": {
           "type": "service_link",
-          "name": "Return & Exchange Policy",
+          "name": "FAQs",
           "settings": {
-            "label": "Return & Exchange Policy",
+            "label": "FAQs",
             "link": ""
           }
         },
@@ -38,11 +38,11 @@
             "link": ""
           }
         },
-        "service_link_QrVYBh": {
+        "service_link_kLtbz8": {
           "type": "service_link",
-          "name": "FAQs",
+          "name": "Return & Exchange Policy",
           "settings": {
-            "label": "FAQs",
+            "label": "Return & Exchange Policy",
             "link": ""
           }
         },
@@ -64,10 +64,10 @@
         }
       },
       "block_order": [
-        "service_link_kLtbz8",
+        "service_link_QrVYBh",
         "service_link_bXFn73",
         "service_link_LVUn3c",
-        "service_link_QrVYBh",
+        "service_link_kLtbz8",
         "service_link_QfWcwP",
         "service_link_GbVKJy"
       ],
