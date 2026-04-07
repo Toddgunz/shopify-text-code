@@ -106,12 +106,12 @@
         "badges",
         "price",
         "rating",
-        "payment_terms",
         "separator",
         "gender_toggle",
         "sibling_color_picker",
         "variant_picker",
         "buy_buttons",
+        "payment_terms",
         "accordion_eLnhPa"
       ],
       "settings": {
