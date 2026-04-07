@@ -3942,13 +3942,110 @@ if (!window.customElements.get("variant-picker")) {
 var SiblingPicker = class extends HTMLElement {
   connectedCallback() {
     this._abortController = new AbortController();
-    this.addEventListener("change", this._onColorChanged.bind(this), { signal: this._abortController.signal });
+    const signal = this._abortController.signal;
+    this.addEventListener("change", this._onColorChanged.bind(this), { signal });
+    this._onVariantChangeBound = this._updateAvailability.bind(this);
+    this._onProductRerenderBound = () => queueMicrotask(() => this._updateAvailability());
+    const form = this._getForm();
+    if (form) {
+      form.addEventListener("variant:change", this._onVariantChangeBound, { signal });
+      form.addEventListener("product:rerender", this._onProductRerenderBound, { signal });
+    }
+    queueMicrotask(() => this._updateAvailability());
   }
   disconnectedCallback() {
     this._abortController?.abort();
   }
   get isQuickBuy() {
     return this.getAttribute("context") === "quick_buy";
+  }
+  _getForm() {
+    const formId = this.getAttribute("form-id");
+    return formId ? document.getElementById(formId) : null;
+  }
+  _getAvailabilityData() {
+    const el = this.querySelector("script[data-sibling-availability]");
+    if (!el?.textContent) return null;
+    try {
+      return JSON.parse(el.textContent);
+    } catch {
+      return null;
+    }
+  }
+  _getCurrentVariantFromPicker() {
+    const formId = this.getAttribute("form-id");
+    if (!formId) return null;
+    const vp = document.querySelector(`variant-picker[form-id="${formId.replace(/\\/g, "\\\\").replace(/"/g, '\\"')}"]`);
+    const script = vp?.querySelector("script[data-variant]");
+    if (!script?.textContent) return null;
+    try {
+      return JSON.parse(script.textContent);
+    } catch {
+      return null;
+    }
+  }
+  _managedOptionIndex(data) {
+    const name = (data.managedOptionName || "Color").toLowerCase().trim();
+    const names = data.siblings?.[0]?.optionNames;
+    if (!names?.length) return -1;
+    const idx = names.findIndex((n) => n.toLowerCase().trim() === name);
+    return idx >= 0 ? idx : -1;
+  }
+  _variantMatchesExceptManaged(v, current, managedIndex, optionCount) {
+    if (!v || !current) return false;
+    for (let i = 0; i < optionCount; i++) {
+      if (i === managedIndex) continue;
+      const key = `option${i + 1}`;
+      const a = (v[key] ?? "").toString().trim();
+      const b = (current[key] ?? "").toString().trim();
+      if (a !== b) return false;
+    }
+    return true;
+  }
+  _siblingHasMatchingAvailableVariant(siblingEntry, currentVariant, managedIndex, optionCount) {
+    return siblingEntry.variants.some(
+      (v) => v.available && this._variantMatchesExceptManaged(v, currentVariant, managedIndex, optionCount)
+    );
+  }
+  _findPreservedVariantIdForSiblingHandle(targetHandle) {
+    const data = this._getAvailabilityData();
+    const current = this._getCurrentVariantFromPicker();
+    if (!data?.siblings?.length || !current) return null;
+    const entry = data.siblings.find((s) => s.handle === targetHandle);
+    if (!entry?.variants?.length) return null;
+    const managedIndex = this._managedOptionIndex(data);
+    const optionCount = Math.max(1, entry.optionNames?.length || data.siblings[0].optionNames?.length || 3);
+    const match = entry.variants.find(
+      (v) => v.available && this._variantMatchesExceptManaged(v, current, managedIndex, optionCount)
+    );
+    return match?.id ?? null;
+  }
+  _buildProductFetchUrl(productUrl, targetHandle, extraParams) {
+    const url = new URL(productUrl, window.location.origin);
+    const variantId = this._findPreservedVariantIdForSiblingHandle(targetHandle);
+    if (variantId != null) url.searchParams.set("variant", String(variantId));
+    if (extraParams) {
+      for (const [k, v] of Object.entries(extraParams)) {
+        if (v != null && v !== "") url.searchParams.set(k, v);
+      }
+    }
+    return url.toString();
+  }
+  _updateAvailability() {
+    const data = this._getAvailabilityData();
+    if (!data?.siblings?.length) return;
+    const current = this._getCurrentVariantFromPicker();
+    if (!current) return;
+    const managedIndex = this._managedOptionIndex(data);
+    const optionCount = Math.max(1, data.siblings[0].optionNames?.length || 3);
+    for (const radio of this.querySelectorAll('input[type="radio"]')) {
+      const label = radio.nextElementSibling;
+      const entry = data.siblings.find((s) => s.handle === radio.value);
+      if (!label || !entry) continue;
+      const ok = this._siblingHasMatchingAvailableVariant(entry, current, managedIndex, optionCount);
+      label.classList.toggle("is-disabled", !ok);
+      radio.disabled = false;
+    }
   }
   _updateSelectedState(handle) {
     for (const radio of this.querySelectorAll('input[type="radio"]')) {
@@ -3980,8 +4077,11 @@ var SiblingPicker = class extends HTMLElement {
     const siblingBlock = this.closest("[data-block-type]");
     this._updateSelectedState(input.value);
     try {
+      const sectionParams = {};
       const sectionId = this.getAttribute("section-id");
-      const html = await fetch(`${productUrl}?section_id=${sectionId}`).then((r) => r.text());
+      if (sectionId) sectionParams.section_id = sectionId;
+      const fetchUrl = this._buildProductFetchUrl(productUrl, input.value, sectionParams);
+      const html = await fetch(fetchUrl).then((r) => r.text());
       const tempContainer = document.createElement("div");
       tempContainer.innerHTML = html;
       const variantScript = tempContainer.querySelector("script[data-variant]");
@@ -4010,15 +4110,17 @@ var SiblingPicker = class extends HTMLElement {
         newUrl.searchParams.set("variant", variant.id);
       }
       window.history.pushState({ path: newUrl.toString() }, "", newUrl.toString());
+      queueMicrotask(() => siblingBlock._updateAvailability?.());
     } catch (error) {
-      window.location.href = productUrl;
+      window.location.href = this._buildProductFetchUrl(productUrl, input.value, {});
     }
   }
   async _onQuickBuyColorChanged(input, productUrl) {
     this._updateSelectedState(input.value);
     const quickBuyModal = this.closest("quick-buy-modal") || this.getRootNode()?.host?.closest("quick-buy-modal");
     try {
-      const responseContent = await fetch(productUrl).then((r) => r.text());
+      const fetchUrl = this._buildProductFetchUrl(productUrl, input.value, {});
+      const responseContent = await fetch(fetchUrl).then((r) => r.text());
       const tempDoc = new DOMParser().parseFromString(responseContent, "text/html");
       const quickBuyContent = tempDoc.getElementById("quick-buy-content");
       if (quickBuyContent && quickBuyModal) {
@@ -4032,6 +4134,102 @@ var SiblingPicker = class extends HTMLElement {
 };
 if (!window.customElements.get("sibling-picker")) {
   window.customElements.define("sibling-picker", SiblingPicker);
+}
+
+// js/custom/gender-toggle.js
+var GenderToggle = class extends HTMLElement {
+  connectedCallback() {
+    this._abortController = new AbortController();
+    this.addEventListener("change", this._onGenderChanged.bind(this), { signal: this._abortController.signal });
+  }
+  disconnectedCallback() {
+    this._abortController?.abort();
+  }
+  get isQuickBuy() {
+    return this.getAttribute("context") === "quick_buy";
+  }
+  _updateSelectedState(handle) {
+    for (const radio of this.querySelectorAll('input[type="radio"]')) {
+      const label = radio.nextElementSibling;
+      if (radio.value === handle) {
+        radio.checked = true;
+        label?.classList.add("is-selected");
+      } else {
+        radio.checked = false;
+        label?.classList.remove("is-selected");
+      }
+    }
+  }
+  async _onGenderChanged(event) {
+    const input = event.target;
+    if (!input.matches('input[type="radio"]')) return;
+    const productUrl = input.dataset.productUrl;
+    if (!productUrl) return;
+    if (this.isQuickBuy) {
+      event.stopPropagation();
+      return this._onQuickBuyGenderChanged(input, productUrl);
+    }
+    const sectionElement = this.closest(".shopify-section");
+    if (!sectionElement) return;
+    const siblingPickerEl = sectionElement.querySelector("sibling-picker");
+    const siblingBlock = siblingPickerEl?.closest("[data-block-type]");
+    this._updateSelectedState(input.value);
+    try {
+      const sectionId = this.getAttribute("section-id");
+      const fetchUrl = new URL(productUrl, window.location.origin);
+      if (sectionId) fetchUrl.searchParams.set("section_id", sectionId);
+      const html = await fetch(fetchUrl.toString()).then((r) => r.text());
+      const tempContainer = document.createElement("div");
+      tempContainer.innerHTML = html;
+      const variantScript = tempContainer.querySelector("script[data-variant]");
+      const variant = variantScript ? JSON.parse(variantScript.textContent) : null;
+      const newSectionWrapper = tempContainer.querySelector(".shopify-section");
+      let activeSection;
+      if (newSectionWrapper) {
+        sectionElement.replaceWith(newSectionWrapper);
+        activeSection = newSectionWrapper;
+      } else {
+        sectionElement.innerHTML = html;
+        activeSection = sectionElement;
+      }
+      if (siblingBlock && !activeSection.querySelector("sibling-picker")) {
+        const variantPickerBlock = activeSection.querySelector('[data-block-type="variant-picker"]');
+        if (variantPickerBlock) {
+          variantPickerBlock.before(siblingBlock);
+        } else {
+          const blockList = activeSection.querySelector(".product-info__block-list");
+          if (blockList) blockList.prepend(siblingBlock);
+        }
+      }
+      Shopify?.PaymentButton?.init();
+      const newUrl = new URL(productUrl, window.location.origin);
+      if (variant?.id) {
+        newUrl.searchParams.set("variant", variant.id);
+      }
+      window.history.pushState({ path: newUrl.toString() }, "", newUrl.toString());
+      queueMicrotask(() => siblingBlock?._updateAvailability?.());
+    } catch (error) {
+      window.location.href = productUrl;
+    }
+  }
+  async _onQuickBuyGenderChanged(input, productUrl) {
+    this._updateSelectedState(input.value);
+    const quickBuyModal = this.closest("quick-buy-modal") || this.getRootNode()?.host?.closest("quick-buy-modal");
+    try {
+      const responseContent = await fetch(productUrl).then((r) => r.text());
+      const tempDoc = new DOMParser().parseFromString(responseContent, "text/html");
+      const quickBuyContent = tempDoc.getElementById("quick-buy-content");
+      if (quickBuyContent && quickBuyModal) {
+        quickBuyModal.replaceChildren(quickBuyContent.content.cloneNode(true).firstElementChild);
+        Shopify?.PaymentButton?.init();
+      }
+    } catch (error) {
+      console.error("GenderToggle: failed to update quick-buy modal", error);
+    }
+  }
+};
+if (!window.customElements.get("gender-toggle")) {
+  window.customElements.define("gender-toggle", GenderToggle);
 }
 
 // js/common/media/base-media.js

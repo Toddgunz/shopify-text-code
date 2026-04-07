@@ -1414,6 +1414,15 @@
         "separator": {
           "name": "Separator"
         },
+        "gender_toggle": {
+          "name": "Gender toggle (men’s / women’s)",
+          "instructions": "Requires product metafield **custom.counterpart_line** (collection): the other gender’s color line for the same model. Match **custom.product_color** across lines when possible; otherwise use a product tagged **main-color** in that collection. Set **custom.gender** (single-line text: e.g. men, mens, women, womens) so the theme knows which segment is active.",
+          "legend_label": "Legend",
+          "legend_info": "Leave blank to use the default translation.",
+          "label_mens": "Men’s label",
+          "label_womens": "Women’s label",
+          "label_info": "Leave blank to use the default translation."
+        },
         "description": {
           "name": "Description",
           "collapse_content": "Collapse content"

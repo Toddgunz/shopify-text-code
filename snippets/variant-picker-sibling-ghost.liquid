@@ -1,0 +1,54 @@
+{%- doc -%}
+  Non-interactive option cell for a value that exists on another sibling product but not the current product.
+  Must not output form inputs so variant-picker JS only sees real option value IDs.
+
+  @param {string} label - display label
+  @param {string} selector_style - swatch | block | block_swatch | variant_image
+  @param {string} [swatch_selector_size] - sm or lg
+  @param {string} [block_selector_style] - outline | fill
+{%- enddoc -%}
+
+{%- liquid
+  assign swatch_selector_size = swatch_selector_size | default: 'lg'
+  assign block_selector_style = block_selector_style | default: 'outline'
+  assign aria_label = label | append: ': ' | append: 'product.general.sibling_variant_unavailable' | t
+-%}
+
+{%- case selector_style -%}
+  {%- when 'swatch' -%}
+    <span
+      class="color-swatch color-swatch--{{ settings.color_swatch_shape }} {% if swatch_selector_size == 'sm' %}color-swatch--sm{% endif %} is-disabled"
+      style="--swatch-background: linear-gradient(to right, rgb(var(--text-color) / .12), rgb(var(--text-color) / .12))"
+      role="img"
+      aria-label="{{ aria_label | escape }}"
+    ></span>
+
+  {%- when 'variant_image' -%}
+    <span
+      class="thumbnail-swatch {% if swatch_selector_size == 'sm' %}thumbnail-swatch--sm{% endif %} is-disabled"
+      aria-label="{{ aria_label | escape }}"
+    >
+      <span class="block-swatch is-disabled" style="min-height: 2.5rem; display: flex; align-items: center; justify-content: center; margin: 0;">
+        {{- label | escape -}}
+      </span>
+    </span>
+
+  {%- when 'block_swatch' -%}
+    <span
+      tabindex="-1"
+      class="block-swatch {% if block_selector_style == 'fill' %}block-swatch--fill{% endif %} is-disabled"
+      aria-label="{{ aria_label | escape }}"
+    >
+      <span class="block-swatch__color {% if settings.color_swatch_shape == 'circle' %}rounded-full{% endif %}" style="--swatch-background: linear-gradient(to right, rgb(var(--text-color) / .12), rgb(var(--text-color) / .12))" aria-hidden="true"></span>
+      <span>{{ label | escape }}</span>
+    </span>
+
+  {%- else -%}
+    <span
+      tabindex="-1"
+      class="block-swatch {% if block_selector_style == 'fill' %}block-swatch--fill{% endif %} is-disabled"
+      aria-label="{{ aria_label | escape }}"
+    >
+      {{- label | escape -}}
+    </span>
+{%- endcase -%}

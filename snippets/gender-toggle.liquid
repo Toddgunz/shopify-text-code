@@ -1,0 +1,155 @@
+{%- doc -%}
+  Men's / Women's toggle: links to the parallel product line via `custom.counterpart_line` (collection).
+  Resolves target by matching `custom.product_color`, then product tag `main-color`.
+  Current gender from product metafield `custom.gender` (single-line text: men / women, etc.).
+
+  @param {object} product
+  @param {string} product_form_id
+  @param {object} block
+  @param {string} alignment
+  @param {string} [context]
+  @param {object} [section]
+{%- enddoc -%}
+
+{%- liquid
+  assign counterpart_line = product.metafields.custom.counterpart_line.value
+
+  assign current_gender = ''
+  assign g = product.metafields.custom.gender.value | downcase | strip
+  if g != blank
+    if g == 'men' or g == 'mens' or g == "men's" or g == 'male'
+      assign current_gender = 'men'
+    elsif g == 'women' or g == 'womens' or g == "women's" or g == 'female'
+      assign current_gender = 'women'
+    endif
+  endif
+-%}
+
+{%- if counterpart_line != blank and counterpart_line.products.size > 0 and current_gender != blank -%}
+  {%- liquid
+    assign mf = product.metafields.custom.product_color
+    assign current_color_key = ''
+    if mf != blank
+      if mf.type contains 'metaobject_reference'
+        if mf.value != blank
+          assign current_color_key = mf.value.id | append: ''
+        endif
+      else
+        assign current_color_key = mf.value | default: '' | strip
+      endif
+    endif
+
+    assign counterpart_target = nil
+    assign counterpart_fallback = nil
+    for p in counterpart_line.products
+      if p.tags contains 'main-color' and counterpart_fallback == nil
+        assign counterpart_fallback = p
+      endif
+    endfor
+
+    for p in counterpart_line.products
+      assign pmf = p.metafields.custom.product_color
+      assign p_key = ''
+      if pmf != blank
+        if pmf.type contains 'metaobject_reference'
+          if pmf.value != blank
+            assign p_key = pmf.value.id | append: ''
+          endif
+        else
+          assign p_key = pmf.value | default: '' | strip
+        endif
+      endif
+      if p_key != blank and p_key == current_color_key
+        assign counterpart_target = p
+        break
+      endif
+    endfor
+
+    if counterpart_target == nil
+      assign counterpart_target = counterpart_fallback
+    endif
+  -%}
+
+  {%- if counterpart_target != nil -%}
+    {%- liquid
+      if current_gender == 'men'
+        assign mens_product = product
+        assign womens_product = counterpart_target
+      else
+        assign mens_product = counterpart_target
+        assign womens_product = product
+      endif
+
+      assign legend_text = block.settings.legend | strip
+      if legend_text == blank
+        assign legend_text = 'product.general.gender_toggle_legend' | t
+      endif
+
+      assign label_mens = block.settings.label_mens | strip
+      if label_mens == blank
+        assign label_mens = 'product.general.gender_toggle_mens' | t
+      endif
+
+      assign label_womens = block.settings.label_womens | strip
+      if label_womens == blank
+        assign label_womens = 'product.general.gender_toggle_womens' | t
+      endif
+
+      assign alignment = alignment | default: 'start'
+    -%}
+
+    <gender-toggle
+      class="variant-picker"
+      section-id="{{ section.id }}"
+      form-id="{{ product_form_id }}"
+      {% if context == 'quick_buy' %}
+        context="quick_buy"
+      {% endif %}
+    >
+      <fieldset class="variant-picker__option justify-{{ alignment }}">
+        <legend class="text-subdued">{{ legend_text | escape }}</legend>
+
+        <div class="variant-picker__option-values h-stack gap-1 wrap">
+          {%- capture id_mens -%}gender-{{ product_form_id }}-mens{%- endcapture -%}
+          {%- capture id_womens -%}gender-{{ product_form_id }}-womens{%- endcapture -%}
+
+          <input
+            type="radio"
+            class="sr-only"
+            name="gender-line-{{ product_form_id }}"
+            id="{{ id_mens }}"
+            value="{{ mens_product.handle }}"
+            data-product-url="{{ mens_product.url }}"
+            {% if current_gender == 'men' %}
+              checked
+            {% endif %}
+          >
+          <label
+            for="{{ id_mens }}"
+            class="block-swatch {% if current_gender == 'men' %}is-selected{% endif %}"
+          >
+            {{- label_mens -}}
+          </label>
+
+          <input
+            type="radio"
+            class="sr-only"
+            name="gender-line-{{ product_form_id }}"
+            id="{{ id_womens }}"
+            value="{{ womens_product.handle }}"
+            data-product-url="{{ womens_product.url }}"
+            {% if current_gender == 'women' %}
+              checked
+            {% endif %}
+          >
+          <label
+            for="{{ id_womens }}"
+            class="block-swatch {% if current_gender == 'women' %}is-selected{% endif %}"
+          >
+            {{- label_womens -}}
+          </label>
+        </div>
+      </fieldset>
+    </gender-toggle>
+  {%- endif -%}
+{%- endif -%}

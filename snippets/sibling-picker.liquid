@@ -25,6 +25,34 @@ fetches the new product via Section Rendering API without a full page reload.
   -%}
 
   <sibling-picker class="variant-picker" section-id="{{ section.id }}" form-id="{{ product_form_id }}"{% if context == 'quick_buy' %} context="quick_buy"{% endif %}>
+    <script type="application/json" data-sibling-availability>
+      {
+        "managedOptionName": {{ option_name | json }},
+        "siblings": [
+          {%- for sibling in sibling_collection.products -%}
+            {
+              "handle": {{ sibling.handle | json }},
+              "optionNames": [
+                {%- for opt in sibling.options_with_values -%}
+                  {{ opt.name | json }}{%- unless forloop.last -%},{%- endunless -%}
+                {%- endfor -%}
+              ],
+              "variants": [
+                {%- for v in sibling.variants -%}
+                  {
+                    "id": {{ v.id }},
+                    "option1": {{ v.option1 | json }},
+                    "option2": {{ v.option2 | json }},
+                    "option3": {{ v.option3 | json }},
+                    "available": {{ v.available }}
+                  }{%- unless forloop.last -%},{%- endunless -%}
+                {%- endfor -%}
+              ]
+            }{%- unless forloop.last -%},{%- endunless -%}
+          {%- endfor -%}
+        ]
+      }
+    </script>
     <fieldset class="variant-picker__option justify-{{ alignment }}">
       <div class="variant-picker__option-info {% if alignment == 'start' %}justify-between{% else %}justify-{{ alignment }}{% endif %}">
         <div class="h-stack gap-2">

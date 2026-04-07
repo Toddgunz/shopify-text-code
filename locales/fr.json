@@ -99,6 +99,10 @@
       "taxes_excluded": "Taxes exclues",
       "shipping_policy_html": "<button aria-controls=\"{{ drawer_id }}\" class=\"link\">Frais d'envoi calculés<\/button> au paiement",
       "size_chart": "Guide des tailles",
+      "sibling_variant_unavailable": "Non disponible pour cette couleur",
+      "gender_toggle_legend": "Genre",
+      "gender_toggle_mens": "Hommes",
+      "gender_toggle_womens": "Femmes",
       "available_colors_count": {
         "one": "{{ count }} couleur",
         "other": "{{ count }} couleurs"

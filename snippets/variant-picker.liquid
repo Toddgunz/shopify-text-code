@@ -13,6 +13,8 @@ Render the variant picker option selectors.
 @param {string} [variant_image_options] - a list of option names for which to use the variant image selector mode
 @param {object} [size_chart_page] - the page to use for the size chart
 @param {string} [alignment] - the content alignment for options (can be "start", "center" or "end")
+@param {object} [sibling_union_collection] - sibling collection metafield; when present with multiple products, union non-color options across siblings
+@param {string} [sibling_managed_option_name] - Shopify option name handled by sibling color picker (excluded from union expansion)
 @param {object} [block]
 @param {object} [section]
 {%- enddoc -%}
@@ -25,6 +27,12 @@ Render the variant picker option selectors.
   if context == 'main_product'
     assign is_main_product = true
   endif
+
+  assign sibling_union_mode = false
+  if sibling_union_collection != blank and sibling_union_collection.products.size > 1 and sibling_managed_option_name != blank
+    assign sibling_union_mode = true
+    assign sibling_managed_option_key = sibling_managed_option_name | downcase | strip
+  endif
 -%}
 
 {%- unless product.has_only_default_variant -%}
@@ -35,7 +43,7 @@ Render the variant picker option selectors.
     <script data-variant type="application/json">
       {{- product.selected_or_first_available_variant | json -}}
     </script>
-    
+
     {%- for option in product.options_with_values -%}
       {% liquid
         assign option_downcase = option.name | downcase
@@ -58,9 +66,75 @@ Render the variant picker option selectors.
         if variant_image_options contains option_downcase
           assign resolved_option_selector_style = 'variant_image'
         endif
+
+        assign option_use_sibling_union = false
+        if sibling_union_mode
+          assign opt_key = option.name | downcase | strip
+          if opt_key != sibling_managed_option_key
+            assign option_use_sibling_union = true
+          endif
+        endif
+
+        assign vp_order_pipe = ''
+        if option_use_sibling_union
+          assign vp_seen = '|'
+          for option_value in option.values
+            assign vn = option_value.name | strip
+            assign mark = '|' | append: vn | append: '|'
+            unless vp_seen contains mark
+              assign vp_order_pipe = vp_order_pipe | append: vn | append: '~~~'
+              assign vp_seen = vp_seen | append: vn | append: '|'
+            endunless
+          endfor
+          for sp in sibling_union_collection.products
+            for sopt in sp.options_with_values
+              if sopt.name == option.name
+                for sib_ov in sopt.values
+                  assign vn = sib_ov.name | strip
+                  assign mark = '|' | append: vn | append: '|'
+                  unless vp_seen contains mark
+                    assign vp_order_pipe = vp_order_pipe | append: vn | append: '~~~'
+                    assign vp_seen = vp_seen | append: vn | append: '|'
+                  endunless
+                endfor
+              endif
+            endfor
+          endfor
+          comment
+            sort_natural still orders 10-16 before 6 (lexicographic). For Size options, walk a canonical US running
+            half-size ladder so 6, 6.5... come before 10. Non-matching labels (e.g. EU sizes) append after, sort_natural.
+          endcomment
+          if size_label_list contains option_downcase
+            assign canonical_running_sizes = '3,3.5,4,4.5,5,5.5,6,6.5,7,7.5,8,8.5,9,9.5,10,10.5,11,11.5,12,12.5,13,13.5,14,14.5,15,16' | split: ','
+            assign size_ordered_pipe = ''
+            for sz in canonical_running_sizes
+              assign sz_mark = '|' | append: sz | append: '|'
+              if vp_seen contains sz_mark
+                assign size_ordered_pipe = size_ordered_pipe | append: sz | append: '~~~'
+              endif
+            endfor
+            assign canonical_lookup = '|'
+            for sz in canonical_running_sizes
+              assign canonical_lookup = canonical_lookup | append: sz | append: '|'
+            endfor
+            assign union_names_temp = vp_order_pipe | split: '~~~' | compact
+            assign extra_pipe = ''
+            for name in union_names_temp
+              assign name_mark = '|' | append: name | append: '|'
+              unless canonical_lookup contains name_mark
+                assign extra_pipe = extra_pipe | append: name | append: '~~~'
+              endunless
+            endfor
+            assign extras_sorted = extra_pipe | split: '~~~' | compact | sort_natural
+            assign base_ordered = size_ordered_pipe | split: '~~~' | compact
+            assign vp_sorted_union_names = base_ordered | concat: extras_sorted
+          else
+            assign vp_sorted_union_names = vp_order_pipe | split: '~~~' | compact | sort_natural
+          endif
+        endif
       %}
 
-      <fieldset class="variant-picker__option justify-{{ alignment }}" data-option-name="{{ option.name | escape }}" {% if size_label_list contains option_downcase %}data-option-role="size"{% endif %}>
+      <fieldset class="variant-picker__option justify-{{ alignment }}">
         <div class="variant-picker__option-info {% if alignment == 'start' %}justify-between{% else %}justify-{{ alignment }}{% endif %}">
           <div class="h-stack gap-2">
             <legend class="text-subdued">{{ option.name }}:</legend>
@@ -98,31 +172,79 @@ Render the variant picker option selectors.
 
               <div class="popover__value-list">
                 {%- assign param_name = form_id | append: '-option' | append: option.position -%}
-                
-                {%- for option_value in option.values -%}
-                  {%- capture option_markup -%}
-                    <span {% if option_value.available == false %}class="line-through"{% endif %}>{{- option_value -}}</span>
-                  {%- endcapture -%}
 
-                  {%- if hide_sold_out_variants == false or option_value.available or option_value.selected -%}
-                    {%- if is_main_product and option_value.product_url != blank -%}
-                      <div class="popover__value-option">
-                        {%- if option_value.selected -%}
-                          <input class="sr-only" type="radio" id="{{ param_name }}-{{ option_value.id }}" form="{{ form_id }}" name="{{ param_name }}" data-option-position="{{ option.position }}" value="{{ option_value.id }}" checked>
+                {%- if option_use_sibling_union -%}
+                  {%- assign expanded_option_names = vp_sorted_union_names -%}
+                  {%- for value_name in expanded_option_names -%}
+                    {%- if value_name == blank -%}{%- continue -%}{%- endif -%}
+                    {%- liquid
+                      assign matched_option_value = false
+                      for option_value in option.values
+                        assign ovn = option_value.name | strip
+                        if ovn == value_name
+                          assign matched_option_value = option_value
+                          break
+                        endif
+                      endfor
+                    -%}
+                    {%- if matched_option_value != false -%}
+                      {%- assign option_value = matched_option_value -%}
+                      {%- capture option_markup -%}
+                        <span {% if option_value.available == false %}class="line-through"{% endif %}>{{- option_value -}}</span>
+                      {%- endcapture -%}
+
+                      {%- if hide_sold_out_variants == false or option_value.available or option_value.selected -%}
+                        {%- if is_main_product and option_value.product_url != blank -%}
+                          <div class="popover__value-option">
+                            {%- if option_value.selected -%}
+                              <input class="sr-only" type="radio" id="{{ param_name }}-{{ option_value.id }}" form="{{ form_id }}" name="{{ param_name }}" data-option-position="{{ option.position }}" value="{{ option_value.id }}" checked>
+                            {%- endif -%}
+
+                            <a href="{{ option_value.variant.url | default: option_value.product_url }}" class="h-stack justify-between gap-2 link-faded-reverse">
+                              {{- option_markup -}}
+                            </a>
+                          </div>
+                        {%- else -%}
+                          <label class="popover__value-option" for="{{ param_name }}-{{ option_value.id }}">
+                            <input class="sr-only" type="radio" id="{{ param_name }}-{{ option_value.id }}" form="{{ form_id }}" name="{{ param_name }}" {% if option_value.product_url != blank %}data-product-url="{{ option_value.product_url | escape }}"{% endif %} data-option-position="{{ option.position }}" value="{{ option_value.id }}" {% if option_value.selected %}checked{% endif %}>
+                            {{- option_markup -}}
+                          </label>
                         {%- endif -%}
-
-                        <a href="{{ option_value.variant.url | default: option_value.product_url }}" class="h-stack justify-between gap-2 link-faded-reverse">
-                          {{- option_markup -}}
-                        </a>
-                      </div>
+                      {%- endif -%}
                     {%- else -%}
-                      <label class="popover__value-option" for="{{ param_name }}-{{ option_value.id }}">
-                        <input class="sr-only" type="radio" id="{{ param_name }}-{{ option_value.id }}" form="{{ form_id }}" name="{{ param_name }}" {% if option_value.product_url != blank %}data-product-url="{{ option_value.product_url | escape }}"{% endif %} data-option-position="{{ option.position }}" value="{{ option_value.id }}" {% if option_value.selected %}checked{% endif %}>
-                        {{- option_markup -}}
-                      </label>
+                      {%- assign ghost_aria_suffix = 'product.general.sibling_variant_unavailable' | t -%}
+                      {%- assign ghost_aria = value_name | append: ': ' | append: ghost_aria_suffix -%}
+                      <div class="popover__value-option" role="presentation">
+                        <span class="line-through text-subdued" aria-label="{{ ghost_aria | escape }}">{{ value_name | escape }}</span>
+                      </div>
                     {%- endif -%}
-                  {%- endif -%}
-                {%- endfor -%}
+                  {%- endfor -%}
+                {%- else -%}
+                  {%- for option_value in option.values -%}
+                    {%- capture option_markup -%}
+                      <span {% if option_value.available == false %}class="line-through"{% endif %}>{{- option_value -}}</span>
+                    {%- endcapture -%}
+
+                    {%- if hide_sold_out_variants == false or option_value.available or option_value.selected -%}
+                      {%- if is_main_product and option_value.product_url != blank -%}
+                        <div class="popover__value-option">
+                          {%- if option_value.selected -%}
+                            <input class="sr-only" type="radio" id="{{ param_name }}-{{ option_value.id }}" form="{{ form_id }}" name="{{ param_name }}" data-option-position="{{ option.position }}" value="{{ option_value.id }}" checked>
+                          {%- endif -%}
+
+                          <a href="{{ option_value.variant.url | default: option_value.product_url }}" class="h-stack justify-between gap-2 link-faded-reverse">
+                            {{- option_markup -}}
+                          </a>
+                        </div>
+                      {%- else -%}
+                        <label class="popover__value-option" for="{{ param_name }}-{{ option_value.id }}">
+                          <input class="sr-only" type="radio" id="{{ param_name }}-{{ option_value.id }}" form="{{ form_id }}" name="{{ param_name }}" {% if option_value.product_url != blank %}data-product-url="{{ option_value.product_url | escape }}"{% endif %} data-option-position="{{ option.position }}" value="{{ option_value.id }}" {% if option_value.selected %}checked{% endif %}>
+                          {{- option_markup -}}
+                        </label>
+                      {%- endif -%}
+                    {%- endif -%}
+                  {%- endfor -%}
+                {%- endif -%}
               </div>
             </x-popover>
           </div>
@@ -153,22 +275,67 @@ Render the variant picker option selectors.
           -%}
 
           <div class="variant-picker__option-values {{ list_classes }}">
-            {% liquid
+            {%- liquid
               assign name = form_id | append: '-option' | append: option.position
+            -%}
 
-              for option_value in option.values
-                case resolved_option_selector_style
-                  when 'variant_image'
-                    render 'option-value', type: 'thumbnail', form: form_id, option_value: option_value, param_name: name, option_position: option.position, size: swatch_selector_size, hide_if_disabled: hide_sold_out_variants, reload_page_for_combined_products: is_main_product, id_prefix: forloop.index
-                  when 'swatch'
-                    render 'option-value', type: 'swatch', form: form_id, option_value: option_value, param_name: name, option_position: option.position, size: swatch_selector_size, hide_if_disabled: hide_sold_out_variants, reload_page_for_combined_products: is_main_product, id_prefix: forloop.index
-                  when 'block'
-                    render 'option-value', type: 'block', form: form_id, option_value: option_value, param_name: name, option_position: option.position, style: block_selector_style, hide_if_disabled: hide_sold_out_variants, reload_page_for_combined_products: is_main_product, id_prefix: forloop.index
-                  when 'block_swatch'
-                    render 'option-value', type: 'block', form: form_id, option_value: option_value, param_name: name, option_position: option.position, style: block_selector_style, show_swatch: true, hide_if_disabled: hide_sold_out_variants, reload_page_for_combined_products: is_main_product, id_prefix: forloop.index
-                endcase
-              endfor
-            %}
+            {%- if option_use_sibling_union -%}
+              {%- assign expanded_option_names_grid = vp_sorted_union_names -%}
+              {%- for value_name in expanded_option_names_grid -%}
+                {%- if value_name == blank -%}{%- continue -%}{%- endif -%}
+                {%- liquid
+                  assign matched_option_value = false
+                  for option_value in option.values
+                    assign ovn = option_value.name | strip
+                    if ovn == value_name
+                      assign matched_option_value = option_value
+                      break
+                    endif
+                  endfor
+                -%}
+                {%- if matched_option_value != false -%}
+                  {%- assign option_value = matched_option_value -%}
+                  {%- if hide_sold_out_variants == false or option_value.available or option_value.selected -%}
+                    {%- case resolved_option_selector_style -%}
+                      {%- when 'variant_image' -%}
+                        {%- render 'option-value', type: 'thumbnail', form: form_id, option_value: option_value, param_name: name, option_position: option.position, size: swatch_selector_size, hide_if_disabled: hide_sold_out_variants, reload_page_for_combined_products: is_main_product, id_prefix: forloop.index -%}
+                      {%- when 'swatch' -%}
+                        {%- render 'option-value', type: 'swatch', form: form_id, option_value: option_value, param_name: name, option_position: option.position, size: swatch_selector_size, hide_if_disabled: hide_sold_out_variants, reload_page_for_combined_products: is_main_product, id_prefix: forloop.index -%}
+                      {%- when 'block' -%}
+                        {%- render 'option-value', type: 'block', form: form_id, option_value: option_value, param_name: name, option_position: option.position, style: block_selector_style, hide_if_disabled: hide_sold_out_variants, reload_page_for_combined_products: is_main_product, id_prefix: forloop.index -%}
+                      {%- when 'block_swatch' -%}
+                        {%- render 'option-value', type: 'block', form: form_id, option_value: option_value, param_name: name, option_position: option.position, style: block_selector_style, show_swatch: true, hide_if_disabled: hide_sold_out_variants, reload_page_for_combined_products: is_main_product, id_prefix: forloop.index -%}
+                    {%- endcase -%}
+                  {%- endif -%}
+                {%- else -%}
+                  {%- case resolved_option_selector_style -%}
+                    {%- when 'variant_image' -%}
+                      {%- render 'variant-picker-sibling-ghost', label: value_name, selector_style: 'variant_image', swatch_selector_size: swatch_selector_size, block_selector_style: block_selector_style -%}
+                    {%- when 'swatch' -%}
+                      {%- render 'variant-picker-sibling-ghost', label: value_name, selector_style: 'swatch', swatch_selector_size: swatch_selector_size, block_selector_style: block_selector_style -%}
+                    {%- when 'block' -%}
+                      {%- render 'variant-picker-sibling-ghost', label: value_name, selector_style: 'block', swatch_selector_size: swatch_selector_size, block_selector_style: block_selector_style -%}
+                    {%- when 'block_swatch' -%}
+                      {%- render 'variant-picker-sibling-ghost', label: value_name, selector_style: 'block_swatch', swatch_selector_size: swatch_selector_size, block_selector_style: block_selector_style -%}
+                  {%- endcase -%}
+                {%- endif -%}
+              {%- endfor -%}
+            {%- else -%}
+              {% liquid
+                for option_value in option.values
+                  case resolved_option_selector_style
+                    when 'variant_image'
+                      render 'option-value', type: 'thumbnail', form: form_id, option_value: option_value, param_name: name, option_position: option.position, size: swatch_selector_size, hide_if_disabled: hide_sold_out_variants, reload_page_for_combined_products: is_main_product, id_prefix: forloop.index
+                    when 'swatch'
+                      render 'option-value', type: 'swatch', form: form_id, option_value: option_value, param_name: name, option_position: option.position, size: swatch_selector_size, hide_if_disabled: hide_sold_out_variants, reload_page_for_combined_products: is_main_product, id_prefix: forloop.index
+                    when 'block'
+                      render 'option-value', type: 'block', form: form_id, option_value: option_value, param_name: name, option_position: option.position, style: block_selector_style, hide_if_disabled: hide_sold_out_variants, reload_page_for_combined_products: is_main_product, id_prefix: forloop.index
+                    when 'block_swatch'
+                      render 'option-value', type: 'block', form: form_id, option_value: option_value, param_name: name, option_position: option.position, style: block_selector_style, show_swatch: true, hide_if_disabled: hide_sold_out_variants, reload_page_for_combined_products: is_main_product, id_prefix: forloop.index
+                  endcase
+                endfor
+              %}
+            {%- endif -%}
           </div>
         {%- endif -%}
       </fieldset>

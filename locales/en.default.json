@@ -99,6 +99,10 @@
       "taxes_excluded": "Tax excluded.",
       "shipping_policy_html": "<button aria-controls=\"{{ drawer_id }}\" class=\"link\">Shipping calculated<\/button> at checkout",
       "size_chart": "Size chart",
+      "sibling_variant_unavailable": "Not available for this color",
+      "gender_toggle_legend": "Gender",
+      "gender_toggle_mens": "Men’s",
+      "gender_toggle_womens": "Women’s",
       "variant_in_cart_count": {
         "one": "{{ count }} in cart",
         "other": "{{ count }} in cart"

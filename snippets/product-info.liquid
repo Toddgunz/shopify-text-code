@@ -212,6 +212,24 @@ no need to manually pass the section as it is globally available)
               {%- endif -%}
             {%- endif -%}
 
+          {%- when 'gender_toggle' -%}
+            {%- if product != blank -%}
+              {%- liquid
+                assign gender_alignment = block.settings.alignment
+                if gender_alignment == blank
+                  assign gender_alignment = alignment
+                endif
+              -%}
+              {%- render 'gender-toggle',
+                  product: product,
+                  product_form_id: product_form_id,
+                  block: block,
+                  alignment: gender_alignment,
+                  context: context,
+                  section: section
+              -%}
+            {%- endif -%}
+
           {%- when 'sibling_color_picker' -%}
             {%- if product != blank -%}
               {%- render 'sibling-picker',
@@ -227,7 +245,19 @@ no need to manually pass the section as it is globally available)
 
           {%- when 'variant_picker' -%}
             {%- if product != blank -%}
-              {%- render 'unisex-size-toggle', product: product -%}
+              {%- liquid
+                assign variant_picker_sibling_collection = nil
+                assign variant_picker_sibling_option_label = ''
+                for b in filtered_blocks
+                  if b.type == 'sibling_color_picker'
+                    assign sc = product.metafields.custom.sibling_collection.value
+                    if sc != blank and sc.products.size > 1
+                      assign variant_picker_sibling_collection = sc
+                      assign variant_picker_sibling_option_label = b.settings.option_name | default: 'Color'
+                    endif
+                  endif
+                endfor
+              -%}
               {%- render 'variant-picker',
                   product: product,
                   form_id: product_form_id,
@@ -240,7 +270,9 @@ no need to manually pass the section as it is globally available)
                   swatch_selector_size: block.settings.swatch_selector_size,
                   block_selector_style: block.settings.block_selector_style,
                   variant_image_options: block.settings.variant_image_options,
-                  size_chart_page: block.settings.size_chart_page 
+                  size_chart_page: block.settings.size_chart_page,
+                  sibling_union_collection: variant_picker_sibling_collection,
+                  sibling_managed_option_name: variant_picker_sibling_option_label
                 -%}
             {%- endif -%}
 
