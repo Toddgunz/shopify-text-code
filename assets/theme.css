@@ -2693,6 +2693,47 @@ model-media model-viewer, model-media .shopify-model-viewer-ui {
   display: none;
 }
 
+/* Sibling color swatches: show unavailable combinations crossed out instead of hiding */
+sibling-picker :disabled + .thumbnail-swatch {
+  display: block;
+}
+
+sibling-picker :disabled + .block-swatch {
+  display: flex;
+}
+
+/*
+  Unavailable sibling thumbnails: match .block-swatch.is-disabled (variant picker).
+  Use ::before for the strike so ::after stays free for [data-tooltip]:after.
+*/
+sibling-picker .thumbnail-swatch.is-disabled {
+  color: rgb(var(--text-color) / .35);
+  border-color: rgb(var(--border-color) / .35);
+  text-decoration: line-through;
+  -webkit-text-decoration-color: rgb(var(--text-color) / .5);
+  text-decoration-color: rgb(var(--text-color) / .5);
+}
+
+/* Horizontal strike on image, matching the block-swatch line-through color. */
+sibling-picker .thumbnail-swatch.is-disabled::before {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  z-index: 1;
+  margin: 0 auto;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1.5px;
+  transform: translateY(-50%);
+  background: rgb(178 178 178);
+  border-radius: 1px;
+}
+
+sibling-picker .thumbnail-swatch.is-disabled img {
+  opacity: 0.35;
+}
+
 .thumbnail-swatch > img {
   height: 100%;
 }
@@ -7594,6 +7635,10 @@ product-rerender {
   align-items: baseline;
   column-gap: 2rem;
   display: flex;
+}
+
+gender-toggle legend {
+  padding: 0;
 }
 
 @media (scripting: none) {

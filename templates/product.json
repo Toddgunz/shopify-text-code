@@ -46,6 +46,15 @@
           "type": "separator",
           "settings": {}
         },
+        "gender_toggle": {
+          "type": "gender_toggle",
+          "settings": {
+            "legend": "",
+            "label_mens": "",
+            "label_womens": "",
+            "alignment": "start"
+          }
+        },
         "sibling_color_picker": {
           "type": "sibling_color_picker",
           "settings": {
@@ -99,6 +108,7 @@
         "rating",
         "payment_terms",
         "separator",
+        "gender_toggle",
         "sibling_color_picker",
         "variant_picker",
         "buy_buttons",

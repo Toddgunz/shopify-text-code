@@ -357,6 +357,55 @@
       "name": "t:sections.main_product.blocks.separator.name"
     },
     {
+      "type": "gender_toggle",
+      "name": "t:sections.main_product.blocks.gender_toggle.name",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "t:sections.main_product.blocks.gender_toggle.instructions"
+        },
+        {
+          "type": "text",
+          "id": "legend",
+          "label": "t:sections.main_product.blocks.gender_toggle.legend_label",
+          "info": "t:sections.main_product.blocks.gender_toggle.legend_info"
+        },
+        {
+          "type": "text",
+          "id": "label_mens",
+          "label": "t:sections.main_product.blocks.gender_toggle.label_mens",
+          "info": "t:sections.main_product.blocks.gender_toggle.label_info"
+        },
+        {
+          "type": "text",
+          "id": "label_womens",
+          "label": "t:sections.main_product.blocks.gender_toggle.label_womens",
+          "info": "t:sections.main_product.blocks.gender_toggle.label_info"
+        },
+        {
+          "type": "select",
+          "id": "alignment",
+          "label": "t:global.position.alignment",
+          "options": [
+            {
+              "value": "start",
+              "label": "t:global.position.left"
+            },
+            {
+              "value": "center",
+              "label": "t:global.position.center"
+            },
+            {
+              "value": "end",
+              "label": "t:global.position.right"
+            }
+          ],
+          "default": "start"
+        }
+      ]
+    },
+    {
       "type": "description",
       "name": "t:sections.main_product.blocks.description.name",
       "limit": 1,

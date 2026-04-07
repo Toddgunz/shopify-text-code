@@ -1414,6 +1414,15 @@
         "separator": {
           "name": "Séparateur"
         },
+        "gender_toggle": {
+          "name": "Sélecteur genre (hommes / femmes)",
+          "instructions": "Nécessite le metafield produit **custom.counterpart_line** (collection) : la ligne de coloris de l’autre genre pour le même modèle. Fait correspondre **custom.product_color** entre les lignes quand c’est possible ; sinon utilise un produit avec le tag **main-color** dans cette collection. Définissez **custom.gender** (texte sur une ligne : ex. men, mens, women, womens) pour indiquer le segment actif.",
+          "legend_label": "Légende",
+          "legend_info": "Laisser vide pour utiliser la traduction par défaut.",
+          "label_mens": "Libellé hommes",
+          "label_womens": "Libellé femmes",
+          "label_info": "Laisser vide pour utiliser la traduction par défaut."
+        },
         "description": {
           "name": "Description",
           "collapse_content": "Fermer le contenu"
