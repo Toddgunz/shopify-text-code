@@ -3939,6 +3939,21 @@ if (!window.customElements.get("variant-picker")) {
 }
 
 // js/custom/sibling-picker.js
+function preservePaymentTermsBlock(previousPaymentTermsBlock, activeSection) {
+  if (!previousPaymentTermsBlock || !activeSection) return;
+  const blockId = previousPaymentTermsBlock.getAttribute("data-block-id");
+  const matchingBlock = activeSection.querySelector(`[data-block-type="payment-terms"][data-block-id="${blockId}"]`);
+  if (!matchingBlock) return;
+  const previousInput = previousPaymentTermsBlock.querySelector('[name="id"]');
+  const matchingInput = matchingBlock.querySelector('[name="id"]');
+  if (previousInput && matchingInput) {
+    previousInput.value = matchingInput.value;
+  }
+  matchingBlock.replaceWith(previousPaymentTermsBlock);
+  if (previousInput && matchingInput) {
+    previousInput.dispatchEvent(new Event("change", { bubbles: true }));
+  }
+}
 var SiblingPicker = class extends HTMLElement {
   connectedCallback() {
     this._abortController = new AbortController();
@@ -4075,6 +4090,7 @@ var SiblingPicker = class extends HTMLElement {
     const sectionElement = this.closest(".shopify-section");
     if (!sectionElement) return;
     const siblingBlock = this.closest("[data-block-type]");
+    const paymentTermsBlock = sectionElement.querySelector('[data-block-type="payment-terms"][data-block-id]');
     this._updateSelectedState(input.value);
     try {
       const sectionParams = {};
@@ -4095,6 +4111,7 @@ var SiblingPicker = class extends HTMLElement {
         sectionElement.innerHTML = html;
         activeSection = sectionElement;
       }
+      preservePaymentTermsBlock(paymentTermsBlock, activeSection);
       if (siblingBlock && !activeSection.querySelector("sibling-picker")) {
         const variantPickerBlock = activeSection.querySelector('[data-block-type="variant-picker"]');
         if (variantPickerBlock) {
@@ -4173,6 +4190,7 @@ var GenderToggle = class extends HTMLElement {
     if (!sectionElement) return;
     const siblingPickerEl = sectionElement.querySelector("sibling-picker");
     const siblingBlock = siblingPickerEl?.closest("[data-block-type]");
+    const paymentTermsBlock = sectionElement.querySelector('[data-block-type="payment-terms"][data-block-id]');
     this._updateSelectedState(input.value);
     try {
       const sectionId = this.getAttribute("section-id");
@@ -4192,6 +4210,7 @@ var GenderToggle = class extends HTMLElement {
         sectionElement.innerHTML = html;
         activeSection = sectionElement;
       }
+      preservePaymentTermsBlock(paymentTermsBlock, activeSection);
       if (siblingBlock && !activeSection.querySelector("sibling-picker")) {
         const variantPickerBlock = activeSection.querySelector('[data-block-type="variant-picker"]');
         if (variantPickerBlock) {
