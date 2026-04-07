@@ -3944,15 +3944,15 @@ function preservePaymentTermsBlock(previousPaymentTermsBlock, activeSection) {
   const blockId = previousPaymentTermsBlock.getAttribute("data-block-id");
   const matchingBlock = activeSection.querySelector(`[data-block-type="payment-terms"][data-block-id="${blockId}"]`);
   if (!matchingBlock) return;
+  const previousTermsText = previousPaymentTermsBlock.textContent.replace(/\s+/g, " ").trim();
+  const matchingTermsText = matchingBlock.textContent.replace(/\s+/g, " ").trim();
+  if (previousTermsText !== matchingTermsText) return;
   const previousInput = previousPaymentTermsBlock.querySelector('[name="id"]');
   const matchingInput = matchingBlock.querySelector('[name="id"]');
   if (previousInput && matchingInput) {
     previousInput.value = matchingInput.value;
   }
   matchingBlock.replaceWith(previousPaymentTermsBlock);
-  if (previousInput && matchingInput) {
-    previousInput.dispatchEvent(new Event("change", { bubbles: true }));
-  }
 }
 var SiblingPicker = class extends HTMLElement {
   connectedCallback() {
