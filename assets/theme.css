@@ -7605,6 +7605,14 @@ product-rerender {
   --product-block-item-margin: 1.25rem;
 }
 
+.product-short-blurb {
+  font-size: var(--text-sm);
+}
+
+.product-short-blurb :where(h1, h2, h3, h4, h5, h6) {
+  margin-block-end: .5rem;
+}
+
 @media screen and (min-width: 1000px) {
   .product-info {
     max-width: calc(32rem + var(--product-block-item-margin) * 2);

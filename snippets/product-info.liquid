@@ -161,6 +161,15 @@ no need to manually pass the section as it is globally available)
               {%- endif -%}
             {%- endif -%}
 
+          {%- when 'short_blurb' -%}
+            {%- assign short_blurb = product.metafields.custom.short_blurb | metafield_tag -%}
+
+            {%- if short_blurb != blank -%}
+              <div class="product-short-blurb prose prose-justify-{{ alignment }}">
+                {{- short_blurb -}}
+              </div>
+            {%- endif -%}
+
           {%- when 'payment_terms' -%}
             {%- if product != blank -%}
               <payment-terms class="payment-terms">
