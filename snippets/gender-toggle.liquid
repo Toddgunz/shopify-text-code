@@ -107,7 +107,9 @@
       {% endif %}
     >
       <fieldset class="variant-picker__option justify-{{ alignment }}">
-        <legend class="text-subdued">{{ legend_text | escape }}</legend>
+        <div class="variant-picker__option-info {% if alignment == 'start' %}justify-between{% else %}justify-{{ alignment }}{% endif %}">
+          <legend class="text-subdued">{{ legend_text | escape }}</legend>
+        </div>
 
         <div class="variant-picker__option-values h-stack gap-1 wrap">
           {%- capture id_mens -%}gender-{{ product_form_id }}-mens{%- endcapture -%}

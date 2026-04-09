@@ -44,6 +44,17 @@ Render the variant picker option selectors.
       {{- product.selected_or_first_available_variant | json -}}
     </script>
 
+    <script data-product-variants type="application/json">
+      [
+        {%- for variant in product.variants -%}
+          {
+            "available": {{ variant.available | json }},
+            "options": {{ variant.options | json }}
+          }{% unless forloop.last %},{% endunless %}
+        {%- endfor -%}
+      ]
+    </script>
+
     {%- for option in product.options_with_values -%}
       {% liquid
         assign option_downcase = option.name | downcase
@@ -127,6 +138,30 @@ Render the variant picker option selectors.
             endfor
             assign extras_sorted = extra_pipe | split: '~~~' | compact | sort_natural
             assign base_ordered = size_ordered_pipe | split: '~~~' | compact
+            assign vp_sorted_union_names = base_ordered | concat: extras_sorted
+          elsif option_downcase == 'width'
+            assign canonical_widths = 'B - Standard,D - Standard,2E - Wide,4E - Extra Wide' | split: ','
+            assign width_ordered_pipe = ''
+            for width in canonical_widths
+              assign width_mark = '|' | append: width | append: '|'
+              if vp_seen contains width_mark
+                assign width_ordered_pipe = width_ordered_pipe | append: width | append: '~~~'
+              endif
+            endfor
+            assign canonical_width_lookup = '|'
+            for width in canonical_widths
+              assign canonical_width_lookup = canonical_width_lookup | append: width | append: '|'
+            endfor
+            assign union_names_temp = vp_order_pipe | split: '~~~' | compact
+            assign extra_pipe = ''
+            for name in union_names_temp
+              assign name_mark = '|' | append: name | append: '|'
+              unless canonical_width_lookup contains name_mark
+                assign extra_pipe = extra_pipe | append: name | append: '~~~'
+              endunless
+            endfor
+            assign extras_sorted = extra_pipe | split: '~~~' | compact | sort_natural
+            assign base_ordered = width_ordered_pipe | split: '~~~' | compact
             assign vp_sorted_union_names = base_ordered | concat: extras_sorted
           else
             assign vp_sorted_union_names = vp_order_pipe | split: '~~~' | compact | sort_natural
