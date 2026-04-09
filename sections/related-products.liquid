@@ -30,7 +30,7 @@
               {%- if section.settings.stack_products -%}
                 (max-width: 699px) calc(100vw / {{ section.settings.products_per_row_mobile }} - 40px), (max-width: 999px) calc(50vw - 64px), calc((100vw - 96px) / {{ section.settings.products_per_row_desktop }})
               {%- else -%}
-                (max-width: 699px) 74vw, (max-width: 999px) 50vw, calc((100vw - 96px) / {{ section.settings.products_per_row_desktop }})
+                (max-width: 699px) min(62vw, 320px), (max-width: 999px) 42vw, calc((100vw - 96px) / {{ section.settings.products_per_row_desktop }})
               {%- endif -%}
             {%- endcapture -%}
 

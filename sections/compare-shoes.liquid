@@ -1,0 +1,139 @@
+<style>
+  #shopify-section-{{ section.id }} {
+    --compare-card-grid: 1fr;
+  }
+
+  #shopify-section-{{ section.id }} .compare-shoes__panel {
+    border: 1px solid rgb(var(--text-color) / 0.12);
+    border-radius: var(--container-gutter);
+    padding: clamp(1.25rem, 3vw, 2rem);
+  }
+
+  #shopify-section-{{ section.id }} .compare-shoes__search {
+    border: 1px dashed rgb(var(--text-color) / 0.2);
+    border-radius: 999px;
+    min-height: 3rem;
+    padding-inline: 1rem;
+    display: flex;
+    align-items: center;
+  }
+
+  #shopify-section-{{ section.id }} .compare-shoes__grid {
+    display: grid;
+    grid-template-columns: var(--compare-card-grid);
+    gap: 1rem;
+  }
+
+  #shopify-section-{{ section.id }} .compare-shoes__card {
+    border: 1px solid rgb(var(--text-color) / 0.12);
+    border-radius: min(18px, var(--container-gutter));
+    padding: 1rem;
+  }
+
+  @media screen and (min-width: 700px) {
+    #shopify-section-{{ section.id }} {
+      --compare-card-grid: repeat(3, minmax(0, 1fr));
+    }
+  }
+</style>
+
+<div class="color-scheme color-scheme--{{ section.settings.color_scheme.id }}">
+  <div class="container section-spacing">
+    <div class="section-stack">
+      {%- if section.settings.subheading != blank or section.settings.title != blank or section.settings.content != blank -%}
+        <div class="prose">
+          {%- render 'subheading', content: section.settings.subheading -%}
+          {%- render 'heading', content: section.settings.title, style: section.settings.heading_size, html_tag: 'h2', balance_text: true -%}
+
+          {%- if section.settings.content != blank -%}
+            <div class="max-w-2xl">
+              {{- section.settings.content -}}
+            </div>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+
+      <div class="compare-shoes__panel v-stack gap-6">
+        <div class="compare-shoes__search text-subdued">
+          Search footwear to compare
+        </div>
+
+        <div class="compare-shoes__grid">
+          <div class="compare-shoes__card v-stack gap-2">
+            <p class="subheading text-subdued">Current shoe</p>
+            <p class="h6">{{ product.title }}</p>
+            {%- if product.metafields.custom.short_blurb != blank -%}
+              <div class="prose prose-sm text-subdued">
+                {{- product.metafields.custom.short_blurb | metafield_tag -}}
+              </div>
+            {%- endif -%}
+          </div>
+
+          <div class="compare-shoes__card v-stack gap-2 text-subdued">
+            <p class="subheading">Comparison slot</p>
+            <p>Select another footwear product</p>
+          </div>
+
+          <div class="compare-shoes__card v-stack gap-2 text-subdued">
+            <p class="subheading">Comparison slot</p>
+            <p>Select another footwear product</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Compare shoes",
+  "class": "shopify-section--compare-shoes",
+  "tag": "section",
+  "enabled_on": {
+    "templates": ["product"]
+  },
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:global.colors.scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "subheading",
+      "label": "t:global.text.subheading",
+      "default": "Coming next"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "title",
+      "label": "t:global.text.heading",
+      "default": "Compare with similar shoes"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "t:global.text.heading_size",
+      "options": [
+        { "value": "h2", "label": "X-Large" },
+        { "value": "h3", "label": "Large" },
+        { "value": "h4", "label": "Medium" },
+        { "value": "h5", "label": "Small" }
+      ],
+      "default": "h3"
+    },
+    {
+      "type": "richtext",
+      "id": "content",
+      "label": "Content",
+      "default": "<p>We'll turn this into a footwear-only compare tool powered by shoe metafields like weight, foam, drop, stack height, and surface.</p>"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Compare shoes"
+    }
+  ]
+}
+{% endschema %}
