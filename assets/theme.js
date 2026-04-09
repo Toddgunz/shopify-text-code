@@ -3331,6 +3331,8 @@ if (!window.customElements.get("product-form")) {
 var BuyButtons = class extends HTMLElement {
   connectedCallback() {
   }
+  disconnectedCallback() {
+  }
 };
 if (!window.customElements.get("buy-buttons")) {
   window.customElements.define("buy-buttons", BuyButtons);
@@ -3937,6 +3939,63 @@ var VariantPicker = _VariantPicker;
 if (!window.customElements.get("variant-picker")) {
   window.customElements.define("variant-picker", VariantPicker);
 }
+function updateVariantCombinationAvailability(variantPicker) {
+  const dataScript = variantPicker?.querySelector("script[data-product-variants]");
+  if (!variantPicker || !dataScript?.textContent) return;
+  let variants;
+  try {
+    variants = JSON.parse(dataScript.textContent);
+  } catch {
+    return;
+  }
+  if (!Array.isArray(variants) || variants.length === 0) return;
+  const form = document.forms[variantPicker.getAttribute("form-id")];
+  if (!form) return;
+  const selectedInputs = Array.from(form.elements).filter((item) => item.matches("input[data-option-position]:checked"));
+  if (selectedInputs.length === 0) return;
+  const selectedByPosition = new Map(selectedInputs.map((input) => [Number(input.getAttribute("data-option-position")), input]));
+  const allInputs = Array.from(form.elements).filter((item) => item.matches("input[data-option-position]"));
+  for (const input of allInputs) {
+    const position = Number(input.getAttribute("data-option-position"));
+    const candidateOptions = [];
+    for (let index = 1; index <= selectedByPosition.size; index++) {
+      const selectedInput = index === position ? input : selectedByPosition.get(index);
+      const selectedLabel = selectedInput?.nextElementSibling?.textContent?.replace(/\s+/g, " ").trim();
+      candidateOptions.push(selectedLabel || "");
+    }
+    const hasAvailableVariant = variants.some((variant) => {
+      if (!variant.available || !Array.isArray(variant.options)) return false;
+      return candidateOptions.every((option, index) => variant.options[index] === option);
+    });
+    const label = input.nextElementSibling;
+    if (label) label.classList.toggle("is-disabled", !hasAvailableVariant);
+  }
+}
+function scheduleVariantCombinationAvailabilityUpdate(variantPicker) {
+  if (!variantPicker) return;
+  queueMicrotask(() => updateVariantCombinationAvailability(variantPicker));
+  requestAnimationFrame(() => updateVariantCombinationAvailability(variantPicker));
+  setTimeout(() => updateVariantCombinationAvailability(variantPicker), 0);
+}
+document.addEventListener("change", (event) => {
+  if (!event.target.matches("input[data-option-position]")) return;
+  const formId = event.target.getAttribute("form");
+  const variantPicker = formId ? document.querySelector(`variant-picker[form-id="${CSS.escape(formId)}"]`) : event.target.closest("variant-picker");
+  scheduleVariantCombinationAvailabilityUpdate(variantPicker);
+});
+document.addEventListener("variant:change", (event) => {
+  const formId = event.detail?.formId;
+  const variantPicker = formId ? document.querySelector(`variant-picker[form-id="${CSS.escape(formId)}"]`) : null;
+  scheduleVariantCombinationAvailabilityUpdate(variantPicker);
+});
+document.addEventListener("product:rerender", (event) => {
+  const formId = event.target?.id;
+  const variantPicker = formId ? document.querySelector(`variant-picker[form-id="${CSS.escape(formId)}"]`) : null;
+  scheduleVariantCombinationAvailabilityUpdate(variantPicker);
+});
+queueMicrotask(() => {
+  document.querySelectorAll("variant-picker").forEach(scheduleVariantCombinationAvailabilityUpdate);
+});
 
 // js/custom/sibling-picker.js
 function preservePaymentTermsBlock(previousPaymentTermsBlock, activeSection) {
@@ -4097,12 +4156,19 @@ var SiblingPicker = class extends HTMLElement {
       const sectionId = this.getAttribute("section-id");
       if (sectionId) sectionParams.section_id = sectionId;
       const fetchUrl = this._buildProductFetchUrl(productUrl, input.value, sectionParams);
-      const html = await fetch(fetchUrl).then((r) => r.text());
+      const response = await fetch(fetchUrl);
+      if (!response.ok) {
+        throw new Error(`SiblingPicker: failed to fetch product section (${response.status})`);
+      }
+      const html = await response.text();
       const tempContainer = document.createElement("div");
       tempContainer.innerHTML = html;
       const variantScript = tempContainer.querySelector("script[data-variant]");
       const variant = variantScript ? JSON.parse(variantScript.textContent) : null;
       const newSectionWrapper = tempContainer.querySelector(".shopify-section");
+      if (!newSectionWrapper && !tempContainer.querySelector("variant-picker")) {
+        throw new Error("SiblingPicker: product section response did not include a product section");
+      }
       let activeSection;
       if (newSectionWrapper) {
         sectionElement.replaceWith(newSectionWrapper);
@@ -4122,6 +4188,8 @@ var SiblingPicker = class extends HTMLElement {
         }
       }
       Shopify?.PaymentButton?.init();
+      const nextVariantPicker = activeSection.querySelector("variant-picker");
+      scheduleVariantCombinationAvailabilityUpdate(nextVariantPicker);
       const newUrl = new URL(productUrl, window.location.origin);
       if (variant?.id) {
         newUrl.searchParams.set("variant", variant.id);
@@ -4129,6 +4197,7 @@ var SiblingPicker = class extends HTMLElement {
       window.history.pushState({ path: newUrl.toString() }, "", newUrl.toString());
       queueMicrotask(() => siblingBlock._updateAvailability?.());
     } catch (error) {
+      console.error("SiblingPicker: failed to swap product section", error);
       window.location.href = this._buildProductFetchUrl(productUrl, input.value, {});
     }
   }
@@ -4196,12 +4265,19 @@ var GenderToggle = class extends HTMLElement {
       const sectionId = this.getAttribute("section-id");
       const fetchUrl = new URL(productUrl, window.location.origin);
       if (sectionId) fetchUrl.searchParams.set("section_id", sectionId);
-      const html = await fetch(fetchUrl.toString()).then((r) => r.text());
+      const response = await fetch(fetchUrl.toString());
+      if (!response.ok) {
+        throw new Error(`GenderToggle: failed to fetch product section (${response.status})`);
+      }
+      const html = await response.text();
       const tempContainer = document.createElement("div");
       tempContainer.innerHTML = html;
       const variantScript = tempContainer.querySelector("script[data-variant]");
       const variant = variantScript ? JSON.parse(variantScript.textContent) : null;
       const newSectionWrapper = tempContainer.querySelector(".shopify-section");
+      if (!newSectionWrapper && !tempContainer.querySelector("variant-picker")) {
+        throw new Error("GenderToggle: product section response did not include a product section");
+      }
       let activeSection;
       if (newSectionWrapper) {
         sectionElement.replaceWith(newSectionWrapper);
@@ -4221,6 +4297,8 @@ var GenderToggle = class extends HTMLElement {
         }
       }
       Shopify?.PaymentButton?.init();
+      const nextVariantPicker = activeSection.querySelector("variant-picker");
+      scheduleVariantCombinationAvailabilityUpdate(nextVariantPicker);
       const newUrl = new URL(productUrl, window.location.origin);
       if (variant?.id) {
         newUrl.searchParams.set("variant", variant.id);
@@ -4228,6 +4306,7 @@ var GenderToggle = class extends HTMLElement {
       window.history.pushState({ path: newUrl.toString() }, "", newUrl.toString());
       queueMicrotask(() => siblingBlock?._updateAvailability?.());
     } catch (error) {
+      console.error("GenderToggle: failed to swap product section", error);
       window.location.href = productUrl;
     }
   }

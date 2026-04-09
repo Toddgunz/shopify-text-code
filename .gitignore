@@ -1,0 +1,7 @@
+.env
+.env.*
+!.env.example
+
+# Local Shopify/Admin API secrets
+shopify-token*.txt
+*.local
