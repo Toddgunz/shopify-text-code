@@ -1,0 +1,171 @@
+{%- assign story_content = section.settings.content -%}
+{%- assign story_image = section.settings.image -%}
+{%- assign story_mobile_image = section.settings.mobile_image -%}
+
+{%- if section.settings.use_product_description and product.description != blank -%}
+  {%- assign story_content = product.description | remove_first: '<meta charset="utf-8">' -%}
+{%- endif -%}
+
+{%- if product != blank -%}
+  {%- if product.metafields.custom.story_image != blank -%}
+    {%- assign story_image = product.metafields.custom.story_image.value -%}
+  {%- endif -%}
+
+  {%- if product.metafields.custom.story_image_mobile != blank -%}
+    {%- assign story_mobile_image = product.metafields.custom.story_image_mobile.value -%}
+  {%- endif -%}
+{%- endif -%}
+
+{%- if story_mobile_image == blank -%}
+  {%- assign story_mobile_image = story_image -%}
+{%- endif -%}
+
+{%- if section.settings.title != blank or story_content != blank or story_image != blank -%}
+  <style>
+    #shopify-section-{{ section.id }} .footwear-story__media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    #shopify-section-{{ section.id }} + .shopify-section {
+      --section-enable-padding-collapsing: 0;
+    }
+  </style>
+
+  <div class="color-scheme color-scheme--{{ section.settings.color_scheme.id }}">
+    <div class="container section-spacing">
+      {%- if story_image != blank -%}
+        <div class="section-split {% if section.settings.image_position == 'end' %}section-split--reverse{% endif %}">
+          <div class="section-split__column section-split__column--image {% unless section.settings.add_image_spacing %}section-split__column--flushed{% endunless %}">
+            <div class="footwear-story__media">
+              {%- if story_mobile_image != blank -%}
+                <picture>
+                  <source media="(max-width: 699px)" srcset="{{ story_mobile_image | image_url: width: 900 }}">
+                  {{- story_image | image_url: width: story_image.width | image_tag: widths: '400,600,800,1000,1200,1400,1600,1800,2000', sizes: '(max-width: 699px) 100vw, 50vw', loading: 'lazy' -}}
+                </picture>
+              {%- else -%}
+                {{- story_image | image_url: width: story_image.width | image_tag: widths: '400,600,800,1000,1200,1400,1600,1800,2000', sizes: '(max-width: 699px) 100vw, 50vw', loading: 'lazy' -}}
+              {%- endif -%}
+            </div>
+          </div>
+
+          <div class="section-split__column align-self-center">
+            <div class="section-stack max-w-md">
+              {%- if section.settings.subheading != blank -%}
+                {%- render 'subheading', content: section.settings.subheading -%}
+              {%- endif -%}
+
+              {%- if section.settings.title != blank -%}
+                {%- render 'heading', content: section.settings.title, style: section.settings.heading_size, html_tag: 'h2', balance_text: true -%}
+              {%- endif -%}
+
+              {%- if story_content != blank -%}
+                <div class="prose">
+                  {{- story_content -}}
+                </div>
+              {%- endif -%}
+            </div>
+          </div>
+        </div>
+      {%- else -%}
+        <div class="section-stack max-w-3xl">
+          {%- if section.settings.subheading != blank -%}
+            {%- render 'subheading', content: section.settings.subheading -%}
+          {%- endif -%}
+
+          {%- if section.settings.title != blank -%}
+            {%- render 'heading', content: section.settings.title, style: section.settings.heading_size, html_tag: 'h2', balance_text: true -%}
+          {%- endif -%}
+
+          {%- if story_content != blank -%}
+            <div class="prose">
+              {{- story_content -}}
+            </div>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Footwear story",
+  "class": "shopify-section--footwear-story",
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "subheading",
+      "label": "Subheading"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "title",
+      "label": "Heading",
+      "default": "Description"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "Heading size",
+      "options": [
+        { "value": "h2", "label": "X-Large" },
+        { "value": "h3", "label": "Large" },
+        { "value": "h4", "label": "Medium" },
+        { "value": "h5", "label": "Small" }
+      ],
+      "default": "h3"
+    },
+    {
+      "type": "checkbox",
+      "id": "use_product_description",
+      "label": "Use product description",
+      "default": true
+    },
+    {
+      "type": "richtext",
+      "id": "content",
+      "label": "Fallback content",
+      "default": "<p>Add richer below-the-fold storytelling here, or leave this blank and use the product description above.</p>"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Fallback desktop image"
+    },
+    {
+      "type": "image_picker",
+      "id": "mobile_image",
+      "label": "Fallback mobile image"
+    },
+    {
+      "type": "select",
+      "id": "image_position",
+      "label": "Image position",
+      "options": [
+        { "value": "start", "label": "Left" },
+        { "value": "end", "label": "Right" }
+      ],
+      "default": "end"
+    },
+    {
+      "type": "checkbox",
+      "id": "add_image_spacing",
+      "label": "Add image spacing",
+      "default": false
+    }
+  ],
+  "presets": [
+    {
+      "name": "Footwear story"
+    }
+  ]
+}
+{% endschema %}

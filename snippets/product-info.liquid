@@ -491,6 +491,15 @@ no need to manually pass the section as it is globally available)
             {%- liquid
               assign accordion_title = block.settings.title | default: block.settings.page.title
               assign accordion_content = block.settings.page.content | default: block.settings.content
+              assign accordion_title_key = accordion_title | strip | downcase
+
+              if product != blank
+                if accordion_title_key == 'product details' and product.metafields.custom.product_details != blank
+                  assign accordion_content = product.metafields.custom.product_details | metafield_tag
+                elsif accordion_title_key == 'tech specs' and product.metafields.custom.tech_specs != blank
+                  assign accordion_content = product.metafields.custom.tech_specs | metafield_tag
+                endif
+              endif
 
               if accordion_title != blank and accordion_content != blank
                 if block.settings.custom_icon != blank
