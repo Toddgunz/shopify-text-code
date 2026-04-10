@@ -209,10 +209,9 @@
       "type": "compare-shoes",
       "settings": {
         "color_scheme": "",
-        "subheading": "Coming next",
-        "title": "Compare with similar shoes",
-        "heading_size": "h3",
-        "content": "<p>We'll turn this into a footwear-only compare tool powered by shoe metafields like weight, foam, drop, stack height, and surface.</p>"
+        "subheading": "",
+        "title": "Compare shoes",
+        "heading_size": "h3"
       }
     }
   },

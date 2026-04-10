@@ -1,97 +1,605 @@
+{%- liquid
+  assign weight     = product.metafields.custom.weight_oz.value
+  assign stack_heel = product.metafields.custom.stack_heel_mm.value
+  assign stack_fore = product.metafields.custom.stack_forefoot_mm.value
+  assign drop       = product.metafields.custom.drop_mm.value
+  assign foam       = product.metafields.custom.foam_composition.value
+  assign surface    = product.metafields.custom.surface.value
+  assign cushion    = product.metafields.custom.cushion_level.value | plus: 0
+-%}
+
 <style>
   #shopify-section-{{ section.id }} {
-    --compare-card-grid: 1fr;
+    --compare-col-min: 340px;
+    --compare-col-max: 460px;
+    --compare-bar-filled: rgb(var(--text-color) / 0.85);
+    --compare-bar-empty: rgb(var(--text-color) / 0.1);
   }
 
-  #shopify-section-{{ section.id }} .compare-shoes__panel {
-    border: 1px solid rgb(var(--text-color) / 0.12);
-    border-radius: var(--container-gutter);
-    padding: clamp(1.25rem, 3vw, 2rem);
-  }
-
-  #shopify-section-{{ section.id }} .compare-shoes__search {
-    border: 1px dashed rgb(var(--text-color) / 0.2);
-    border-radius: 999px;
-    min-height: 3rem;
-    padding-inline: 1rem;
-    display: flex;
-    align-items: center;
-  }
-
-  #shopify-section-{{ section.id }} .compare-shoes__grid {
-    display: grid;
-    grid-template-columns: var(--compare-card-grid);
-    gap: 1rem;
-  }
-
-  #shopify-section-{{ section.id }} .compare-shoes__card {
-    border: 1px solid rgb(var(--text-color) / 0.12);
-    border-radius: min(18px, var(--container-gutter));
-    padding: 1rem;
+  .compare-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
   }
 
   @media screen and (min-width: 700px) {
-    #shopify-section-{{ section.id }} {
-      --compare-card-grid: repeat(3, minmax(0, 1fr));
+    .compare-table-wrap {
+      max-width: 1290px;
+      margin-inline: auto;
     }
+  }
+
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: auto;
+  }
+
+  .compare-table th,
+  .compare-table td {
+    padding: 0.75rem 0.875rem;
+    vertical-align: middle;
+    text-align: left;
+    border-bottom: 1px solid rgb(var(--text-color) / 0.08);
+    border-left: 1px solid rgb(var(--text-color) / 0.06);
+    font-size: 1rem;
+  }
+
+  .compare-table th:first-child,
+  .compare-table td:first-child {
+    border-left: none;
+  }
+
+  .compare-table tbody tr:last-child th,
+  .compare-table tbody tr:last-child td { border-bottom: none; }
+
+  /* Sticky label column */
+  .compare-table__label-col {
+    width: 1%;
+    white-space: nowrap;
+    position: sticky;
+    left: 0;
+    background: rgb(var(--background));
+    z-index: 2;
+    color: rgb(var(--text-color) / 0.5);
+    font-size: 0.9rem;
+    font-weight: 500;
+    border-right: 2px solid rgb(var(--text-color) / 0.25);
+  }
+
+  .compare-table__shoe-header {
+    border-bottom: 2px solid rgb(var(--text-color) / 0.25) !important;
+  }
+
+  .compare-table thead .compare-table__label-col { z-index: 3; }
+
+  /* Top-left corner cell */
+  .compare-table__corner {
+    background: rgb(var(--background)) !important;
+    vertical-align: bottom;
+    border-right: 2px solid rgb(var(--text-color) / 0.25) !important;
+    border-bottom: 2px solid rgb(var(--text-color) / 0.25) !important;
+  }
+
+  /* Shoe column headers */
+  .compare-table__shoe-header {
+    width: var(--compare-col-min);
+    max-width: var(--compare-col-max);
+    vertical-align: top;
+    padding: 0.875rem;
+    border-bottom: 1px solid rgb(var(--text-color) / 0.08);
+    position: relative;
+    overflow: visible;
+  }
+
+  /* Shoe card */
+  .compare-shoe-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    position: relative;
+  }
+
+  .compare-shoe-card__image {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: contain;
+    border-radius: 8px;
+    background: rgb(var(--text-color) / 0.03);
+    max-height: 140px;
+  }
+
+  @media screen and (min-width: 700px) {
+    .compare-shoe-card__image { max-height: 180px; }
+  }
+
+  .compare-shoe-card__vendor {
+    display: block;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    opacity: 0.45;
+  }
+
+  .compare-shoe-card__title {
+    display: block;
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  .compare-slot__remove {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 1px solid rgb(var(--text-color) / 0.2);
+    background: rgb(var(--background));
+    cursor: pointer;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: inherit;
+    transition: background 0.15s;
+    line-height: 1;
+  }
+
+  .compare-slot__remove:hover { background: rgb(var(--text-color) / 0.08); }
+
+  /* Inline search per slot */
+  .compare-slot-search {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    position: relative;
+    min-height: 80px;
+  }
+
+  .compare-slot-search__input {
+    width: 100%;
+    border: 1px solid rgb(var(--text-color) / 0.25);
+    border-radius: 8px;
+    padding: 0.45rem 0.65rem;
+    font-size: 0.9rem;
+    background: transparent;
+    color: inherit;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .compare-slot-search__input:focus { border-color: rgb(var(--text-color) / 0.55); }
+  .compare-slot-search__input::placeholder { opacity: 0.4; }
+
+  .compare-slot-search__results {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    background: rgb(var(--background));
+    border: 1px solid rgb(var(--text-color) / 0.15);
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgb(0 0 0 / 0.12);
+    z-index: 200;
+    overflow: hidden;
+  }
+
+  .compare-slot-search__results[hidden] { display: none; }
+
+  .compare-result-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.5rem 0.65rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    font-size: 0.9rem;
+    color: inherit;
+    transition: background 0.1s;
+  }
+
+  .compare-result-item:hover { background: rgb(var(--text-color) / 0.05); }
+
+  .compare-result-item img {
+    width: 36px;
+    height: 36px;
+    object-fit: contain;
+    border-radius: 4px;
+    background: rgb(var(--text-color) / 0.04);
+    flex-shrink: 0;
+  }
+
+  .compare-result-item__vendor {
+    display: block;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    opacity: 0.45;
+  }
+
+  .compare-result-item__title {
+    display: block;
+    font-weight: 500;
+    line-height: 1.3;
+  }
+
+  .compare-slot-search__empty {
+    padding: 0.75rem;
+    font-size: 0.78rem;
+    opacity: 0.45;
+    text-align: center;
+  }
+
+  /* Empty slot */
+  .compare-slot-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 80px;
+  }
+
+  .compare-slot-empty__btn {
+    border: 1px dashed rgb(var(--text-color) / 0.25);
+    border-radius: 8px;
+    padding: 0.5rem 0.8rem;
+    font-size: 0.9rem;
+    background: none;
+    cursor: pointer;
+    color: inherit;
+    opacity: 0.6;
+    transition: opacity 0.15s, border-color 0.15s;
+  }
+
+  .compare-slot-empty__btn:hover {
+    opacity: 1;
+    border-color: rgb(var(--text-color) / 0.5);
+  }
+
+  /* Loading */
+  .compare-loading {
+    font-size: 0.78rem;
+    opacity: 0.4;
+    min-height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Cushion bars */
+  .cushion-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 3px;
+    height: 20px;
+    min-width: 52px;
+  }
+
+  .cushion-bar {
+    flex: 1;
+    border-radius: 2px;
+    background: var(--compare-bar-empty);
+  }
+
+  .cushion-bar:nth-child(1) { height: 8px; }
+  .cushion-bar:nth-child(2) { height: 11px; }
+  .cushion-bar:nth-child(3) { height: 14px; }
+  .cushion-bar:nth-child(4) { height: 17px; }
+  .cushion-bar:nth-child(5) { height: 20px; }
+
+  .cushion-bar--filled { background: var(--compare-bar-filled); }
+
+  /* Scroll hint - mobile only */
+  .compare-scroll-hint {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.72rem;
+    opacity: 0.45;
+    margin-bottom: 0.5rem;
+  }
+
+  @media screen and (min-width: 700px) {
+    .compare-scroll-hint { display: none; }
+  }
+
+  /* Alternating row tint */
+  .compare-table tbody tr:nth-child(even) td,
+  .compare-table tbody tr:nth-child(even) th {
+    background: rgb(var(--text-color) / 0.02);
+  }
+
+  .compare-table tbody tr:nth-child(even) .compare-table__label-col {
+    background: color-mix(in srgb, rgb(var(--background)) 97%, rgb(var(--text-color)) 3%);
   }
 </style>
 
 <div class="color-scheme color-scheme--{{ section.settings.color_scheme.id }}">
   <div class="container section-spacing">
     <div class="section-stack">
-      {%- if section.settings.subheading != blank or section.settings.title != blank or section.settings.content != blank -%}
-        <div class="prose">
-          {%- render 'subheading', content: section.settings.subheading -%}
-          {%- render 'heading', content: section.settings.title, style: section.settings.heading_size, html_tag: 'h2', balance_text: true -%}
 
-          {%- if section.settings.content != blank -%}
-            <div class="max-w-2xl">
-              {{- section.settings.content -}}
-            </div>
-          {%- endif -%}
+      {%- if section.settings.title != blank -%}
+        <div class="prose text-center">
+          {%- render 'heading', content: section.settings.title, style: section.settings.heading_size, html_tag: 'h2', balance_text: true -%}
         </div>
       {%- endif -%}
 
-      <div class="compare-shoes__panel v-stack gap-6">
-        <div class="compare-shoes__search text-subdued">
-          Search footwear to compare
-        </div>
+      <p class="compare-scroll-hint">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Swipe to compare
+      </p>
 
-        <div class="compare-shoes__grid">
-          <div class="compare-shoes__card v-stack gap-2">
-            <p class="subheading text-subdued">Current shoe</p>
-            <p class="h6">{{ product.title }}</p>
-            {%- if product.metafields.custom.short_blurb != blank -%}
-              <div class="prose prose-sm text-subdued">
-                {{- product.metafields.custom.short_blurb | metafield_tag -}}
-              </div>
-            {%- endif -%}
-          </div>
+      <div class="compare-table-wrap">
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th class="compare-table__label-col compare-table__corner" scope="col"></th>
 
-          <div class="compare-shoes__card v-stack gap-2 text-subdued">
-            <p class="subheading">Comparison slot</p>
-            <p>Select another footwear product</p>
-          </div>
+              <!-- Current shoe -->
+              <th class="compare-table__shoe-header" scope="col">
+                <div class="compare-shoe-card">
+                  {%- if product.featured_image -%}
+                    {{- product.featured_image | image_url: width: 480 | image_tag:
+                        class: 'compare-shoe-card__image',
+                        alt: product.featured_image.alt | default: product.title,
+                        loading: 'lazy',
+                        widths: '240,480',
+                        sizes: '240px'
+                    -}}
+                  {%- endif -%}
+                  <span class="compare-shoe-card__vendor">{{ product.vendor }}</span>
+                  <span class="compare-shoe-card__title">{{ product.title }}</span>
+                </div>
+              </th>
 
-          <div class="compare-shoes__card v-stack gap-2 text-subdued">
-            <p class="subheading">Comparison slot</p>
-            <p>Select another footwear product</p>
-          </div>
-        </div>
+              <!-- Slot 0 -->
+              <th class="compare-table__shoe-header" scope="col" id="compare-slot-header-0">
+                <div class="compare-slot-empty" id="compare-slot-empty-0">
+                  <button class="compare-slot-empty__btn" type="button" onclick="compareToolOpenSearch(0)">+ Add shoe</button>
+                </div>
+                <div class="compare-slot-search" id="compare-slot-search-0" hidden>
+                  <input type="search" class="compare-slot-search__input" placeholder="Search shoes..." autocomplete="off" id="compare-slot-input-0" oninput="compareToolOnInput(0, this.value)">
+                  <div class="compare-slot-search__results" id="compare-slot-results-0" hidden></div>
+                </div>
+                <div class="compare-shoe-card" id="compare-slot-card-0" hidden></div>
+              </th>
+
+              <!-- Slot 1 -->
+              <th class="compare-table__shoe-header" scope="col" id="compare-slot-header-1">
+                <div class="compare-slot-empty" id="compare-slot-empty-1">
+                  <button class="compare-slot-empty__btn" type="button" onclick="compareToolOpenSearch(1)">+ Add shoe</button>
+                </div>
+                <div class="compare-slot-search" id="compare-slot-search-1" hidden>
+                  <input type="search" class="compare-slot-search__input" placeholder="Search shoes..." autocomplete="off" id="compare-slot-input-1" oninput="compareToolOnInput(1, this.value)">
+                  <div class="compare-slot-search__results" id="compare-slot-results-1" hidden></div>
+                </div>
+                <div class="compare-shoe-card" id="compare-slot-card-1" hidden></div>
+              </th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr>
+              <th class="compare-table__label-col" scope="row">Weight</th>
+              <td>{% if weight != blank %}{{ weight }} oz{% else %}-{% endif %}</td>
+              <td id="compare-cell-0-weight">-</td>
+              <td id="compare-cell-1-weight">-</td>
+            </tr>
+            <tr>
+              <th class="compare-table__label-col" scope="row">Heel</th>
+              <td>{% if stack_heel != blank %}{{ stack_heel }} mm{% else %}-{% endif %}</td>
+              <td id="compare-cell-0-stack_heel">-</td>
+              <td id="compare-cell-1-stack_heel">-</td>
+            </tr>
+            <tr>
+              <th class="compare-table__label-col" scope="row">Forefoot</th>
+              <td>{% if stack_fore != blank %}{{ stack_fore }} mm{% else %}-{% endif %}</td>
+              <td id="compare-cell-0-stack_forefoot">-</td>
+              <td id="compare-cell-1-stack_forefoot">-</td>
+            </tr>
+            <tr>
+              <th class="compare-table__label-col" scope="row">Drop</th>
+              <td>{% if drop != blank %}{{ drop }} mm{% else %}-{% endif %}</td>
+              <td id="compare-cell-0-drop">-</td>
+              <td id="compare-cell-1-drop">-</td>
+            </tr>
+            <tr>
+              <th class="compare-table__label-col" scope="row">Foam</th>
+              <td>{% if foam != blank %}{{ foam }}{% else %}-{% endif %}</td>
+              <td id="compare-cell-0-foam">-</td>
+              <td id="compare-cell-1-foam">-</td>
+            </tr>
+            <tr>
+              <th class="compare-table__label-col" scope="row">Surface</th>
+              <td>{% if surface != blank %}{{ surface }}{% else %}-{% endif %}</td>
+              <td id="compare-cell-0-surface">-</td>
+              <td id="compare-cell-1-surface">-</td>
+            </tr>
+            <tr>
+              <th class="compare-table__label-col" scope="row">Cushion</th>
+              <td>
+                <div class="cushion-bars" aria-label="{{ cushion }} out of 5">
+                  {%- for i in (1..5) -%}
+                    <span class="cushion-bar{% if i <= cushion %} cushion-bar--filled{% endif %}"></span>
+                  {%- endfor -%}
+                </div>
+              </td>
+              <td id="compare-cell-0-cushion">
+                <div class="cushion-bars">
+                  <span class="cushion-bar"></span><span class="cushion-bar"></span><span class="cushion-bar"></span><span class="cushion-bar"></span><span class="cushion-bar"></span>
+                </div>
+              </td>
+              <td id="compare-cell-1-cushion">
+                <div class="cushion-bars">
+                  <span class="cushion-bar"></span><span class="cushion-bar"></span><span class="cushion-bar"></span><span class="cushion-bar"></span><span class="cushion-bar"></span>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
+
     </div>
   </div>
 </div>
+
+<script>
+(function () {
+  var timers = [null, null];
+
+  function esc(str) {
+    return String(str || '').replace(/[&<>"']/g, function(c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  function renderBars(level) {
+    var n = parseInt(level) || 0;
+    var html = '<div class="cushion-bars" aria-label="' + n + ' out of 5">';
+    for (var i = 0; i < 5; i++) {
+      html += '<span class="cushion-bar' + (i < n ? ' cushion-bar--filled' : '') + '"></span>';
+    }
+    return html + '</div>';
+  }
+
+  window.compareToolOpenSearch = function(slot) {
+    document.getElementById('compare-slot-empty-' + slot).hidden  = true;
+    document.getElementById('compare-slot-search-' + slot).hidden = false;
+    document.getElementById('compare-slot-input-' + slot).focus();
+  };
+
+  window.compareToolOnInput = function(slot, value) {
+    clearTimeout(timers[slot]);
+    var q = value.trim();
+    var results = document.getElementById('compare-slot-results-' + slot);
+    if (q.length < 2) { results.hidden = true; return; }
+    timers[slot] = setTimeout(function() { fetchSuggestions(slot, q); }, 280);
+  };
+
+  function fetchSuggestions(slot, q) {
+    var root = (window.Shopify && window.Shopify.routes && window.Shopify.routes.root) || '/';
+    var url = root + 'search/suggest?q=' + encodeURIComponent(q)
+      + '&section_id=compare-search-results'
+      + '&resources[type]=product'
+      + '&resources[limit]=8';
+
+    fetch(url)
+      .then(function(r) { return r.text(); })
+      .then(function(text) {
+        var match = text.match(/<div[^>]*class="shopify-section"[^>]*>([\s\S]*?)<\/div>/);
+        var json = match ? match[1].trim() : text.trim();
+        // Strip any leading/trailing HTML tags if section wrapper is present
+        json = json.replace(/^<[^>]+>/, '').replace(/<\/[^>]+>$/, '').trim();
+        var products;
+        try { products = JSON.parse(json); } catch(e) { products = []; }
+        var mainOnly = products.filter(function(p) { return p.is_main; });
+        renderResults(slot, (mainOnly.length > 0 ? mainOnly : products).slice(0, 6));
+      })
+      .catch(function(err) { console.error('[compare] search error', err); });
+  }
+
+  function renderResults(slot, products) {
+    var el = document.getElementById('compare-slot-results-' + slot);
+    if (!products.length) {
+      el.innerHTML = '<p class="compare-slot-search__empty">No results found</p>';
+    } else {
+      el.innerHTML = products.map(function(p) {
+        var imgTag = p.image ? '<img src="' + esc(p.image) + '" alt="" width="36" height="36" loading="lazy">' : '';
+        return '<button class="compare-result-item" type="button" data-handle="' + esc(p.handle) + '">'
+          + imgTag
+          + '<span>'
+          + '<span class="compare-result-item__vendor">' + esc(p.vendor || '') + '</span>'
+          + '<span class="compare-result-item__title">' + esc(p.title) + '</span>'
+          + '</span>'
+          + '</button>';
+      }).join('');
+      el.querySelectorAll('[data-handle]').forEach(function(btn) {
+        btn.addEventListener('click', function() { selectProduct(slot, btn.dataset.handle); });
+      });
+    }
+    el.hidden = false;
+  }
+
+  function selectProduct(slot, handle) {
+    document.getElementById('compare-slot-results-' + slot).hidden = true;
+    document.getElementById('compare-slot-search-' + slot).hidden  = true;
+    document.getElementById('compare-slot-card-' + slot).hidden    = false;
+    document.getElementById('compare-slot-card-' + slot).innerHTML = '<div class="compare-loading">Loading...</div>';
+    clearMetricCells(slot);
+
+    fetch('/products/' + handle + '?view=compare-data')
+      .then(function(r) { return r.json(); })
+      .then(function(d) { populateSlot(slot, d); })
+      .catch(function(err) { console.error('[compare] load error', err); resetSlot(slot); });
+  }
+
+  function populateSlot(slot, d) {
+    var card = document.getElementById('compare-slot-card-' + slot);
+    var img = d.image ? '<img src="' + esc(d.image) + '" alt="' + esc(d.image_alt || d.title) + '" class="compare-shoe-card__image" loading="lazy">' : '';
+    card.innerHTML = img
+      + '<span class="compare-shoe-card__vendor">' + esc(d.vendor || '') + '</span>'
+      + '<span class="compare-shoe-card__title">' + esc(d.title || '') + '</span>'
+      + '<button class="compare-slot__remove" type="button" onclick="compareToolReset(' + slot + ')" aria-label="Remove">&times;</button>';
+
+    var set = function(key, val) {
+      var el = document.getElementById('compare-cell-' + slot + '-' + key);
+      if (!el) return;
+      if (key === 'cushion') { el.innerHTML = renderBars(val); }
+      else { el.textContent = val || '-'; }
+    };
+
+    set('weight',        d.weight_oz         ? d.weight_oz + ' oz'         : null);
+    set('stack_heel',    d.stack_heel_mm     ? d.stack_heel_mm + ' mm'     : null);
+    set('stack_forefoot',d.stack_forefoot_mm ? d.stack_forefoot_mm + ' mm' : null);
+    set('drop',          d.drop_mm           ? d.drop_mm + ' mm'           : null);
+    set('foam',          d.foam_composition  || null);
+    set('surface',       d.surface           || null);
+    set('cushion',       d.cushion_level);
+  }
+
+  function clearMetricCells(slot) {
+    ['weight', 'stack_heel', 'stack_forefoot', 'drop', 'foam', 'surface'].forEach(function(key) {
+      var el = document.getElementById('compare-cell-' + slot + '-' + key);
+      if (el) el.textContent = '-';
+    });
+    var c = document.getElementById('compare-cell-' + slot + '-cushion');
+    if (c) c.innerHTML = renderBars(0);
+  }
+
+  function resetSlot(slot) {
+    document.getElementById('compare-slot-card-' + slot).hidden   = true;
+    document.getElementById('compare-slot-search-' + slot).hidden = true;
+    document.getElementById('compare-slot-empty-' + slot).hidden  = false;
+    document.getElementById('compare-slot-input-' + slot).value   = '';
+    clearMetricCells(slot);
+  }
+
+  window.compareToolReset = function(slot) { resetSlot(slot); };
+
+  document.addEventListener('click', function(e) {
+    [0, 1].forEach(function(slot) {
+      var search = document.getElementById('compare-slot-search-' + slot);
+      if (search && !search.contains(e.target)) {
+        var results = document.getElementById('compare-slot-results-' + slot);
+        if (results) results.hidden = true;
+      }
+    });
+  });
+})();
+</script>
 
 {% schema %}
 {
   "name": "Compare shoes",
   "class": "shopify-section--compare-shoes",
   "tag": "section",
-  "enabled_on": {
-    "templates": ["product"]
-  },
+  "enabled_on": { "templates": ["product"] },
   "settings": [
     {
       "type": "color_scheme",
@@ -101,15 +609,9 @@
     },
     {
       "type": "inline_richtext",
-      "id": "subheading",
-      "label": "t:global.text.subheading",
-      "default": "Coming next"
-    },
-    {
-      "type": "inline_richtext",
       "id": "title",
       "label": "t:global.text.heading",
-      "default": "Compare with similar shoes"
+      "default": "Compare shoes"
     },
     {
       "type": "select",
@@ -122,18 +624,8 @@
         { "value": "h5", "label": "Small" }
       ],
       "default": "h3"
-    },
-    {
-      "type": "richtext",
-      "id": "content",
-      "label": "Content",
-      "default": "<p>We'll turn this into a footwear-only compare tool powered by shoe metafields like weight, foam, drop, stack height, and surface.</p>"
     }
   ],
-  "presets": [
-    {
-      "name": "Compare shoes"
-    }
-  ]
+  "presets": [{ "name": "Compare shoes" }]
 }
 {% endschema %}

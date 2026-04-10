@@ -1,0 +1,22 @@
+{%- layout none -%}
+{%- assign p = product -%}
+{%- if p.featured_image -%}
+  {%- assign img_url = p.featured_image | image_url: width: 480 -%}
+{%- else -%}
+  {%- assign img_url = '' -%}
+{%- endif -%}
+{
+  "title": {{ p.title | json }},
+  "handle": {{ p.handle | json }},
+  "vendor": {{ p.vendor | json }},
+  "color": {{ p.metafields.custom.product_color.value | json }},
+  "image": {{ img_url | json }},
+  "image_alt": {{ p.featured_image.alt | default: p.title | json }},
+  "weight_oz": {{ p.metafields.custom.weight_oz.value | json }},
+  "stack_heel_mm": {{ p.metafields.custom.stack_heel_mm.value | json }},
+  "stack_forefoot_mm": {{ p.metafields.custom.stack_forefoot_mm.value | json }},
+  "drop_mm": {{ p.metafields.custom.drop_mm.value | json }},
+  "foam_composition": {{ p.metafields.custom.foam_composition.value | json }},
+  "surface": {{ p.metafields.custom.surface.value | json }},
+  "cushion_level": {{ p.metafields.custom.cushion_level.value | json }}
+}

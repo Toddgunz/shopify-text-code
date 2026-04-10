@@ -1,0 +1,19 @@
+{%- layout none -%}
+{%- if predictive_search.performed -%}
+  {%- assign results = predictive_search.resources.products -%}
+  [
+    {%- for p in results limit: 8 -%}
+      {%- assign is_main = false -%}
+      {%- if p.tags contains 'main-color' -%}{%- assign is_main = true -%}{%- endif -%}
+      {
+        "handle": {{ p.handle | json }},
+        "title": {{ p.title | json }},
+        "vendor": {{ p.vendor | json }},
+        "is_main": {{ is_main }},
+        "image": {{ p.featured_image | image_url: width: 120 | json }}
+      }{%- unless forloop.last -%},{%- endunless -%}
+    {%- endfor -%}
+  ]
+{%- else -%}
+  []
+{%- endif -%}
