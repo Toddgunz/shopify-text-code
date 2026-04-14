@@ -20,6 +20,12 @@
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: thin;
+    cursor: grab;
+  }
+
+  .compare-table-wrap.is-dragging {
+    cursor: grabbing;
+    user-select: none;
   }
 
   @media screen and (min-width: 700px) {
@@ -92,6 +98,15 @@
     overflow: visible;
   }
 
+  /* Mobile: no horizontal padding on header cells so image fills edge to edge */
+  @media screen and (max-width: 699px) {
+    .compare-table__shoe-header {
+      padding-left: 0;
+      padding-right: 0;
+      padding-top: 0;
+    }
+  }
+
   /* Shoe card */
   .compare-shoe-card {
     display: flex;
@@ -100,13 +115,26 @@
     position: relative;
   }
 
+  @media screen and (max-width: 699px) {
+    .compare-shoe-card {
+      padding-bottom: 0.5rem;
+    }
+  }
+
   .compare-shoe-card__image {
     width: 100%;
     aspect-ratio: 4 / 3;
     object-fit: contain;
-    border-radius: 8px;
     background: rgb(var(--text-color) / 0.03);
     max-height: 140px;
+  }
+
+  /* On mobile: image fills the cell edge-to-edge, use cover for better fill */
+  @media screen and (max-width: 699px) {
+    .compare-shoe-card__image {
+      object-fit: cover;
+      max-height: 130px;
+    }
   }
 
   @media screen and (min-width: 700px) {
@@ -121,11 +149,26 @@
     opacity: 0.45;
   }
 
+  @media screen and (max-width: 699px) {
+    .compare-shoe-card__vendor {
+      padding: 0 0.75rem;
+    }
+  }
+
   .compare-shoe-card__title {
-    display: block;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
     font-size: 1rem;
     font-weight: 600;
     line-height: 1.3;
+  }
+
+  @media screen and (max-width: 699px) {
+    .compare-shoe-card__title {
+      padding: 0 0.75rem;
+    }
   }
 
   .compare-slot__remove {
@@ -134,7 +177,6 @@
     right: 0;
     width: 22px;
     height: 22px;
-    border-radius: 50%;
     border: 1px solid rgb(var(--text-color) / 0.2);
     background: rgb(var(--background));
     cursor: pointer;
@@ -156,12 +198,16 @@
     gap: 0.4rem;
     position: relative;
     min-height: 80px;
+    padding: 0 0.75rem;
+  }
+
+  @media screen and (min-width: 700px) {
+    .compare-slot-search { padding: 0; }
   }
 
   .compare-slot-search__input {
     width: 100%;
     border: 1px solid rgb(var(--text-color) / 0.25);
-    border-radius: 8px;
     padding: 0.45rem 0.65rem;
     font-size: 0.9rem;
     background: transparent;
@@ -180,7 +226,6 @@
     right: 0;
     background: rgb(var(--background));
     border: 1px solid rgb(var(--text-color) / 0.15);
-    border-radius: 10px;
     box-shadow: 0 8px 24px rgb(0 0 0 / 0.12);
     z-index: 200;
     overflow: hidden;
@@ -209,7 +254,6 @@
     width: 36px;
     height: 36px;
     object-fit: contain;
-    border-radius: 4px;
     background: rgb(var(--text-color) / 0.04);
     flex-shrink: 0;
   }
@@ -245,7 +289,6 @@
 
   .compare-slot-empty__btn {
     border: 1px dashed rgb(var(--text-color) / 0.25);
-    border-radius: 8px;
     padding: 0.5rem 0.8rem;
     font-size: 0.9rem;
     background: none;
@@ -335,7 +378,7 @@
         Swipe to compare
       </p>
 
-      <div class="compare-table-wrap">
+      <div class="compare-table-wrap" id="compare-table-wrap">
         <table class="compare-table">
           <thead>
             <tr>
@@ -424,22 +467,18 @@
             <tr>
               <th class="compare-table__label-col" scope="row">Cushion</th>
               <td>
-                <div class="cushion-bars" aria-label="{{ cushion }} out of 5">
-                  {%- for i in (1..5) -%}
-                    <span class="cushion-bar{% if i <= cushion %} cushion-bar--filled{% endif %}"></span>
-                  {%- endfor -%}
-                </div>
+                {%- if product.metafields.custom.cushion_level != blank -%}
+                  <div class="cushion-bars" aria-label="{{ cushion }} out of 5">
+                    {%- for i in (1..5) -%}
+                      <span class="cushion-bar{% if i <= cushion %} cushion-bar--filled{% endif %}"></span>
+                    {%- endfor -%}
+                  </div>
+                {%- else -%}
+                  -
+                {%- endif -%}
               </td>
-              <td id="compare-cell-0-cushion">
-                <div class="cushion-bars">
-                  <span class="cushion-bar"></span><span class="cushion-bar"></span><span class="cushion-bar"></span><span class="cushion-bar"></span><span class="cushion-bar"></span>
-                </div>
-              </td>
-              <td id="compare-cell-1-cushion">
-                <div class="cushion-bars">
-                  <span class="cushion-bar"></span><span class="cushion-bar"></span><span class="cushion-bar"></span><span class="cushion-bar"></span><span class="cushion-bar"></span>
-                </div>
-              </td>
+              <td id="compare-cell-0-cushion">-</td>
+              <td id="compare-cell-1-cushion">-</td>
             </tr>
           </tbody>
         </table>
@@ -453,6 +492,37 @@
 (function () {
   var timers = [null, null];
 
+  // Mouse drag-to-scroll
+  (function() {
+    var wrap = document.getElementById('compare-table-wrap');
+    if (!wrap) return;
+    var isDown = false, startX, scrollLeft, moved;
+    wrap.addEventListener('mousedown', function(e) {
+      if (e.target.closest('button, input, a')) return;
+      isDown = true;
+      moved = false;
+      wrap.classList.add('is-dragging');
+      startX = e.pageX - wrap.getBoundingClientRect().left;
+      scrollLeft = wrap.scrollLeft;
+    });
+    document.addEventListener('mouseup', function() {
+      if (!isDown) return;
+      isDown = false;
+      wrap.classList.remove('is-dragging');
+    });
+    wrap.addEventListener('mousemove', function(e) {
+      if (!isDown) return;
+      e.preventDefault();
+      moved = true;
+      var x = e.pageX - wrap.getBoundingClientRect().left;
+      var walk = (x - startX) * 1.2;
+      wrap.scrollLeft = scrollLeft - walk;
+    });
+    wrap.addEventListener('click', function(e) {
+      if (moved) e.stopPropagation();
+    }, true);
+  })();
+
   function esc(str) {
     return String(str || '').replace(/[&<>"']/g, function(c) {
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
@@ -461,6 +531,7 @@
 
   function renderBars(level) {
     var n = parseInt(level) || 0;
+    if (!n) return '<span>-</span>';
     var html = '<div class="cushion-bars" aria-label="' + n + ' out of 5">';
     for (var i = 0; i < 5; i++) {
       html += '<span class="cushion-bar' + (i < n ? ' cushion-bar--filled' : '') + '"></span>';
@@ -494,7 +565,6 @@
       .then(function(text) {
         var match = text.match(/<div[^>]*class="shopify-section"[^>]*>([\s\S]*?)<\/div>/);
         var json = match ? match[1].trim() : text.trim();
-        // Strip any leading/trailing HTML tags if section wrapper is present
         json = json.replace(/^<[^>]+>/, '').replace(/<\/[^>]+>$/, '').trim();
         var products;
         try { products = JSON.parse(json); } catch(e) { products = []; }
@@ -569,7 +639,7 @@
       if (el) el.textContent = '-';
     });
     var c = document.getElementById('compare-cell-' + slot + '-cushion');
-    if (c) c.innerHTML = renderBars(0);
+    if (c) c.innerHTML = '-';
   }
 
   function resetSlot(slot) {

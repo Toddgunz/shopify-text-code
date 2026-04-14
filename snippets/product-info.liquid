@@ -501,11 +501,16 @@ no need to manually pass the section as it is globally available)
                 endif
               endif
 
+              assign accordion_open = false
+              if accordion_title_key == 'product details'
+                assign accordion_open = true
+              endif
+
               if accordion_title != blank and accordion_content != blank
                 if block.settings.custom_icon != blank
-                  render 'accordion', title: accordion_title, custom_icon: block.settings.custom_icon, content: accordion_content, uppercase_title: block.settings.uppercase_title, prose_content: true, block: block
+                  render 'accordion', title: accordion_title, custom_icon: block.settings.custom_icon, content: accordion_content, uppercase_title: block.settings.uppercase_title, prose_content: true, open: accordion_open, block: block
                 else
-                  render 'accordion', title: accordion_title, icon: block.settings.icon, content: accordion_content, uppercase_title: block.settings.uppercase_title, prose_content: true, block: block
+                  render 'accordion', title: accordion_title, icon: block.settings.icon, content: accordion_content, uppercase_title: block.settings.uppercase_title, prose_content: true, open: accordion_open, block: block
                 endif
               endif
             -%}
