@@ -88,6 +88,7 @@
         "location_2_directions_url": "https://share.google/eb1LZNDM6hjd5BMXb",
         "directions_label": "Directions",
         "customer_service_title": "Information",
+        "subscribe_column_width": 1.5,
         "subscribe_title": "Subscribe",
         "subscribe_content": "<p>Subscribe to product launches, running updates, and things we think are worth your time. Never spammy.</p>",
         "subscribe_button_label": "Subscribe",
