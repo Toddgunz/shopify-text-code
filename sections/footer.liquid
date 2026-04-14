@@ -248,7 +248,7 @@
 
   @media screen and (min-width: 1000px) {
     #shopify-section-{{ section.id }} .footer__columns {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(0, {{ section.settings.subscribe_column_width }}fr);
     }
 
     #shopify-section-{{ section.id }} .footer__column {
@@ -640,6 +640,16 @@
     {
       "type": "header",
       "content": "Subscribe"
+    },
+    {
+      "type": "range",
+      "id": "subscribe_column_width",
+      "min": 1,
+      "max": 4,
+      "step": 0.5,
+      "label": "Subscribe column width",
+      "info": "Relative to the other columns. 1 = equal width, 2 = twice as wide.",
+      "default": 1
     },
     {
       "type": "text",
