@@ -98,12 +98,11 @@
     overflow: visible;
   }
 
-  /* Mobile: no horizontal padding on header cells so image fills edge to edge */
+  /* Mobile: no padding on header cells so image fills edge to edge */
   @media screen and (max-width: 699px) {
-    .compare-table__shoe-header {
-      padding-left: 0;
-      padding-right: 0;
-      padding-top: 0;
+    .compare-table th.compare-table__shoe-header,
+    .compare-table td.compare-table__shoe-header {
+      padding: 0 !important;
     }
   }
 
