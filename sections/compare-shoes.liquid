@@ -90,12 +90,19 @@
   /* Shoe column headers */
   .compare-table__shoe-header {
     width: var(--compare-col-min);
+    min-width: var(--compare-col-min);
     max-width: var(--compare-col-max);
     vertical-align: top;
     padding: 0.875rem;
     border-bottom: 1px solid rgb(var(--text-color) / 0.08);
     position: relative;
     overflow: visible;
+  }
+
+  @media screen and (max-width: 699px) {
+    .compare-table__shoe-header {
+      min-width: 200px;
+    }
   }
 
   /* Mobile: no padding on header cells so image fills edge to edge */
@@ -284,6 +291,7 @@
     align-items: center;
     justify-content: center;
     min-height: 80px;
+    padding: 0.875rem;
   }
 
   .compare-slot-empty__btn {
