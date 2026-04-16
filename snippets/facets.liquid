@@ -15,8 +15,14 @@ Display the facets for a given resource.
 {%- assign color_label_list = 'general.label.color' | t | replace: ', ', ',' | downcase | split: ',' -%}
 {%- capture id_prefix -%}facets-{{ form_id }}{%- endcapture -%}
 
+{%- if request.page_type == 'collection' -%}
+  {%- assign facets_action = collection.url -%}
+{%- else -%}
+  {%- assign facets_action = request.path -%}
+{%- endif -%}
+
 <facets-form {% if update_on_change %}update-on-change{% endif %} section-id="{{ section.id }}">
-  <form id="{{ form_id }}" method="GET" action="{{ request.path }}" class="facets" {% if hash %}scroll-to="{{ hash }}"{% endif %}>
+  <form id="{{ form_id }}" method="GET" action="{{ facets_action }}" class="facets" {% if hash %}scroll-to="{{ hash }}"{% endif %}>
     {%- render 'active-facets', source: collection, hash: hash -%}
 
     {%- comment -%}We always reset to the first page so that when criteria change, the page is restored to the first one{%- endcomment -%}

@@ -232,8 +232,13 @@ on desktop based on the settings
     document.querySelectorAll('[data-search-form]').forEach(function(form) {
       form.addEventListener('submit', function() {
         var input = form.querySelector('input[name="q"]');
-        if (input && input.value.trim() !== '' && input.value.indexOf('tag:main-color') === -1) {
-          input.value = input.value.trim() + ' tag:main-color';
+        if (input && input.value.trim() !== '') {
+          var hidden = document.createElement('input');
+          hidden.type = 'hidden';
+          hidden.name = 'q';
+          hidden.value = input.value.trim() + ' tag:main-color';
+          form.appendChild(hidden);
+          input.removeAttribute('name');
         }
       });
     });
