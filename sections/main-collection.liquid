@@ -118,6 +118,111 @@ on desktop based on the settings
   </facets-drawer>
 {%- endif -%}
 
+{%- comment -%}Check if this collection uses main-color grouping{%- endcomment -%}
+{%- assign collection_uses_main_color = false -%}
+{%- for product in collection.products limit: 12 -%}
+  {%- if product.tags contains 'main-color' -%}
+    {%- assign collection_uses_main_color = true -%}
+    {%- break -%}
+  {%- endif -%}
+{%- endfor -%}
+
+<script>
+(function() {
+  var usesMainColor = {{ collection_uses_main_color }};
+  if (!usesMainColor) return;
+
+  var baseUrl    = '/collections/{{ collection.handle }}';
+  var mcUrl      = baseUrl + '/main-color';
+  var curPath    = window.location.pathname.replace(/\/$/, '');
+  var onMC       = curPath.toLowerCase().indexOf('/main-color') !== -1;
+
+  // Shopify option filter params look like: filter.p.option.Size, filter.p.option.Width
+  function isSizeOrWidth(key) {
+    var k = key.toLowerCase();
+    return k.indexOf('filter') !== -1 && (k.indexOf('size') !== -1 || k.indexOf('width') !== -1);
+  }
+
+  function urlHasSizeFilter(search) {
+    var params = new URLSearchParams(search);
+    var found = false;
+    params.forEach(function(v, k) { if (isSizeOrWidth(k)) found = true; });
+    return found;
+  }
+
+  function formHasSizeFilter(form) {
+    var found = false;
+    form.querySelectorAll('input[type="checkbox"]:checked, input[type="radio"]:checked').forEach(function(el) {
+      if (isSizeOrWidth(el.name)) found = true;
+    });
+    return found;
+  }
+
+  function setFacetActions(sizeActive) {
+    document.querySelectorAll('form.facets').forEach(function(form) {
+      var action = (form.getAttribute('action') || '').replace(/\/main-color\/?$/i, '').replace(/\/$/, '');
+      form.setAttribute('action', sizeActive ? action : action + '/main-color');
+    });
+  }
+
+  // --- Page load: redirect if needed ---
+  var search = window.location.search;
+
+  // On main-color URL but size filter in params → strip /main-color
+  if (onMC && urlHasSizeFilter(search)) {
+    window.location.replace(baseUrl + search);
+    return;
+  }
+
+  // On base URL with no size filter → restore /main-color
+  if (!onMC && curPath === baseUrl && !urlHasSizeFilter(search)) {
+    window.location.replace(mcUrl + search);
+    return;
+  }
+
+  // --- Live filter interaction ---
+
+  // When any facet checkbox changes, update all form actions immediately
+  document.addEventListener('change', function(e) {
+    var form = e.target.closest('form.facets');
+    if (!form) return;
+    setFacetActions(formHasSizeFilter(form));
+  }, true);
+
+  // Belt-and-suspenders: also on submit
+  document.addEventListener('submit', function(e) {
+    var form = e.target;
+    if (!form.classList.contains('facets')) return;
+    setFacetActions(formHasSizeFilter(form));
+  }, true);
+
+  // "Clear all filters" links go to collection.url — intercept and send to /main-color
+  document.addEventListener('click', function(e) {
+    var link = e.target.closest('a[is="facet-link"]');
+    if (!link) return;
+    var href = (link.getAttribute('href') || '').split('#')[0].replace(/\/$/, '');
+    if (href === baseUrl) {
+      e.preventDefault();
+      e.stopPropagation();
+      window.location.href = mcUrl + '#collection';
+    }
+  }, true);
+
+  // Drawer reset button resets inputs → also redirect to main-color
+  document.addEventListener('reset', function(e) {
+    var form = e.target;
+    if (!form.classList.contains('facets')) return;
+    // Wait for inputs to reset, then check
+    setTimeout(function() {
+      if (!formHasSizeFilter(form)) {
+        window.location.href = mcUrl;
+      }
+    }, 0);
+  });
+
+})();
+</script>
+
 {% schema %}
 {
   "name": "t:sections.main_collection.name",
