@@ -12,67 +12,45 @@
   "name": "Header group",
   "sections": {
     "blocks_nJFVk9": {
-      "type": "_blocks",
+      "type": "fade-announcement-bar",
       "blocks": {
-        "custom_scrolling_announcement_bar_i8Ffe4": {
-          "type": "custom-scrolling-announcement-bar",
+        "message_1": {
+          "type": "message",
           "settings": {
-            "message_1": "Free shipping on orders over $100",
-            "link_1": "shopify://pages/accessories",
-            "message_2": "New arrivals just landed",
-            "link_2": "",
-            "message_3": "Bandit Spring 2026 Drop 2",
-            "link_3": "",
-            "message_4": "",
-            "link_4": "",
-            "message_5": "",
-            "link_5": "",
-            "separator": "|",
-            "scroll_speed": 75,
-            "mobile_scroll_speed": 45,
-            "pause_on_hover": "paused",
-            "font_size": 16,
-            "font_weight": "400",
-            "text_transform": "capitalize",
-            "letter_spacing": 0.5,
-            "text_spacing": 120,
-            "mobile_text_spacing": 40,
-            "padding_vertical": 10,
-            "mobile_padding_vertical": 8,
-            "background_color": "#1c1c1c",
-            "text_color": "#ffffff",
-            "link_color": "#ffffff",
-            "desktop_width_percent": 100
-          },
-          "blocks": {}
+            "text": "Free shipping on orders over $100",
+            "link": "shopify://pages/accessories"
+          }
         },
-        "section-header": {
-          "type": "_section-header",
-          "disabled": true,
-          "static": true,
+        "message_2": {
+          "type": "message",
           "settings": {
-            "subheading": "",
-            "title": "Header",
-            "content": "<p>Use this content to share information about your store and products.</p>",
-            "button_text": "",
-            "button_link": "",
-            "button_style": "outline",
-            "text_alignment": "left",
-            "heading_size": "h3",
-            "title_icon": "none",
-            "show_scrolling_title": false
-          },
-          "blocks": {}
+            "text": "New arrivals just landed",
+            "link": ""
+          }
+        },
+        "message_3": {
+          "type": "message",
+          "settings": {
+            "text": "Bandit Spring 2026 Drop 2",
+            "link": ""
+          }
         }
       },
       "block_order": [
-        "custom_scrolling_announcement_bar_i8Ffe4"
+        "message_1",
+        "message_2",
+        "message_3"
       ],
-      "name": "Linked scrolling text",
       "settings": {
         "color_scheme": "scheme-2",
-        "add_vertical_spacing": false,
-        "add_horizontal_spacing": false
+        "enable_sticky": false,
+        "show_on_homepage_only": false,
+        "autoplay": true,
+        "cycle_speed": 5,
+        "fade_speed": 800,
+        "pause_on_hover": true,
+        "show_arrows": true,
+        "content_max_width": 20
       }
     },
     "header": {
@@ -315,11 +293,14 @@
       "settings": {
         "color_scheme": "scheme-4",
         "enable_sticky": true,
-        "hide_on_scroll": true,
+        "hide_on_scroll": false,
         "mobile_layout": "logo_with_menu_left_navigation_right",
         "desktop_layout": "logo_left_navigation_inline",
+        "desktop_menu_alignment": "centered",
+        "desktop_split_menu_spacing": 1.5,
+        "desktop_centered_menu_spacing": 2,
         "logo": "{{shop.brand.logo}}",
-        "logo_max_width": 300,
+        "logo_max_width": 100,
         "logo_mobile_max_width": 70,
         "menu": "shoes-apparel-gear",
         "drawer_menu": "",

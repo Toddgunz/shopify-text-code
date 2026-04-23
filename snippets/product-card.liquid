@@ -25,6 +25,7 @@ based on your desired layout (and remove most of the settings associated), and t
 @param {boolean} [force_no_border] - if set to true, no border will be added around cards, even if the global setting ask to
 @param {string} [sizes] - the value of the sizes attribute (because it depends of the context, it should be calculated outside)
 @param {string} [prefix_id] - an optional prefix being used to prefix all the inputs. This is useful when we have to output multiple product card on the same page, to avoid any ID conflicts
+@param {object} [variant] - an optional variant to use for badge, price, url and quick-buy defaults
 @param {string} [quick_buy_context]
 @param {object} [block]
 @param {object} [section]
@@ -39,6 +40,12 @@ based on your desired layout (and remove most of the settings associated), and t
   assign show_quick_buy = show_quick_buy | default: settings.product_card_show_quick_buy, allow_false: true
   assign show_secondary_image = show_secondary_image | default: settings.product_card_show_secondary_image, allow_false: true
   assign show_swatches = show_swatches | default: settings.product_card_show_color_swatches, allow_false: true
+  assign card_variant = variant | default: product.selected_or_first_available_variant
+  assign product_url = product.url
+
+  if variant != blank and card_variant != blank
+    assign product_url = product.url | append: '?variant=' | append: card_variant.id
+  endif
 
   if allow_highlight and product.metafields.custom.highlight_card.value
     assign highlight_card = true
@@ -133,6 +140,7 @@ based on your desired layout (and remove most of the settings associated), and t
     {%- if show_badges and show_badges_along_info != true -%}
       {%- render 'product-badges', 
         product: product,
+        variant: card_variant,
         context: 'card',
         show_custom_badge: true,
         show_sold_out_badge: settings.product_card_show_sold_out_badge,
@@ -144,7 +152,7 @@ based on your desired layout (and remove most of the settings associated), and t
       -%}
     {%- endif -%}
 
-    <a href="{{ product.url }}" class="product-card__media">
+    <a href="{{ product_url }}" class="product-card__media">
       {%- if product.media.size > 0 -%}
         {%- liquid
           assign sizes = sizes | default: '100vw'
@@ -181,7 +189,7 @@ based on your desired layout (and remove most of the settings associated), and t
         {%- if product.variants.size == 1 and product.selling_plan_groups.size == 0 -%}
           <product-form>
             {%- form 'product', product -%}
-              <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+              <input type="hidden" name="id" value="{{ card_variant.id }}">
 
               {%- assign button_label = 'product.general.add_to_cart_button' | t -%}
               {%- render 'button', content: button_label, type: 'submit', stretch: true, background: settings.default_color_scheme.settings.background, text_color: settings.default_color_scheme.settings.text_color, class: 'touch:hidden' -%}
@@ -211,7 +219,7 @@ based on your desired layout (and remove most of the settings associated), and t
             </button-content>
           </button>
 
-          <quick-buy-modal id="{{ quick_buy_id }}" product-url="{{ product.url }}" class="modal modal--quick-buy color-scheme color-scheme--{{ settings.default_color_scheme.id }}">
+          <quick-buy-modal id="{{ quick_buy_id }}" product-url="{{ product_url }}" class="modal modal--quick-buy color-scheme color-scheme--{{ settings.default_color_scheme.id }}">
             {%- comment -%}The content will be dynamically filled in JS{%- endcomment -%}
           </quick-buy-modal>
         {%- endif -%}
@@ -393,6 +401,7 @@ based on your desired layout (and remove most of the settings associated), and t
           {%- if show_badges and show_badges_along_info -%}
             {%- render 'product-badges',
               product: product,
+              variant: card_variant,
               context: 'card',
               show_custom_badge: true,
               show_sold_out_badge: settings.product_card_show_sold_out_badge,
@@ -410,7 +419,7 @@ based on your desired layout (and remove most of the settings associated), and t
                 {%- render 'vendor' with product.vendor, class: vendor_class -%}
               {%- endif -%}
 
-              <a href="{{ product.url }}" class="product-title {{ title_class }} {% if settings.product_card_title_max_lines > 0 %}line-clamp{% else %}{% if show_vendor == false %}trim-start{% endif %}{% endif %}" {% if settings.product_card_title_max_lines > 0 %}style="--line-clamp-count: {{ settings.product_card_title_max_lines }}"{% endif %}>
+              <a href="{{ product_url }}" class="product-title {{ title_class }} {% if settings.product_card_title_max_lines > 0 %}line-clamp{% else %}{% if show_vendor == false %}trim-start{% endif %}{% endif %}" {% if settings.product_card_title_max_lines > 0 %}style="--line-clamp-count: {{ settings.product_card_title_max_lines }}"{% endif %}>
                 {{- product.title -}}
               </a>
             </div>
@@ -422,10 +431,10 @@ based on your desired layout (and remove most of the settings associated), and t
         </div>
 
         {%- if settings.product_card_info_horizontal_alignment == 'split' -%}
-          {%- render 'price-list', product: product, context: 'card' -%}
+          {%- render 'price-list', product: product, variant: variant, context: 'card' -%}
         {%- else -%}
           <div class="v-stack gap-1">
-            {%- render 'price-list', product: product, context: 'card' -%}
+            {%- render 'price-list', product: product, variant: variant, context: 'card' -%}
 
             {%- if show_rating -%}
               {%- render 'product-rating', product: product, show_empty: settings.product_card_show_rating_if_empty, display_mode: settings.product_card_rating_mode -%}

@@ -132,71 +132,31 @@ on desktop based on the settings
   var usesMainColor = {{ collection_uses_main_color }};
   if (!usesMainColor) return;
 
-  var baseUrl    = '/collections/{{ collection.handle }}';
-  var mcUrl      = baseUrl + '/main-color';
-  var curPath    = window.location.pathname.replace(/\/$/, '');
-  var onMC       = curPath.toLowerCase().indexOf('/main-color') !== -1;
+  var baseUrl = {{ collection.url | json }}.replace(/\/$/, '').replace(/\/main-color$/i, '');
+  var groupedUrl = window.location.pathname.replace(/\/$/, '');
 
-  // Shopify option filter params look like: filter.p.option.Size, filter.p.option.Width
-  function isSizeOrWidth(key) {
-    var k = key.toLowerCase();
-    return k.indexOf('filter') !== -1 && (k.indexOf('size') !== -1 || k.indexOf('width') !== -1);
-  }
+  if (groupedUrl.toLowerCase().indexOf('/main-color') === -1) return;
 
-  function urlHasSizeFilter(search) {
-    var params = new URLSearchParams(search);
-    var found = false;
-    params.forEach(function(v, k) { if (isSizeOrWidth(k)) found = true; });
-    return found;
-  }
-
-  function formHasSizeFilter(form) {
-    var found = false;
-    form.querySelectorAll('input[type="checkbox"]:checked, input[type="radio"]:checked').forEach(function(el) {
-      if (isSizeOrWidth(el.name)) found = true;
-    });
-    return found;
-  }
-
-  function setFacetActions(sizeActive) {
+  function setFacetActions() {
     document.querySelectorAll('form.facets').forEach(function(form) {
-      var action = (form.getAttribute('action') || '').replace(/\/main-color\/?$/i, '').replace(/\/$/, '');
-      form.setAttribute('action', sizeActive ? action : action + '/main-color');
+      form.setAttribute('action', groupedUrl);
     });
   }
 
-  // --- Page load: redirect if needed ---
-  var search = window.location.search;
+  setFacetActions();
 
-  // On main-color URL but size filter in params → strip /main-color
-  if (onMC && urlHasSizeFilter(search)) {
-    window.location.replace(baseUrl + search);
-    return;
-  }
-
-  // On base URL with no size filter → restore /main-color
-  if (!onMC && curPath === baseUrl && !urlHasSizeFilter(search)) {
-    window.location.replace(mcUrl + search);
-    return;
-  }
-
-  // --- Live filter interaction ---
-
-  // When any facet checkbox changes, update all form actions immediately
   document.addEventListener('change', function(e) {
     var form = e.target.closest('form.facets');
     if (!form) return;
-    setFacetActions(formHasSizeFilter(form));
+    setFacetActions();
   }, true);
 
-  // Belt-and-suspenders: also on submit
   document.addEventListener('submit', function(e) {
     var form = e.target;
     if (!form.classList.contains('facets')) return;
-    setFacetActions(formHasSizeFilter(form));
+    setFacetActions();
   }, true);
 
-  // "Clear all filters" links go to collection.url — intercept and send to /main-color
   document.addEventListener('click', function(e) {
     var link = e.target.closest('a[is="facet-link"]');
     if (!link) return;
@@ -204,19 +164,15 @@ on desktop based on the settings
     if (href === baseUrl) {
       e.preventDefault();
       e.stopPropagation();
-      window.location.href = mcUrl + '#collection';
+      window.location.href = groupedUrl + '#collection';
     }
   }, true);
 
-  // Drawer reset button resets inputs → also redirect to main-color
   document.addEventListener('reset', function(e) {
     var form = e.target;
     if (!form.classList.contains('facets')) return;
-    // Wait for inputs to reset, then check
     setTimeout(function() {
-      if (!formHasSizeFilter(form)) {
-        window.location.href = mcUrl;
-      }
+      window.location.href = groupedUrl;
     }, 0);
   });
 
@@ -314,6 +270,58 @@ on desktop based on the settings
       "id": "show_filters",
       "label": "t:global.faceting.show_filters",
       "info": "t:global.faceting.show_filters_info",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Visible filters"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_filter_availability",
+      "label": "Show availability filter",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_filter_price",
+      "label": "Show price filter",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_filter_brand",
+      "label": "Show brand/vendor filter",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_filter_color",
+      "label": "Show color filter",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_filter_size",
+      "label": "Show size filter",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_filter_width",
+      "label": "Show width filter",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_filter_gender",
+      "label": "Show gender filter",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_filter_type",
+      "label": "Show product type filter",
       "default": true
     },
     {

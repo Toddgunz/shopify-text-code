@@ -18,17 +18,45 @@ This component display a list of product that can be used in collection, search.
 <product-list {% if id %}id="{{ id }}"{% endif %} class="product-list {% if stack == false or spotlight == false %}product-list--carousel scroll-area bleed{% endif %} {% if spotlight %}product-list--spotlight scroll-area bleed{% if settings.product_listing_spacing == 'none' %}border{% endif %}{% endif %}" {% if output_override_attributes %}mobile-items-per-row="{{ cart.attributes.product_card_mobile_items_per_row | default: section.settings.products_per_row_mobile }}" desktop-layout="{{ cart.attributes.product_card_desktop_layout | default: 'grid' }}"{% endif %}>
   {%- liquid
     assign has_active_filters = false
+    assign has_active_size_or_width_filters = false
+    assign active_sizes_pipe = ''
+    assign active_widths_pipe = ''
+    assign size_label_list = 'general.label.size' | t | replace: ', ', ',' | downcase | split: ','
 
     for filter in collection.filters
       if filter.type == 'price_range'
         if filter.max_value.value != blank or filter.min_value.value != blank
           assign has_active_filters = true
-          break
         endif
       else
         if filter.active_values.size > 0
           assign has_active_filters = true
-          break
+
+          assign filter_param_name_downcase = filter.param_name | downcase
+          assign filter_label_downcase = filter.label | downcase | strip
+
+          if filter_param_name_downcase contains '.option.' and filter_param_name_downcase contains 'size'
+            assign has_active_size_or_width_filters = true
+            for active_value in filter.active_values
+              assign active_sizes_pipe = active_sizes_pipe | append: '|' | append: active_value.label | append: '|'
+            endfor
+          elsif filter_param_name_downcase contains '.option.' and filter_param_name_downcase contains 'width'
+            assign has_active_size_or_width_filters = true
+            for active_value in filter.active_values
+              assign active_widths_pipe = active_widths_pipe | append: '|' | append: active_value.label | append: '|'
+            endfor
+          elsif filter_label_downcase == 'size' or filter_label_downcase == 'width'
+            assign has_active_size_or_width_filters = true
+            if filter_label_downcase == 'size'
+              for active_value in filter.active_values
+                assign active_sizes_pipe = active_sizes_pipe | append: '|' | append: active_value.label | append: '|'
+              endfor
+            else
+              for active_value in filter.active_values
+                assign active_widths_pipe = active_widths_pipe | append: '|' | append: active_value.label | append: '|'
+              endfor
+            endif
+          endif
         endif
       endif
     endfor
@@ -41,6 +69,9 @@ This component display a list of product that can be used in collection, search.
       (max-width: 699px) 74vw, (max-width: 999px) 38vw, calc(100vw / {{ section.settings.products_per_row_desktop | default: 4 }})
     {%- endif -%}
   {%- endcapture -%}
+
+  {%- assign rendered_handles = '|' -%}
+  {%- assign rendered_sibling_groups = '|' -%}
 
   {%- for product in products -%}
     {%- for block in blocks -%}
@@ -97,7 +128,210 @@ This component display a list of product that can be used in collection, search.
       </div>
     {%- endfor -%}
 
-    {%- render 'product-card', product: product, reveal: true, allow_highlight: allow_highlight, sizes: sizes, force_no_border: spotlight, section_color_scheme: section_color_scheme, prefix_id: prefix_id, position: forloop.index -%}
+    {%- liquid
+      assign sibling_collection = product.metafields.custom.sibling_collection.value
+      assign should_expand_siblings = false
+      assign sibling_group_key = ''
+
+      if has_active_size_or_width_filters and sibling_collection != blank and sibling_collection.products.size > 1
+        assign sibling_group_key = sibling_collection.id | append: ''
+        assign sibling_group_mark = '|' | append: sibling_group_key | append: '|'
+
+        unless rendered_sibling_groups contains sibling_group_mark
+          assign should_expand_siblings = true
+          assign rendered_sibling_groups = rendered_sibling_groups | append: sibling_group_key | append: '|'
+        endunless
+      endif
+    -%}
+
+    {%- if should_expand_siblings -%}
+      {%- for sibling in sibling_collection.products -%}
+        {%- liquid
+          assign sibling_matches_filters = false
+          assign sibling_matched_variant = nil
+          assign size_option_position = 0
+          assign width_option_position = 0
+
+          for option in sibling.options_with_values
+            assign option_name_downcase = option.name | downcase | strip
+
+            if size_label_list contains option_name_downcase
+              assign size_option_position = option.position
+            elsif option_name_downcase == 'width'
+              assign width_option_position = option.position
+            endif
+          endfor
+
+          for variant in sibling.variants
+            assign variant_matches_filters = variant.available
+
+            if variant_matches_filters and active_sizes_pipe != blank
+              if size_option_position == 0
+                assign variant_matches_filters = false
+              else
+                case size_option_position
+                  when 1
+                    assign variant_size_value = variant.option1 | strip
+                  when 2
+                    assign variant_size_value = variant.option2 | strip
+                  when 3
+                    assign variant_size_value = variant.option3 | strip
+                endcase
+
+                assign variant_size_mark = '|' | append: variant_size_value | append: '|'
+                unless active_sizes_pipe contains variant_size_mark
+                  assign variant_matches_filters = false
+                endunless
+              endif
+            endif
+
+            if variant_matches_filters and active_widths_pipe != blank
+              if width_option_position == 0
+                assign variant_matches_filters = false
+              else
+                case width_option_position
+                  when 1
+                    assign variant_width_value = variant.option1 | strip
+                  when 2
+                    assign variant_width_value = variant.option2 | strip
+                  when 3
+                    assign variant_width_value = variant.option3 | strip
+                endcase
+
+                assign variant_width_mark = '|' | append: variant_width_value | append: '|'
+                unless active_widths_pipe contains variant_width_mark
+                  assign variant_matches_filters = false
+                endunless
+              endif
+            endif
+
+            if variant_matches_filters
+              assign sibling_matches_filters = true
+              assign sibling_matched_variant = variant
+              break
+            endif
+          endfor
+
+          assign sibling_handle_mark = '|' | append: sibling.handle | append: '|'
+        -%}
+
+        {%- if sibling_matches_filters -%}
+          {%- unless rendered_handles contains sibling_handle_mark -%}
+          {%- assign rendered_handles = rendered_handles | append: sibling.handle | append: '|' -%}
+          {%- render 'product-card',
+            product: sibling,
+            variant: sibling_matched_variant,
+            reveal: true,
+            allow_highlight: allow_highlight,
+            sizes: sizes,
+            force_no_border: spotlight,
+            section_color_scheme: section_color_scheme,
+            prefix_id: prefix_id,
+            position: forloop.parentloop.index,
+            show_swatches: false
+          -%}
+          {%- endunless -%}
+        {%- endif -%}
+      {%- endfor -%}
+    {%- else -%}
+      {%- assign product_handle_mark = '|' | append: product.handle | append: '|' -%}
+      {%- assign product_matched_variant = nil -%}
+
+      {%- if has_active_size_or_width_filters -%}
+        {%- liquid
+          assign product_size_option_position = 0
+          assign product_width_option_position = 0
+
+          for option in product.options_with_values
+            assign option_name_downcase = option.name | downcase | strip
+
+            if size_label_list contains option_name_downcase
+              assign product_size_option_position = option.position
+            elsif option_name_downcase == 'width'
+              assign product_width_option_position = option.position
+            endif
+          endfor
+
+          for variant in product.variants
+            assign variant_matches_filters = variant.available
+
+            if variant_matches_filters and active_sizes_pipe != blank
+              if product_size_option_position == 0
+                assign variant_matches_filters = false
+              else
+                case product_size_option_position
+                  when 1
+                    assign variant_size_value = variant.option1 | strip
+                  when 2
+                    assign variant_size_value = variant.option2 | strip
+                  when 3
+                    assign variant_size_value = variant.option3 | strip
+                endcase
+
+                assign variant_size_mark = '|' | append: variant_size_value | append: '|'
+                unless active_sizes_pipe contains variant_size_mark
+                  assign variant_matches_filters = false
+                endunless
+              endif
+            endif
+
+            if variant_matches_filters and active_widths_pipe != blank
+              if product_width_option_position == 0
+                assign variant_matches_filters = false
+              else
+                case product_width_option_position
+                  when 1
+                    assign variant_width_value = variant.option1 | strip
+                  when 2
+                    assign variant_width_value = variant.option2 | strip
+                  when 3
+                    assign variant_width_value = variant.option3 | strip
+                endcase
+
+                assign variant_width_mark = '|' | append: variant_width_value | append: '|'
+                unless active_widths_pipe contains variant_width_mark
+                  assign variant_matches_filters = false
+                endunless
+              endif
+            endif
+
+            if variant_matches_filters
+              assign product_matched_variant = variant
+              break
+            endif
+          endfor
+        -%}
+      {%- endif -%}
+
+      {%- unless rendered_handles contains product_handle_mark -%}
+        {%- assign rendered_handles = rendered_handles | append: product.handle | append: '|' -%}
+        {%- if has_active_size_or_width_filters -%}
+          {%- render 'product-card',
+            product: product,
+            variant: product_matched_variant,
+            reveal: true,
+            allow_highlight: allow_highlight,
+            sizes: sizes,
+            force_no_border: spotlight,
+            section_color_scheme: section_color_scheme,
+            prefix_id: prefix_id,
+            position: forloop.index,
+            show_swatches: false
+          -%}
+        {%- else -%}
+          {%- render 'product-card',
+            product: product,
+            reveal: true,
+            allow_highlight: allow_highlight,
+            sizes: sizes,
+            force_no_border: spotlight,
+            section_color_scheme: section_color_scheme,
+            prefix_id: prefix_id,
+            position: forloop.index
+          -%}
+        {%- endif -%}
+      {%- endunless -%}
+    {%- endif -%}
   {%- else -%}
     {%- if show_placeholder -%}
       {%- for i in (1..4) -%}

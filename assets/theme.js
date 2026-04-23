@@ -5654,7 +5654,12 @@ var Header = class extends HTMLElement {
   }
   connectedCallback() {
     __privateSet(this, _abortController11, new AbortController());
-    __privateGet(this, _headerTrackerIntersectionObserver).observe(document.getElementById("header-scroll-tracker"));
+    const headerTracker = document.getElementById("header-scroll-tracker");
+    if (headerTracker) {
+      this.classList.toggle("is-solid", headerTracker.getBoundingClientRect().bottom <= 0);
+      __privateGet(this, _headerTrackerIntersectionObserver).observe(headerTracker);
+    }
+    requestAnimationFrame(() => this.classList.add("is-initialized"));
     if (this.hasAttribute("hide-on-scroll")) {
       window.addEventListener("scroll", throttle(__privateMethod(this, _Header_instances, detectScrollDirection_fn).bind(this)), { signal: __privateGet(this, _abortController11).signal, passive: true });
       window.addEventListener("pointermove", __privateMethod(this, _Header_instances, detectMousePosition_fn).bind(this), { signal: __privateGet(this, _abortController11).signal });

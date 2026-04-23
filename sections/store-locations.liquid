@@ -14,9 +14,11 @@
     --store-map-column-width: {{ 100 | minus: section.settings.location_panel_width }}fr;
     --store-map-height-desktop: {{ section.settings.desktop_map_height }}px;
     --store-map-height-mobile: {{ section.settings.mobile_map_height }}px;
-    --store-location-card-padding: clamp(1.25rem, 2vw, 2rem);
+    --store-location-card-padding-block: clamp(1.25rem, 2vw, 2rem);
+    --store-location-card-padding-inline: {{ section.settings.location_side_padding }}px;
     --store-location-gap: clamp(1rem, 2vw, 1.5rem);
     --store-location-active-shadow: 0 0 0 2px rgb(var(--text-color));
+    --store-location-text-align: {{ section.settings.location_text_alignment }};
   }
 
   #shopify-section-{{ section.id }} + .shopify-section {
@@ -24,8 +26,9 @@
   }
 
   #shopify-section-{{ section.id }} .store-locations {
-    border: 1px solid rgb(var(--border-color));
     overflow: hidden;
+    max-width: 1200px;
+    margin-inline: auto;
   }
 
   #shopify-section-{{ section.id }} .store-locations__header {
@@ -60,17 +63,17 @@
   #shopify-section-{{ section.id }} .store-locations__item {
     display: grid;
     gap: var(--store-location-gap);
-    padding: var(--store-location-card-padding);
+    padding-block: var(--store-location-card-padding-block);
+    padding-inline: var(--store-location-card-padding-inline);
     border-block-start: 1px solid rgb(var(--border-color));
     background: rgb(var(--store-location-bg, var(--background)));
     color: rgb(var(--store-location-text, var(--text-color)));
+    justify-items: var(--store-location-text-align);
+    text-align: var(--store-location-text-align);
     cursor: pointer;
     transition: background-color 0.2s ease, box-shadow 0.2s ease;
   }
 
-  #shopify-section-{{ section.id }} .store-locations__item:first-child {
-    border-block-start: 0;
-  }
 
   #shopify-section-{{ section.id }} .store-locations__item.is-active {
     box-shadow: var(--store-location-active-shadow) inset;
@@ -88,6 +91,7 @@
   #shopify-section-{{ section.id }} .store-locations__content {
     display: grid;
     gap: 1rem;
+    justify-items: inherit;
   }
 
   #shopify-section-{{ section.id }} .store-locations__content .prose > * + * {
@@ -98,6 +102,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 0.75rem;
+    justify-content: {% if section.settings.location_text_alignment == 'center' %}center{% elsif section.settings.location_text_alignment == 'end' %}flex-end{% else %}flex-start{% endif %};
   }
 
   #shopify-section-{{ section.id }} .store-locations__item .button--outline {
@@ -206,8 +211,9 @@
     backdrop-filter: blur(4px);
   }
 
-  #shopify-section-{{ section.id }} [data-map-style='light'] .leaflet-tile {
-    filter: invert(1) hue-rotate(180deg) saturate(0.9) brightness(1.08) contrast(0.92);
+  #shopify-section-{{ section.id }} .leaflet-tile {
+    outline: 1px solid transparent;
+    backface-visibility: hidden;
   }
 
   #shopify-section-{{ section.id }} .leaflet-bar {
@@ -249,6 +255,14 @@
       justify-content: center;
       text-align: center;
     }
+
+    #shopify-section-{{ section.id }} .store-locations__list {
+      border-block-end: 1px solid rgb(var(--border-color));
+    }
+
+    #shopify-section-{{ section.id }} .store-locations__map-pane {
+      margin-block-start: var(--store-location-card-padding-block);
+    }
   }
 
   @media screen and (min-width: 1000px) {
@@ -267,8 +281,11 @@
 <div
   class="color-scheme color-scheme--{{ section.settings.color_scheme.id }}"
   data-store-locations-section
-  data-map-style="{{ section.settings.map_style }}"
+  data-map-style="light"
   data-marker-color="{{ section.settings.marker_color | escape }}"
+  data-show-name-tag="{{ section.settings.show_location_name_tag }}"
+  data-name-tag-background="{{ section.settings.location_name_tag_background | escape }}"
+  data-name-tag-border="{{ section.settings.location_name_tag_border | escape }}"
 >
   <div class="container section-spacing">
     <div class="store-locations">
@@ -370,19 +387,48 @@
               data-overview-zoom="{{ section.settings.overview_zoom }}"
               data-default-zoom="{{ section.blocks.first.settings.map_zoom }}"
             ></div>
-          {%- elsif fallback_map_src != blank -%}
-            <iframe
-              class="store-locations__map-frame"
-              src="{{ fallback_map_src | escape }}"
-              title="Store locations map"
-              loading="lazy"
-              referrerpolicy="no-referrer-when-downgrade"
-              allowfullscreen
-            ></iframe>
           {%- else -%}
-            <div class="store-locations__map-empty prose">
-              <p>Add coordinates for your locations, or paste a default map embed.</p>
-            </div>
+            {%- assign rendered_block_frames = false -%}
+            {%- for block in section.blocks -%}
+              {%- liquid
+                assign block_embed_src = block.settings.map_embed | strip
+                if block_embed_src contains 'src="'
+                  assign block_embed_src = block_embed_src | split: 'src="' | last | split: '"' | first
+                elsif block_embed_src contains "src='"
+                  assign block_embed_src = block_embed_src | split: "src='" | last | split: "'" | first
+                endif
+              -%}
+              {%- if block_embed_src != blank -%}
+                <iframe
+                  class="store-locations__map-frame"
+                  src="{{ block_embed_src | escape }}"
+                  data-location-map-frame="{{ forloop.index0 }}"
+                  title="Store location map"
+                  loading="lazy"
+                  referrerpolicy="no-referrer-when-downgrade"
+                  allowfullscreen
+                  {% unless forloop.first %}hidden{% endunless %}
+                ></iframe>
+                {%- assign rendered_block_frames = true -%}
+              {%- endif -%}
+            {%- endfor -%}
+
+            {%- unless rendered_block_frames -%}
+              {%- if fallback_map_src != blank -%}
+                <iframe
+                  class="store-locations__map-frame"
+                  src="{{ fallback_map_src | escape }}"
+                  title="Store locations map"
+                  loading="lazy"
+                  referrerpolicy="no-referrer-when-downgrade"
+                  allowfullscreen
+                ></iframe>
+              {%- else -%}
+                <div class="store-locations__map-empty prose">
+                  <p>Add coordinates for your locations, or paste a default map embed.</p>
+                </div>
+              {%- endif -%}
+            {%- endunless -%}
           {%- endif -%}
         </div>
       </div>
@@ -402,10 +448,11 @@
         }
       },
       light: {
-        url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+        url: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
         options: {
-          maxZoom: 19,
-          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          maxZoom: 20,
+          subdomains: 'abcd',
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
         }
       },
       muted: {
@@ -418,6 +465,30 @@
       },
       dark: {
         url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+        options: {
+          maxZoom: 20,
+          subdomains: 'abcd',
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+        }
+      },
+      minimal: {
+        url: 'https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png',
+        options: {
+          maxZoom: 20,
+          subdomains: 'abcd',
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+        }
+      },
+      muted_no_labels: {
+        url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png',
+        options: {
+          maxZoom: 20,
+          subdomains: 'abcd',
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+        }
+      },
+      dark_no_labels: {
+        url: 'https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',
         options: {
           maxZoom: 20,
           subdomains: 'abcd',
@@ -462,18 +533,27 @@
       return window.__codexLeafletPromise;
     };
 
-    const createIcon = (leaflet, title, index, state) => leaflet.divIcon({
+    const createIcon = (leaflet, title, index, state, color = '#111111', nameTag = null) => {
+      let labelStyle = '';
+      if (nameTag?.show) {
+        const bg = nameTag.background || 'transparent';
+        const border = nameTag.border || 'transparent';
+        labelStyle = `background:${bg};border:1px solid ${border};padding:0.2em 0.45em;border-radius:2px;text-shadow:none;`;
+      }
+
+      return leaflet.divIcon({
       className: 'store-locations__leaflet-marker',
       html: `<span style="
         --store-callout-dot-scale:${state === 'active' ? '1.18' : '1'};
         --store-callout-label-scale:${state === 'overview' ? '0.9' : '1'};
       " class="store-locations__map-callout ${index % 2 === 0 ? 'store-locations__map-callout--right' : 'store-locations__map-callout--left'}">
-        <span class="store-locations__map-callout-label">${title}</span>
-        <span class="store-locations__map-callout-dot"></span>
+        <span class="store-locations__map-callout-label" style="${labelStyle}">${title}</span>
+        <span class="store-locations__map-callout-dot" style="background:${color};"></span>
       </span>`,
       iconSize: [state === 'active' ? 148 : 140, 46],
       iconAnchor: [index % 2 === 0 ? 7 : 133, 39]
-    });
+      });
+    };
 
     const getSectionSignature = (section, styleMode, markerMode, cards) => {
       const cardSignature = cards.map((card) => [
@@ -509,13 +589,60 @@
         return;
       }
 
+      // If the outer Shopify section wrapper was passed, resolve to the inner data element
+      // so that dataset reads (mapStyle, markerColor, etc.) work correctly
+      if (!section.hasAttribute('data-store-locations-section')) {
+        section = section.querySelector('[data-store-locations-section]');
+        if (!section) return;
+      }
+
       const mapElement = section.querySelector('[data-store-map]');
       const cards = Array.from(section.querySelectorAll('[data-store-location-card]'));
-      if (!mapElement || cards.length === 0) {
+
+      if (cards.length === 0) {
+        return;
+      }
+
+      // Handle per-block iframe mode when no Leaflet map canvas is present
+      const mapFrames = Array.from(section.querySelectorAll('[data-location-map-frame]'));
+
+      if (!mapElement) {
+        if (mapFrames.length > 0 && !section.dataset.storeLocationsIframeInit) {
+          section.dataset.storeLocationsIframeInit = '1';
+
+          cards.forEach((card) => {
+            const activateCard = (event) => {
+              if (event.target.closest('a')) return;
+
+              const index = card.dataset.locationIndex;
+              mapFrames.forEach((frame) => {
+                frame.hidden = frame.dataset.locationMapFrame !== index;
+              });
+
+              cards.forEach((c) => {
+                const isActive = c === card;
+                c.classList.toggle('is-active', isActive);
+                c.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+              });
+            };
+
+            const activateCardWithKeyboard = (event) => {
+              if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                activateCard(event);
+              }
+            };
+
+            card.addEventListener('click', activateCard);
+            card.addEventListener('keydown', activateCardWithKeyboard);
+          });
+        }
+
         return;
       }
 
       const styleMode = section.dataset.mapStyle || 'dark';
+      const markerColor = section.dataset.markerColor || '#111111';
       const tileConfig = Object.prototype.hasOwnProperty.call(tileConfigs, styleMode) ? tileConfigs[styleMode] : tileConfigs.dark;
       const signature = getSectionSignature(section, styleMode, 'callout', cards);
 
@@ -552,10 +679,11 @@
           zoomControl: true,
           scrollWheelZoom: true,
           dragging: true,
-          attributionControl: true
+          attributionControl: false
         });
 
         leaflet.tileLayer(tileConfig.url, tileConfig.options).addTo(map);
+        leaflet.control.attribution({ prefix: false }).addTo(map);
 
         const bounds = leaflet.latLngBounds(locations.map((location) => [location.lat, location.lng]));
         const markers = [];
@@ -581,7 +709,7 @@
 
             const marker = markers[location.index];
             if (marker) {
-              marker.setIcon(createIcon(leaflet, location.title, location.index, isActive ? 'active' : 'inactive'));
+              marker.setIcon(createIcon(leaflet, location.title, location.index, isActive ? 'active' : 'inactive', markerColor));
               marker.setZIndexOffset(isActive ? 500 : 0);
             }
           });
@@ -605,7 +733,7 @@
 
             const marker = markers[location.index];
             if (marker) {
-              marker.setIcon(createIcon(leaflet, location.title, location.index, 'overview'));
+              marker.setIcon(createIcon(leaflet, location.title, location.index, 'overview', markerColor));
               marker.setZIndexOffset(0);
             }
           });
@@ -615,7 +743,7 @@
 
         locations.forEach((location) => {
           const marker = leaflet.marker([location.lat, location.lng], {
-            icon: createIcon(leaflet, location.title, location.index, 'overview'),
+            icon: createIcon(leaflet, location.title, location.index, 'overview', markerColor),
             title: location.title
           }).addTo(map);
 
@@ -770,6 +898,16 @@
     },
     {
       "type": "range",
+      "id": "location_side_padding",
+      "min": 24,
+      "max": 96,
+      "step": 4,
+      "unit": "px",
+      "label": "Location side padding",
+      "default": 32
+    },
+    {
+      "type": "range",
       "id": "desktop_map_height",
       "min": 480,
       "max": 1000,
@@ -792,14 +930,16 @@
       "type": "select",
       "id": "map_style",
       "label": "Map style",
-      "info": "If this setting does not persist reliably in the editor, it can be changed manually in the template JSON.",
       "options": [
         { "value": "dark", "label": "Dark" },
+        { "value": "dark_no_labels", "label": "Dark no labels" },
         { "value": "muted", "label": "Muted" },
+        { "value": "muted_no_labels", "label": "Muted no labels" },
         { "value": "light", "label": "Light" },
+        { "value": "minimal", "label": "Minimal" },
         { "value": "standard", "label": "Standard" }
       ],
-      "default": "dark"
+      "default": "light"
     },
     {
       "type": "color",
@@ -824,6 +964,35 @@
         { "value": "h5", "label": "Small" }
       ],
       "default": "h3"
+    },
+    {
+      "type": "select",
+      "id": "location_text_alignment",
+      "label": "Location text alignment",
+      "options": [
+        { "value": "start", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "end", "label": "Right" }
+      ],
+      "default": "start"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_location_name_tag",
+      "label": "Show rectangle behind location name",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "location_name_tag_background",
+      "label": "Location name rectangle background",
+      "default": "#f3f0ea"
+    },
+    {
+      "type": "color",
+      "id": "location_name_tag_border",
+      "label": "Location name rectangle border",
+      "default": "#111111"
     }
   ],
   "blocks": [

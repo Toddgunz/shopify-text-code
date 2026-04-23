@@ -503,31 +503,24 @@
   (function() {
     var wrap = document.getElementById('compare-table-wrap');
     if (!wrap) return;
-    var isDown = false, startX, scrollLeft, moved;
+    var isDown = false, startX, scrollLeft;
     wrap.addEventListener('mousedown', function(e) {
       if (e.target.closest('button, input, a')) return;
       isDown = true;
-      moved = false;
       wrap.classList.add('is-dragging');
       startX = e.pageX - wrap.getBoundingClientRect().left;
       scrollLeft = wrap.scrollLeft;
+      e.preventDefault();
     });
     document.addEventListener('mouseup', function() {
-      if (!isDown) return;
       isDown = false;
       wrap.classList.remove('is-dragging');
     });
     wrap.addEventListener('mousemove', function(e) {
       if (!isDown) return;
-      e.preventDefault();
-      moved = true;
       var x = e.pageX - wrap.getBoundingClientRect().left;
-      var walk = (x - startX) * 1.2;
-      wrap.scrollLeft = scrollLeft - walk;
+      wrap.scrollLeft = scrollLeft - (x - startX) * 1.2;
     });
-    wrap.addEventListener('click', function(e) {
-      if (moved) e.stopPropagation();
-    }, true);
   })();
 
   function esc(str) {

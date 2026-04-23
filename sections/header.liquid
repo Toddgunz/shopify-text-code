@@ -1,5 +1,13 @@
 {%- liquid
   assign open_dropdown_menu_in_sidebar = false
+  assign center_desktop_menus = false
+  assign mobile_logo = section.settings.mobile_logo | default: section.settings.logo
+  assign desktop_logo = section.settings.desktop_logo | default: section.settings.logo
+  assign has_logo_image = false
+
+  if section.settings.desktop_menu_alignment == 'centered'
+    assign center_desktop_menus = true
+  endif
 
   if section.settings.show_country_selector and localization.available_countries.size > 1
     assign show_country_selector = true
@@ -11,6 +19,10 @@
 
   if section.settings.desktop_dropdown_menu_style == 'sidebar' and section.settings.desktop_layout == 'logo_center_navigation_inline'
     assign open_dropdown_menu_in_sidebar = true
+  endif
+
+  if mobile_logo != blank or desktop_logo != blank
+    assign has_logo_image = true
   endif
 -%}
 
@@ -34,6 +46,9 @@
 
     --header-transparent-header-text-color: {{ section.settings.transparent_header_text_color.rgb }};
     --header-non-transparent-text-color: {{ section.settings.color_scheme.settings.text_color.rgb }};
+    --header-logo-nav-gap-setting: {{ section.settings.desktop_split_menu_spacing }}rem;
+    --header-centered-menu-gap-setting: {{ section.settings.desktop_centered_menu_spacing }}rem;
+    --header-desktop-menu-font-size: {{ section.settings.desktop_menu_font_size }}rem;
   }
 
   @media screen and (min-width: 1000px) {
@@ -62,21 +77,39 @@
     }
   {%- endif -%}
 
-  {%- if section.settings.logo != blank -%}
+  {%- if has_logo_image -%}
     #shopify-section-{{ section.id }} {
       --header-logo-width: {{ section.settings.logo_mobile_max_width }}px;
+    }
+
+    {%- unless section.settings.transparent_logo -%}
+      #shopify-section-{{ section.id }} .header {
+        --header-show-transparent-logo: 0;
+      }
+    {%- endunless -%}
+
+    #shopify-section-{{ section.id }} .header__logo-image--desktop {
+      display: none;
     }
 
     @media screen and (min-width: 700px) {
       #shopify-section-{{ section.id }} {
         --header-logo-width: {{ section.settings.logo_max_width }}px;
       }
+
+      #shopify-section-{{ section.id }} .header__logo-image--mobile {
+        display: none;
+      }
+
+      #shopify-section-{{ section.id }} .header__logo-image--desktop {
+        display: inline-block;
+      }
     }
   {%- endif -%}
 </style>
 
 <height-observer variable="header">
-  <x-header class="header color-scheme color-scheme--{{ section.settings.color_scheme.id }}" {% if section.settings.hide_on_scroll %}hide-on-scroll{% endif %}>
+  <x-header class="header color-scheme color-scheme--{{ section.settings.color_scheme.id }} {% if request.page_type == 'index' %}header--initially-transparent{% endif %}" {% if section.settings.hide_on_scroll %}hide-on-scroll{% endif %}>
     {%- comment -%}
     --------------------------------------------------------------------------------------------------------------------
     LOGO AREA
@@ -84,17 +117,29 @@
     {%- endcomment -%}
 
     {%- capture logo_content -%}
-      {%- if section.settings.logo != blank -%}
-        {%- capture sizes -%}{{ section.settings.logo_max_width }}px{%- endcapture -%}
-        {%- capture widths -%}{{ section.settings.logo_max_width | times: 2 | at_most: section.settings.logo.width }}, {{ section.settings.logo_max_width | times: 3 | at_most: section.settings.logo.width }}{%- endcapture -%}
+      {%- if has_logo_image -%}
+        {%- capture mobile_sizes -%}{{ section.settings.logo_mobile_max_width }}px{%- endcapture -%}
+        {%- capture desktop_sizes -%}{{ section.settings.logo_max_width }}px{%- endcapture -%}
 
         <span class="sr-only">{{ shop.name }}</span>
 
-        {%- assign alt_text = section.settings.logo.alt | default: shop.name -%}
-        {{- section.settings.logo | image_url: width: section.settings.logo.width | image_tag: sizes: sizes, widths: widths, alt: alt_text, class: 'header__logo-image' -}}
+        {%- if mobile_logo != blank -%}
+          {%- capture mobile_widths -%}{{ section.settings.logo_mobile_max_width | times: 2 | at_most: mobile_logo.width }}, {{ section.settings.logo_mobile_max_width | times: 3 | at_most: mobile_logo.width }}{%- endcapture -%}
+          {%- assign mobile_alt_text = mobile_logo.alt | default: shop.name -%}
+          {{- mobile_logo | image_url: width: mobile_logo.width | image_tag: sizes: mobile_sizes, widths: mobile_widths, alt: mobile_alt_text, class: 'header__logo-image header__logo-image--mobile' -}}
+        {%- endif -%}
+
+        {%- if desktop_logo != blank -%}
+          {%- capture desktop_widths -%}{{ section.settings.logo_max_width | times: 2 | at_most: desktop_logo.width }}, {{ section.settings.logo_max_width | times: 3 | at_most: desktop_logo.width }}{%- endcapture -%}
+          {%- assign desktop_alt_text = desktop_logo.alt | default: shop.name -%}
+          {{- desktop_logo | image_url: width: desktop_logo.width | image_tag: sizes: desktop_sizes, widths: desktop_widths, alt: desktop_alt_text, class: 'header__logo-image header__logo-image--desktop' -}}
+        {%- endif -%}
 
         {%- if section.settings.transparent_logo -%}
-          {{- section.settings.transparent_logo | image_url: width: section.settings.transparent_logo.width | image_tag: sizes: sizes, widths: widths, class: 'header__logo-image header__logo-image--transparent' -}}
+          {%- capture transparent_mobile_widths -%}{{ section.settings.logo_mobile_max_width | times: 2 | at_most: section.settings.transparent_logo.width }}, {{ section.settings.logo_mobile_max_width | times: 3 | at_most: section.settings.transparent_logo.width }}{%- endcapture -%}
+          {%- capture transparent_desktop_widths -%}{{ section.settings.logo_max_width | times: 2 | at_most: section.settings.transparent_logo.width }}, {{ section.settings.logo_max_width | times: 3 | at_most: section.settings.transparent_logo.width }}{%- endcapture -%}
+          {{- section.settings.transparent_logo | image_url: width: section.settings.transparent_logo.width | image_tag: sizes: mobile_sizes, widths: transparent_mobile_widths, class: 'header__logo-image header__logo-image--transparent header__logo-image--mobile' -}}
+          {{- section.settings.transparent_logo | image_url: width: section.settings.transparent_logo.width | image_tag: sizes: desktop_sizes, widths: transparent_desktop_widths, class: 'header__logo-image header__logo-image--transparent header__logo-image--desktop' -}}
         {%- endif -%}
       {%- else -%}
         <p class="header__logo-text heading">{{ shop.name }}</p>
@@ -116,7 +161,169 @@
     {%- endcomment -%}
 
     {%- assign menu = section.settings.menu -%}
+    {%- assign secondary_menu = section.settings.secondary_menu -%}
     {%- assign sidebar_menu = section.settings.sidebar_menu -%}
+
+    {%- capture desktop_secondary_navigation -%}
+      {%- if secondary_menu.links.size > 0 -%}
+        <ul class="h-stack gap-6 unstyled-list">
+          {%- for link in secondary_menu.links -%}
+            {% liquid
+              assign link_title_downcase = link.title | strip | downcase
+              assign mega_menu_block = ''
+
+              for block in section.blocks
+                assign menu_item_downcase = block.settings.menu_item | strip | downcase
+
+                if menu_item_downcase == link_title_downcase
+                  assign mega_menu_block = block
+                  break
+                endif
+
+              endfor
+            %}
+
+            <li class="{% if mega_menu_block != '' %}header__secondary-nav-item header__secondary-nav-item--mega{% endif %}">
+              {%- liquid
+                assign has_dropdown_menu = false
+                assign menu_id = 'header-secondary-menu-dropdown-' | append: forloop.index
+
+                if link.levels > 0 or mega_menu_block != ''
+                  assign has_dropdown_menu = true
+                endif
+              -%}
+
+              <a href="{{ link.url }}" class="block subheading link-reversed" {% if link.current %}aria-current="page"{% endif %} {% if has_dropdown_menu %}aria-expanded="false" aria-controls="{{ menu_id }}" {% if section.settings.menu_open_trigger == 'hover' %}data-open-on-hover{% endif %}{% endif %}>
+                {{- link.title -}}
+              </a>
+
+              {%- if has_dropdown_menu -%}
+                {%- if mega_menu_block == '' -%}
+                  <header-dropdown-menu class="header__dropdown-menu color-scheme color-scheme--{{ section.settings.color_scheme.id }}" id="{{ menu_id }}">
+                    <ul class="unstyled-list">
+                      {%- for sub_link in link.links -%}
+                        {%- assign sub_menu_id = menu_id | append: '-' | append: forloop.index -%}
+
+                        <li>
+                          <a href="{{ sub_link.url }}" class="subheading link-faded-reverse" {% if sub_link.current %}aria-current="page"{% endif %} {% if sub_link.levels > 0 %}aria-expanded="false" aria-controls="{{ sub_menu_id }}" {% if section.settings.menu_open_trigger == 'hover' %}data-open-on-hover{% endif %}{% endif %}>
+                            {{- sub_link.title -}}
+
+                            {%- if sub_link.levels > 0 -%}
+                              {%- render 'icon' with 'chevron-right', direction_aware: true -%}
+                            {%- endif -%}
+                          </a>
+
+                          {%- if sub_link.levels > 0 -%}
+                            <header-dropdown-menu class="header__dropdown-menu color-scheme color-scheme--{{ section.settings.color_scheme.id }}" id="{{ sub_menu_id }}">
+                              <ul class="unstyled-list">
+                                {%- for sub_sub_link in sub_link.links -%}
+                                  <li>
+                                    <a href="{{ sub_sub_link.url }}" class="subheading link-faded-reverse" {% if sub_sub_link.current %}aria-current="page"{% endif %}>{{ sub_sub_link.title }}</a>
+                                  </li>
+                                {%- endfor -%}
+                              </ul>
+                            </header-dropdown-menu>
+                          {%- endif -%}
+                        </li>
+                      {%- endfor -%}
+                    </ul>
+                  </header-dropdown-menu>
+                {%- else -%}
+                  {%- render 'mega-menu', link: link, color_scheme: section.settings.color_scheme, id: menu_id, block: mega_menu_block, extra_class: 'mega-menu--secondary' -%}
+                {%- endif -%}
+              {%- endif -%}
+            </li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+    {%- endcapture -%}
+
+    {%- capture desktop_primary_navigation -%}
+      {%- if menu.links.size > 0 and section.settings.desktop_layout != 'drawer' -%}
+        <ul class="contents unstyled-list md-max:hidden">
+          {%- if open_dropdown_menu_in_sidebar -%}
+            <li class="contents">
+              <button type="button" aria-controls="menu-dropdown-sidebar" class="tap-area">
+                <span class="sr-only">{{ 'header.general.menu' | t }}</span>
+
+                <div class="header__hamburger">
+                  <span></span>
+                  <span></span>
+                </div>
+              </button>
+            </li>
+          {%- endif -%}
+
+          {%- for link in menu.links -%}
+            {% liquid
+              assign link_title_downcase = link.title | strip | downcase
+              assign mega_menu_block = ''
+
+              for block in section.blocks
+                assign menu_item_downcase = block.settings.menu_item | strip | downcase
+
+                if menu_item_downcase == link_title_downcase
+                  assign mega_menu_block = block
+                  break
+                endif
+
+              endfor
+            %}
+
+            <li>
+              {%- liquid
+                assign has_dropdown_menu = false
+                assign menu_id = 'header-menu-dropdown-' | append: forloop.index
+
+                if link.levels > 0 or mega_menu_block != ''
+                  assign has_dropdown_menu = true
+                endif
+              -%}
+
+              <a href="{{ link.url }}" class="block subheading link-reversed" {% if link.current %}aria-current="page"{% endif %} {% if open_dropdown_menu_in_sidebar and has_dropdown_menu %}aria-expanded="false" aria-controls="menu-dropdown-sidebar" data-link-position="{{ forloop.index }}"{% elsif has_dropdown_menu %}aria-expanded="false" aria-controls="{{ menu_id }}" {% if section.settings.menu_open_trigger == 'hover' %}data-open-on-hover{% endif %}{% endif %}>
+                {{- link.title -}}
+              </a>
+
+              {%- if has_dropdown_menu and open_dropdown_menu_in_sidebar == false -%}
+                {%- if mega_menu_block == '' -%}
+                  <header-dropdown-menu class="header__dropdown-menu color-scheme color-scheme--{{ section.settings.color_scheme.id }}" id="{{ menu_id }}">
+                    <ul class="unstyled-list">
+                      {%- for sub_link in link.links -%}
+                        {%- assign sub_menu_id = menu_id | append: '-' | append: forloop.index -%}
+
+                        <li>
+                          <a href="{{ sub_link.url }}" class="subheading link-faded-reverse" {% if sub_link.current %}aria-current="page"{% endif %} {% if sub_link.levels > 0 %}aria-expanded="false" aria-controls="{{ sub_menu_id }}" {% if section.settings.menu_open_trigger == 'hover' %}data-open-on-hover{% endif %}{% endif %}>
+                            {{- sub_link.title -}}
+
+                            {%- if sub_link.levels > 0 -%}
+                              {%- render 'icon' with 'chevron-right', direction_aware: true -%}
+                            {%- endif -%}
+                          </a>
+
+                          {%- if sub_link.levels > 0 -%}
+                            <header-dropdown-menu class="header__dropdown-menu color-scheme color-scheme--{{ section.settings.color_scheme.id }}" id="{{ sub_menu_id }}">
+                              <ul class="unstyled-list">
+                                {%- for sub_sub_link in sub_link.links -%}
+                                  <li>
+                                    <a href="{{ sub_sub_link.url }}" class="subheading link-faded-reverse" {% if sub_sub_link.current %}aria-current="page"{% endif %}>{{ sub_sub_link.title }}</a>
+                                  </li>
+                                {%- endfor -%}
+                              </ul>
+                            </header-dropdown-menu>
+                          {%- endif -%}
+                        </li>
+                      {%- endfor -%}
+                    </ul>
+                  </header-dropdown-menu>
+                {%- else -%}
+                  {%- render 'mega-menu', link: link, color_scheme: section.settings.color_scheme, id: menu_id, block: mega_menu_block -%}
+                {%- endif -%}
+              {%- endif -%}
+            </li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+    {%- endcapture -%}
 
     {%- if menu.links.size > 0 or sidebar_menu.links.size > 0 -%}
       {%- liquid
@@ -135,6 +342,14 @@
           when 'logo_left_navigation_center'
             assign primary_nav_extra_classes = primary_nav_extra_classes | append: ' md:justify-center'
         endcase
+
+        if section.settings.desktop_layout == 'logo_left_navigation_inline' and center_desktop_menus == false
+          assign primary_nav_extra_classes = primary_nav_extra_classes | append: ' header__primary-nav--with-logo-gap'
+        endif
+
+        if center_desktop_menus
+          assign primary_nav_extra_classes = primary_nav_extra_classes | append: ' header__primary-nav--desktop-centered'
+        endif
       -%}
 
       <nav class="header__primary-nav {{ primary_nav_extra_classes }}" aria-label="{{ 'header.general.primary_navigation' | t | escape }}">
@@ -158,89 +373,13 @@
           </a>
         {%- endif -%}
 
-        {%- if menu.links.size > 0 and section.settings.desktop_layout != 'drawer' -%}
-          <ul class="contents unstyled-list md-max:hidden">
-            {%- if open_dropdown_menu_in_sidebar -%}
-              <li class="contents">
-                <button type="button" aria-controls="menu-dropdown-sidebar" class="tap-area">
-                  <span class="sr-only">{{ 'header.general.menu' | t }}</span>
-
-                  <div class="header__hamburger">
-                    <span></span>
-                    <span></span>
-                  </div>
-                </button>
-              </li>
-            {%- endif -%}
-
-            {%- for link in menu.links -%}
-              {% liquid
-                assign link_title_downcase = link.title | strip | downcase
-                assign mega_menu_block = ''
-
-                for block in section.blocks
-                  assign menu_item_downcase = block.settings.menu_item | strip | downcase
-
-                  if menu_item_downcase == link_title_downcase
-                    assign mega_menu_block = block
-                    break
-                  endif
-
-                endfor
-              %}
-
-              <li>
-                {%- liquid
-                  assign has_dropdown_menu = false
-                  assign menu_id = 'header-menu-dropdown-' | append: forloop.index
-                  
-                  if link.levels > 0 or mega_menu_block != ''
-                    assign has_dropdown_menu = true
-                  endif
-                -%}
-
-                <a href="{{ link.url }}" class="block subheading link-reversed" {% if link.current %}aria-current="page"{% endif %} {% if open_dropdown_menu_in_sidebar and has_dropdown_menu %}aria-expanded="false" aria-controls="menu-dropdown-sidebar" data-link-position="{{ forloop.index }}"{% elsif has_dropdown_menu %}aria-expanded="false" aria-controls="{{ menu_id }}" {% if section.settings.menu_open_trigger == 'hover' %}data-open-on-hover{% endif %}{% endif %}>
-                  {{- link.title -}}
-                </a>
-
-                {%- if has_dropdown_menu and open_dropdown_menu_in_sidebar == false -%}
-                  {%- if mega_menu_block == '' -%}
-                    <header-dropdown-menu class="header__dropdown-menu color-scheme color-scheme--{{ section.settings.color_scheme.id }}" id="{{ menu_id }}">
-                      <ul class="unstyled-list">
-                        {%- for sub_link in link.links -%}
-                          {%- assign sub_menu_id = menu_id | append: '-' | append: forloop.index -%}
-
-                          <li>
-                            <a href="{{ sub_link.url }}" class="subheading link-faded-reverse" {% if sub_link.current %}aria-current="page"{% endif %} {% if sub_link.levels > 0 %}aria-expanded="false" aria-controls="{{ sub_menu_id }}" {% if section.settings.menu_open_trigger == 'hover' %}data-open-on-hover{% endif %}{% endif %}>
-                              {{- sub_link.title -}}
-
-                              {%- if sub_link.levels > 0 -%}
-                                {%- render 'icon' with 'chevron-right', direction_aware: true -%}
-                              {%- endif -%}
-                            </a>
-
-                            {%- if sub_link.levels > 0 -%}
-                              <header-dropdown-menu class="header__dropdown-menu color-scheme color-scheme--{{ section.settings.color_scheme.id }}" id="{{ sub_menu_id }}">
-                                <ul class="unstyled-list">
-                                  {%- for sub_sub_link in sub_link.links -%}
-                                    <li>
-                                      <a href="{{ sub_sub_link.url }}" class="subheading link-faded-reverse" {% if sub_sub_link.current %}aria-current="page"{% endif %}>{{ sub_sub_link.title }}</a>
-                                    </li>
-                                  {%- endfor -%}
-                                </ul>
-                              </header-dropdown-menu>
-                            {%- endif -%}
-                          </li>
-                        {%- endfor -%}
-                      </ul>
-                    </header-dropdown-menu>
-                  {%- else -%}
-                    {%- render 'mega-menu', link: link, color_scheme: section.settings.color_scheme, id: menu_id, block: mega_menu_block -%}
-                  {%- endif -%}
-                {%- endif -%}
-              </li>
-            {%- endfor -%}
-          </ul>
+        {%- if center_desktop_menus and section.settings.desktop_layout != 'drawer' -%}
+          <div class="header__desktop-menu-cluster md-max:hidden">
+            {{- desktop_primary_navigation -}}
+            {{- desktop_secondary_navigation -}}
+          </div>
+        {%- else -%}
+          {{- desktop_primary_navigation -}}
         {%- endif -%}
       </nav>
     {%- endif -%}
@@ -253,77 +392,9 @@
 
     <nav class="header__secondary-nav" aria-label="{{ 'header.general.secondary_navigation' | t | escape }}">
       <ul class="contents unstyled-list">
-        {%- if section.settings.secondary_menu.links.size > 0 -%}
+        {%- if secondary_menu.links.size > 0 and center_desktop_menus == false -%}
           <li class="header__secondary-nav-menu-wrapper hidden md:block">
-            <ul class="h-stack gap-6 unstyled-list">
-              {%- for link in section.settings.secondary_menu.links -%}
-                {% liquid
-                  assign link_title_downcase = link.title | strip | downcase
-                  assign mega_menu_block = ''
-
-                  for block in section.blocks
-                    assign menu_item_downcase = block.settings.menu_item | strip | downcase
-
-                    if menu_item_downcase == link_title_downcase
-                      assign mega_menu_block = block
-                      break
-                    endif
-
-                  endfor
-                %}
-
-                <li class="{% if mega_menu_block != '' %}header__secondary-nav-item header__secondary-nav-item--mega{% endif %}">
-                  {%- liquid
-                    assign has_dropdown_menu = false
-                    assign menu_id = 'header-secondary-menu-dropdown-' | append: forloop.index
-
-                    if link.levels > 0 or mega_menu_block != ''
-                      assign has_dropdown_menu = true
-                    endif
-                  -%}
-
-                  <a href="{{ link.url }}" class="block subheading link-reversed" {% if link.current %}aria-current="page"{% endif %} {% if has_dropdown_menu %}aria-expanded="false" aria-controls="{{ menu_id }}" {% if section.settings.menu_open_trigger == 'hover' %}data-open-on-hover{% endif %}{% endif %}>
-                    {{- link.title -}}
-                  </a>
-
-                  {%- if has_dropdown_menu -%}
-                    {%- if mega_menu_block == '' -%}
-                      <header-dropdown-menu class="header__dropdown-menu color-scheme color-scheme--{{ section.settings.color_scheme.id }}" id="{{ menu_id }}">
-                        <ul class="unstyled-list">
-                          {%- for sub_link in link.links -%}
-                            {%- assign sub_menu_id = menu_id | append: '-' | append: forloop.index -%}
-
-                            <li>
-                              <a href="{{ sub_link.url }}" class="subheading link-faded-reverse" {% if sub_link.current %}aria-current="page"{% endif %} {% if sub_link.levels > 0 %}aria-expanded="false" aria-controls="{{ sub_menu_id }}" {% if section.settings.menu_open_trigger == 'hover' %}data-open-on-hover{% endif %}{% endif %}>
-                                {{- sub_link.title -}}
-
-                                {%- if sub_link.levels > 0 -%}
-                                  {%- render 'icon' with 'chevron-right', direction_aware: true -%}
-                                {%- endif -%}
-                              </a>
-
-                              {%- if sub_link.levels > 0 -%}
-                                <header-dropdown-menu class="header__dropdown-menu color-scheme color-scheme--{{ section.settings.color_scheme.id }}" id="{{ sub_menu_id }}">
-                                  <ul class="unstyled-list">
-                                    {%- for sub_sub_link in sub_link.links -%}
-                                      <li>
-                                        <a href="{{ sub_sub_link.url }}" class="subheading link-faded-reverse" {% if sub_sub_link.current %}aria-current="page"{% endif %}>{{ sub_sub_link.title }}</a>
-                                      </li>
-                                    {%- endfor -%}
-                                  </ul>
-                                </header-dropdown-menu>
-                              {%- endif -%}
-                            </li>
-                          {%- endfor -%}
-                        </ul>
-                      </header-dropdown-menu>
-                    {%- else -%}
-                      {%- render 'mega-menu', link: link, color_scheme: section.settings.color_scheme, id: menu_id, block: mega_menu_block, extra_class: 'mega-menu--secondary' -%}
-                    {%- endif -%}
-                  {%- endif -%}
-                </li>
-              {%- endfor -%}
-            </ul>
+            {{- desktop_secondary_navigation -}}
           </li>
         {%- endif -%}
 
@@ -522,6 +593,51 @@
       "default": "logo_left_navigation_inline"
     },
     {
+      "type": "select",
+      "id": "desktop_menu_alignment",
+      "label": "Desktop menu alignment",
+      "options": [
+        {
+          "value": "split",
+          "label": "Split left and right"
+        },
+        {
+          "value": "centered",
+          "label": "Center menus together"
+        }
+      ],
+      "default": "split"
+    },
+    {
+      "type": "range",
+      "id": "desktop_split_menu_spacing",
+      "label": "Split menu spacing",
+      "min": 1.5,
+      "max": 10,
+      "step": 0.5,
+      "default": 1.5,
+      "visible_if": "{{ section.settings.desktop_menu_alignment == 'split' }}"
+    },
+    {
+      "type": "range",
+      "id": "desktop_centered_menu_spacing",
+      "label": "Centered menu spacing",
+      "min": 2,
+      "max": 10,
+      "step": 0.5,
+      "default": 2,
+      "visible_if": "{{ section.settings.desktop_menu_alignment == 'centered' }}"
+    },
+    {
+      "type": "range",
+      "id": "desktop_menu_font_size",
+      "label": "Desktop menu text size",
+      "min": 0.8,
+      "max": 1.5,
+      "step": 0.1,
+      "default": 1.1
+    },
+    {
       "type": "header",
       "content": "t:sections.header.logo_category"
     },
@@ -530,6 +646,18 @@
       "id": "logo",
       "label": "t:global.image.image",
       "info": "t:sections.header.logo_size_recommendation"
+    },
+    {
+      "type": "image_picker",
+      "id": "mobile_logo",
+      "label": "Mobile logo",
+      "info": "Optional. Falls back to the default logo when empty."
+    },
+    {
+      "type": "image_picker",
+      "id": "desktop_logo",
+      "label": "Desktop logo",
+      "info": "Optional. Falls back to the default logo when empty."
     },
     {
       "type": "range",

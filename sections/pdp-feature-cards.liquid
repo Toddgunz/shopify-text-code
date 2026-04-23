@@ -1,0 +1,425 @@
+{%- if section.blocks.size > 0 -%}
+  <style>
+    #shopify-section-{{ section.id }} {
+      --section-vertical-spacing-block-start: {% if section.settings.top_spacing == 'none' %}0px{% elsif section.settings.top_spacing == 'sm' %}calc(var(--section-vertical-spacing) * 0.6){% elsif section.settings.top_spacing == 'md' %}var(--section-vertical-spacing){% else %}calc(var(--section-vertical-spacing) * 1.5){% endif %};
+      --pdp-feature-cards-columns: 1;
+      --pdp-feature-cards-gap: {% if section.settings.column_spacing == 'none' %}0px{% elsif section.settings.column_spacing == 'sm' %}calc(var(--container-gutter) / 2){% elsif section.settings.column_spacing == 'md' %}var(--container-gutter){% else %}calc(var(--container-gutter) * 1.5){% endif %};
+      --pdp-feature-cards-media-radius: {{ section.settings.media_corner_radius }}px;
+    }
+
+    @media screen and (min-width: 700px) {
+      #shopify-section-{{ section.id }} {
+        --pdp-feature-cards-columns: 2;
+      }
+    }
+
+    @media screen and (min-width: 1000px) {
+      #shopify-section-{{ section.id }} {
+        --pdp-feature-cards-columns: {{ section.settings.items_per_row }};
+      }
+    }
+  </style>
+
+  <div class="color-scheme color-scheme--{{ section.settings.color_scheme.id }}">
+    <div class="{% if section.settings.add_horizontal_spacing %}container{% endif %} section-spacing">
+      <div class="section-stack">
+        {%- if section.settings.subheading != blank or section.settings.title != blank or section.settings.content != blank -%}
+          <div class="prose prose-justify-{{ section.settings.text_alignment }}">
+            {%- liquid
+              assign cards_subheading = section.settings.subheading
+              assign cards_title = section.settings.title
+              assign cards_intro = section.settings.content
+
+              if section.settings.content_source == 'product' and product != blank
+                if product.metafields.custom.pdp_feature_cards_subheading != blank
+                  assign cards_subheading = product.metafields.custom.pdp_feature_cards_subheading.value
+                endif
+
+                if product.metafields.custom.pdp_feature_cards_heading != blank
+                  assign cards_title = product.metafields.custom.pdp_feature_cards_heading.value
+                endif
+
+                if product.metafields.custom.pdp_feature_cards_intro != blank
+                  assign cards_intro = product.metafields.custom.pdp_feature_cards_intro | metafield_tag
+                endif
+              endif
+            -%}
+
+            {%- if cards_subheading != blank -%}
+              {%- render 'subheading', content: cards_subheading -%}
+            {%- endif -%}
+
+            {%- if cards_title != blank -%}
+              {%- render 'heading', content: cards_title, style: section.settings.heading_size, html_tag: 'h2' -%}
+            {%- endif -%}
+
+            {%- if cards_intro != blank -%}
+              <div class="max-w-xl">
+                {{- cards_intro -}}
+              </div>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+
+        <div class="pdp-feature-cards">
+          {%- for block in section.blocks -%}
+            {%- liquid
+              assign card_image = block.settings.image
+              assign card_heading = block.settings.heading
+              assign card_text = block.settings.text
+
+              if section.settings.content_source == 'product' and product != blank
+                assign image_key = ''
+                assign heading_key = ''
+                assign text_key = ''
+
+                case forloop.index
+                  when 1
+                    assign image_key = 'pdp_feature_card_1_image'
+                    assign heading_key = 'pdp_feature_card_1_heading'
+                    assign text_key = 'pdp_feature_card_1_text'
+                  when 2
+                    assign image_key = 'pdp_feature_card_2_image'
+                    assign heading_key = 'pdp_feature_card_2_heading'
+                    assign text_key = 'pdp_feature_card_2_text'
+                  when 3
+                    assign image_key = 'pdp_feature_card_3_image'
+                    assign heading_key = 'pdp_feature_card_3_heading'
+                    assign text_key = 'pdp_feature_card_3_text'
+                  when 4
+                    assign image_key = 'pdp_feature_card_4_image'
+                    assign heading_key = 'pdp_feature_card_4_heading'
+                    assign text_key = 'pdp_feature_card_4_text'
+                endcase
+
+                if image_key != ''
+                  assign image_metafield = product.metafields.custom[image_key]
+                  assign heading_metafield = product.metafields.custom[heading_key]
+                  assign text_metafield = product.metafields.custom[text_key]
+
+                  if image_metafield != blank
+                    assign card_image = image_metafield.value
+                  endif
+
+                  if heading_metafield != blank
+                    assign card_heading = heading_metafield.value
+                  endif
+
+                  if text_metafield != blank
+                    assign card_text = text_metafield | metafield_tag
+                  endif
+                endif
+              endif
+            -%}
+
+            <article class="pdp-feature-card" {{ block.shopify_attributes }}>
+              {%- if card_image != blank -%}
+                <div class="pdp-feature-card__media">
+                  {{- card_image | image_url: width: card_image.width | image_tag: loading: 'lazy', widths: '400,600,800,1000,1200,1400', sizes: '(max-width: 699px) 100vw, (max-width: 999px) 50vw, 33vw', class: 'pdp-feature-card__image' -}}
+                </div>
+              {%- elsif block.settings.icon != 'none' -%}
+                <div class="pdp-feature-card__icon-wrapper">
+                  {%- render 'icon' with block.settings.icon, width: block.settings.icon_width, mobile_width: block.settings.icon_width -%}
+                </div>
+              {%- endif -%}
+
+              <div class="pdp-feature-card__content">
+                {%- if card_heading != blank -%}
+                  <h3 class="pdp-feature-card__heading {{ block.settings.heading_size }}">{{ card_heading }}</h3>
+                {%- endif -%}
+
+                {%- if card_text != blank -%}
+                  <div class="pdp-feature-card__text rte">
+                    {{- card_text -}}
+                  </div>
+                {%- endif -%}
+              </div>
+            </article>
+          {%- endfor -%}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    #shopify-section-{{ section.id }} .pdp-feature-cards {
+      display: grid;
+      grid-template-columns: repeat(var(--pdp-feature-cards-columns), minmax(0, 1fr));
+      gap: var(--pdp-feature-cards-gap);
+    }
+
+    #shopify-section-{{ section.id }} .pdp-feature-card {
+      display: grid;
+      gap: 1rem;
+      align-content: start;
+    }
+
+    #shopify-section-{{ section.id }} .pdp-feature-card__media {
+      overflow: hidden;
+      border-radius: var(--pdp-feature-cards-media-radius);
+      background: rgb(var(--background-secondary));
+      aspect-ratio: {% if section.settings.image_ratio == 'portrait' %}4 / 5{% elsif section.settings.image_ratio == 'landscape' %}3 / 2{% elsif section.settings.image_ratio == 'square' %}1 / 1{% else %}auto{% endif %};
+    }
+
+    #shopify-section-{{ section.id }} .pdp-feature-card__image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    #shopify-section-{{ section.id }} .pdp-feature-card__icon-wrapper {
+      min-height: 5rem;
+      display: grid;
+      align-items: center;
+      justify-content: start;
+    }
+
+    #shopify-section-{{ section.id }} .pdp-feature-card__content {
+      display: grid;
+      gap: .625rem;
+    }
+
+    #shopify-section-{{ section.id }} .pdp-feature-card__heading {
+      margin: 0;
+      text-wrap: balance;
+    }
+
+    #shopify-section-{{ section.id }} .pdp-feature-card__text {
+      color: rgb(var(--text-color) / .85);
+    }
+
+    #shopify-section-{{ section.id }} .pdp-feature-card__text > *:first-child {
+      margin-top: 0;
+    }
+
+    #shopify-section-{{ section.id }} .pdp-feature-card__text > *:last-child {
+      margin-bottom: 0;
+    }
+  </style>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "PDP Feature Cards",
+  "tag": "section",
+  "class": "shopify-section--pdp-feature-cards",
+  "disabled_on": {
+    "groups": ["header", "custom.overlay"]
+  },
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "checkbox",
+      "id": "add_horizontal_spacing",
+      "label": "Add horizontal spacing",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "content_source",
+      "label": "Content source",
+      "options": [
+        { "value": "section", "label": "Section settings" },
+        { "value": "product", "label": "Product metafields" }
+      ],
+      "default": "section"
+    },
+    {
+      "type": "paragraph",
+      "content": "Product metafield keys: pdp_feature_cards_subheading, pdp_feature_cards_heading, pdp_feature_cards_intro, plus pdp_feature_card_1_image/heading/text through pdp_feature_card_4_image/heading/text."
+    },
+    {
+      "type": "select",
+      "id": "top_spacing",
+      "label": "Top spacing",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" }
+      ],
+      "default": "md"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Product features"
+    },
+    {
+      "type": "richtext",
+      "id": "content",
+      "label": "Intro text"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "Heading size",
+      "options": [
+        { "value": "h2", "label": "Large" },
+        { "value": "h3", "label": "Medium" },
+        { "value": "h4", "label": "Small" }
+      ],
+      "default": "h3"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Text alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "range",
+      "id": "items_per_row",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "label": "Cards per row on desktop",
+      "default": 3
+    },
+    {
+      "type": "select",
+      "id": "column_spacing",
+      "label": "Column spacing",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" }
+      ],
+      "default": "md"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Image ratio",
+      "options": [
+        { "value": "natural", "label": "Natural" },
+        { "value": "portrait", "label": "Portrait" },
+        { "value": "landscape", "label": "Landscape" },
+        { "value": "square", "label": "Square" }
+      ],
+      "default": "portrait"
+    },
+    {
+      "type": "range",
+      "id": "media_corner_radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Media corner radius",
+      "default": 0
+    }
+  ],
+  "blocks": [
+    {
+      "type": "feature",
+      "name": "Feature card",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "none", "label": "None" },
+            { "value": "picto-award-gift", "label": "Award" },
+            { "value": "picto-box", "label": "Box" },
+            { "value": "picto-chat", "label": "Chat" },
+            { "value": "picto-check-mark", "label": "Check mark" },
+            { "value": "picto-leaf", "label": "Leaf" },
+            { "value": "picto-lock", "label": "Lock" },
+            { "value": "picto-return-box", "label": "Return" },
+            { "value": "picto-secure", "label": "Secure" },
+            { "value": "picto-star", "label": "Star" },
+            { "value": "picto-truck", "label": "Truck" }
+          ],
+          "default": "none"
+        },
+        {
+          "type": "range",
+          "id": "icon_width",
+          "min": 20,
+          "max": 80,
+          "step": 2,
+          "unit": "px",
+          "label": "Icon width",
+          "default": 36
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Feature heading"
+        },
+        {
+          "type": "select",
+          "id": "heading_size",
+          "label": "Heading size",
+          "options": [
+            { "value": "h3", "label": "Large" },
+            { "value": "h4", "label": "Medium" },
+            { "value": "h5", "label": "Small" }
+          ],
+          "default": "h4"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Text",
+          "default": "<p>Use this card to explain a key product benefit, material story, or brand feature.</p>"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "PDP Feature Cards",
+      "category": "Product",
+      "blocks": [
+        {
+          "type": "feature",
+          "settings": {
+            "heading": "Light on your feet",
+            "text": "<p>Use this card to describe a lightweight construction, cushioning setup, or material story.</p>"
+          }
+        },
+        {
+          "type": "feature",
+          "settings": {
+            "heading": "Built for long efforts",
+            "text": "<p>Use this card for durability, responsiveness, or the type of effort the product is designed for.</p>"
+          }
+        },
+        {
+          "type": "feature",
+          "settings": {
+            "heading": "Made to move",
+            "text": "<p>Use this card for flexibility, fit, layering, or comfort details that matter on the run.</p>"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

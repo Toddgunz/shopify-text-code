@@ -7,7 +7,7 @@
  * made to this file may be overwritten.
  * ------------------------------------------------------------
  */
- {
+{
   "sections": {
     "main": {
       "type": "main-product",
@@ -201,15 +201,13 @@
         "image": "",
         "mobile_image": "",
         "image_position": "end",
-        "add_image_spacing": false,
-        "image_height": "md"
+        "add_image_spacing": false
       }
     },
     "compare-shoes": {
       "type": "compare-shoes",
       "settings": {
         "color_scheme": "",
-        "subheading": "",
         "title": "Compare shoes",
         "heading_size": "h3"
       }

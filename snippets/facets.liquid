@@ -67,6 +67,34 @@ Display the facets for a given resource.
     {%- endif -%}
 
     {%- for filter in source.filters -%}
+      {%- liquid
+        assign filter_param_key = filter.param_name | downcase
+        assign filter_label_key = filter.label | downcase | strip
+        assign show_filter_item = true
+
+        if filter.param_name == 'filter.v.availability'
+          assign show_filter_item = section.settings.show_filter_availability
+        elsif filter.type == 'price_range' or filter_param_key contains 'price'
+          assign show_filter_item = section.settings.show_filter_price
+        elsif filter_param_key contains 'filter.p.option.size' or filter_label_key == 'size'
+          assign show_filter_item = section.settings.show_filter_size
+        elsif filter_param_key contains 'filter.p.option.width' or filter_label_key == 'width'
+          assign show_filter_item = section.settings.show_filter_width
+        elsif filter_param_key contains 'filter.p.option.color' or color_label_list contains filter_label_key
+          assign show_filter_item = section.settings.show_filter_color
+        elsif filter_param_key contains 'vendor' or filter_label_key contains 'brand' or filter_label_key contains 'vendor'
+          assign show_filter_item = section.settings.show_filter_brand
+        elsif filter_param_key contains 'product_type' or filter_label_key == 'type' or filter_label_key == 'product type'
+          assign show_filter_item = section.settings.show_filter_type
+        elsif filter_param_key contains 'tag' and filter_label_key contains 'gender'
+          assign show_filter_item = section.settings.show_filter_gender
+        endif
+      -%}
+
+      {%- unless show_filter_item -%}
+        {%- continue -%}
+      {%- endunless -%}
+
       {%- if filter.param_name == 'filter.v.availability' -%}
         {%- comment -%}
         IMPLEMENTATION NOTE: we are doing an exception for the availability filter, where we display it differently

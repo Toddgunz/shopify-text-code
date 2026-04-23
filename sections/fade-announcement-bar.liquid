@@ -1,0 +1,435 @@
+{%- if section.blocks.size > 0 -%}
+  {%- liquid
+    assign should_render = true
+
+    if request.page_type != 'index' and section.settings.show_on_homepage_only
+      assign should_render = false
+    endif
+
+    if request.page_type == 'index' and section.settings.hide_on_homepage
+      assign should_render = false
+    endif
+  -%}
+
+  {%- if should_render -%}
+    <style>
+      :root {
+        --announcement-bar-is-sticky: {% if section.settings.enable_sticky %}1{% else %}0{% endif %};
+      }
+
+      {%- if section.settings.enable_sticky -%}
+        #shopify-section-{{ section.id }} {
+          position: sticky;
+          top: 0;
+          z-index: 3;
+        }
+
+        .shopify-section--header ~ #shopify-section-{{ section.id }} {
+          top: calc(var(--header-is-sticky, 0) * var(--header-is-visible, 0) * var(--header-height, 0px));
+        }
+      {%- endif -%}
+
+      #shopify-section-{{ section.id }} .fade-announcement-bar {
+        text-align: center;
+        display: inline-grid;
+        align-items: center;
+        grid-template-columns: auto minmax(0, var(--fade-announcement-bar-viewport-width, min(100%, {{ section.settings.content_max_width }}rem))) auto;
+        column-gap: .75rem;
+        min-height: 2.75rem;
+        padding: .7rem var(--container-gutter);
+        width: 100%;
+        justify-content: center;
+      }
+
+      #shopify-section-{{ section.id }} .fade-announcement-bar__nav {
+        color: inherit;
+        opacity: .6;
+        transition: opacity .2s ease-in-out;
+        width: 2.25rem;
+        min-width: 2.25rem;
+        justify-self: center;
+      }
+
+      #shopify-section-{{ section.id }} .fade-announcement-bar__nav:hover {
+        opacity: 1;
+      }
+
+      #shopify-section-{{ section.id }} .fade-announcement-bar__nav[disabled] {
+        opacity: .25;
+        pointer-events: none;
+      }
+
+      #shopify-section-{{ section.id }} .fade-announcement-bar__viewport {
+        position: relative;
+        width: 100%;
+        max-width: min(100%, {{ section.settings.content_max_width }}rem);
+        min-height: 1.25rem;
+        overflow: hidden;
+      }
+
+      #shopify-section-{{ section.id }} .fade-announcement-bar__message {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(115%);
+        transition: opacity {{ section.settings.fade_speed | times: 0.001 }}s ease, transform {{ section.settings.fade_speed | times: 0.001 }}s ease, visibility 0s linear {{ section.settings.fade_speed | times: 0.001 }}s;
+        pointer-events: none;
+      }
+
+      #shopify-section-{{ section.id }} .fade-announcement-bar__message.is-before,
+      #shopify-section-{{ section.id }} .fade-announcement-bar__message.is-after,
+      #shopify-section-{{ section.id }} .fade-announcement-bar__message.is-selected {
+        visibility: visible;
+        transition-delay: 0s;
+      }
+
+      #shopify-section-{{ section.id }} .fade-announcement-bar__message.is-before {
+        opacity: 0;
+        transform: translateY(-115%);
+      }
+
+      #shopify-section-{{ section.id }} .fade-announcement-bar__message.is-after {
+        opacity: 0;
+        transform: translateY(115%);
+      }
+
+      #shopify-section-{{ section.id }} .fade-announcement-bar__message.is-selected {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+      }
+
+      #shopify-section-{{ section.id }} .fade-announcement-bar__message > * {
+        margin: 0;
+      }
+
+      #shopify-section-{{ section.id }} .fade-announcement-bar__link {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      #shopify-section-{{ section.id }} .fade-announcement-bar__link:hover {
+        text-decoration: underline;
+        text-underline-offset: .18em;
+      }
+
+      @media screen and (min-width: 700px) {
+        #shopify-section-{{ section.id }} .fade-announcement-bar {
+          min-height: 3rem;
+          column-gap: 2.5rem;
+          padding-block: .8rem;
+        }
+      }
+    </style>
+
+    <div class="color-scheme color-scheme--{{ section.settings.color_scheme.id }}">
+      <height-observer variable="announcement-bar">
+        <fade-announcement-bar class="fade-announcement-bar" {% if section.settings.autoplay and section.blocks.size > 1 %}autoplay="{{ section.settings.cycle_speed }}"{% endif %} {% if section.settings.pause_on_hover %}pause-on-hover{% endif %}>
+          {%- if section.blocks.size > 1 and section.settings.show_arrows -%}
+            <button type="button" class="fade-announcement-bar__nav tap-area" data-action="prev">
+              <span class="sr-only">{{ 'general.accessibility.previous' | t }}</span>
+              {%- render 'icon' with 'arrow-left', direction_aware: true -%}
+            </button>
+          {%- endif -%}
+
+          <div class="fade-announcement-bar__viewport">
+            {%- for block in section.blocks -%}
+              {%- if block.settings.text != blank -%}
+                <div class="fade-announcement-bar__message{% if forloop.first %} is-selected{% elsif forloop.index == 2 %} is-after{% endif %}" {{ block.shopify_attributes }}>
+                  {%- if block.settings.link != blank -%}
+                    <a href="{{ block.settings.link }}" class="fade-announcement-bar__link">
+                      <p class="subheading subheading-xs">{{ block.settings.text }}</p>
+                    </a>
+                  {%- else -%}
+                    <p class="subheading subheading-xs">{{ block.settings.text }}</p>
+                  {%- endif -%}
+                </div>
+              {%- endif -%}
+            {%- endfor -%}
+          </div>
+
+          {%- if section.blocks.size > 1 and section.settings.show_arrows -%}
+            <button type="button" class="fade-announcement-bar__nav tap-area" data-action="next">
+              <span class="sr-only">{{ 'general.accessibility.next' | t }}</span>
+              {%- render 'icon' with 'arrow-right', direction_aware: true -%}
+            </button>
+          {%- endif -%}
+        </fade-announcement-bar>
+      </height-observer>
+    </div>
+
+    <script>
+      (() => {
+        class FadeAnnouncementBar extends HTMLElement {
+          connectedCallback() {
+            this.messages = Array.from(this.querySelectorAll('.fade-announcement-bar__message'));
+            this.selectedIndex = this.messages.findIndex((message) => message.classList.contains('is-selected'));
+            this.selectedIndex = this.selectedIndex >= 0 ? this.selectedIndex : 0;
+            this.autoplaySeconds = Number(this.getAttribute('autoplay')) || 0;
+            this.pauseOnHover = this.hasAttribute('pause-on-hover');
+            this.intervalId = null;
+
+            if (this.pauseOnHover) {
+              this.addEventListener('mouseenter', this.stopRotation.bind(this));
+              this.addEventListener('mouseleave', this.startRotation.bind(this));
+            }
+
+            this.querySelector('[data-action="prev"]')?.addEventListener('click', () => {
+              this.showPreviousMessage();
+              this.restartRotation();
+            });
+
+            this.querySelector('[data-action="next"]')?.addEventListener('click', () => {
+              this.showNextMessage();
+              this.restartRotation();
+            });
+
+            this.syncClasses();
+            this.syncViewportWidth();
+            this.syncHeight();
+            this.startRotation();
+            window.addEventListener('resize', this.handleResize);
+          }
+
+          disconnectedCallback() {
+            this.stopRotation();
+            window.removeEventListener('resize', this.handleResize);
+          }
+
+          startRotation() {
+            if (this.messages.length <= 1 || this.autoplaySeconds <= 0) {
+              return;
+            }
+
+            this.stopRotation();
+            this.intervalId = window.setInterval(() => this.showNextMessage(), this.autoplaySeconds * 1000);
+          }
+
+          stopRotation() {
+            if (this.intervalId) {
+              window.clearInterval(this.intervalId);
+              this.intervalId = null;
+            }
+          }
+
+          restartRotation() {
+            if (this.autoplaySeconds > 0) {
+              this.startRotation();
+            }
+          }
+
+          showNextMessage() {
+            this.selectedIndex = (this.selectedIndex + 1) % this.messages.length;
+            this.syncClasses();
+            this.syncHeight();
+          }
+
+          showPreviousMessage() {
+            this.selectedIndex = (this.selectedIndex - 1 + this.messages.length) % this.messages.length;
+            this.syncClasses();
+            this.syncHeight();
+          }
+
+          syncClasses() {
+            this.messages.forEach((message, index) => {
+              message.classList.remove('is-before', 'is-selected', 'is-after');
+
+              if (index === this.selectedIndex) {
+                message.classList.add('is-selected');
+                return;
+              }
+
+              const previousIndex = (this.selectedIndex - 1 + this.messages.length) % this.messages.length;
+              const nextIndex = (this.selectedIndex + 1) % this.messages.length;
+
+              if (index === previousIndex) {
+                message.classList.add('is-before');
+              } else if (index === nextIndex) {
+                message.classList.add('is-after');
+              }
+            });
+          }
+
+          syncHeight() {
+            const viewport = this.querySelector('.fade-announcement-bar__viewport');
+            const currentMessage = this.messages[this.selectedIndex];
+
+            if (!viewport || !currentMessage) {
+              return;
+            }
+
+            viewport.style.minHeight = `${Math.ceil(currentMessage.offsetHeight)}px`;
+            document.documentElement.style.setProperty('--announcement-bar-height', `${Math.round(document.getElementById('shopify-section-{{ section.id }}').clientHeight)}px`);
+          }
+
+          handleResize = () => {
+            this.syncViewportWidth();
+            this.syncHeight();
+          }
+
+          syncViewportWidth() {
+            const viewport = this.querySelector('.fade-announcement-bar__viewport');
+
+            if (!viewport || this.messages.length === 0) {
+              return;
+            }
+
+            const previousMinHeight = viewport.style.minHeight;
+
+            viewport.style.minHeight = '';
+
+            let maxWidth = 0;
+
+            this.messages.forEach((message) => {
+              const previousVisibility = message.style.visibility;
+              const previousOpacity = message.style.opacity;
+              const previousPointerEvents = message.style.pointerEvents;
+              const previousPosition = message.style.position;
+              const previousInset = message.style.inset;
+              const previousTransform = message.style.transform;
+
+              message.style.visibility = 'hidden';
+              message.style.opacity = '1';
+              message.style.pointerEvents = 'none';
+              message.style.position = 'relative';
+              message.style.inset = 'auto';
+              message.style.transform = 'none';
+
+              maxWidth = Math.max(maxWidth, Math.ceil(message.scrollWidth));
+
+              message.style.visibility = previousVisibility;
+              message.style.opacity = previousOpacity;
+              message.style.pointerEvents = previousPointerEvents;
+              message.style.position = previousPosition;
+              message.style.inset = previousInset;
+              message.style.transform = previousTransform;
+            });
+
+            this.style.setProperty('--fade-announcement-bar-viewport-width', `${maxWidth}px`);
+            viewport.style.width = `min(100%, ${maxWidth}px)`;
+            viewport.style.minHeight = previousMinHeight;
+          }
+        }
+
+        if (!customElements.get('fade-announcement-bar')) {
+          customElements.define('fade-announcement-bar', FadeAnnouncementBar);
+        }
+      })();
+    </script>
+  {%- endif -%}
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Fade announcement bar",
+  "class": "shopify-section--announcement-bar",
+  "tag": "aside",
+  "enabled_on": {
+    "groups": ["header"]
+  },
+  "max_blocks": 6,
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_sticky",
+      "label": "Enable sticky",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_on_homepage_only",
+      "label": "Show on homepage only",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_on_homepage",
+      "label": "Hide on homepage",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Auto-rotate messages",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "cycle_speed",
+      "min": 3,
+      "max": 12,
+      "step": 1,
+      "unit": "s",
+      "label": "Time per message",
+      "default": 5,
+      "visible_if": "{{ section.settings.autoplay }}"
+    },
+    {
+      "type": "range",
+      "id": "fade_speed",
+      "min": 150,
+      "max": 800,
+      "step": 50,
+      "unit": "ms",
+      "label": "Fade speed",
+      "default": 300
+    },
+    {
+      "type": "checkbox",
+      "id": "pause_on_hover",
+      "label": "Pause on hover",
+      "default": true,
+      "visible_if": "{{ section.settings.autoplay }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_arrows",
+      "label": "Show side arrows",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "content_max_width",
+      "min": 20,
+      "max": 60,
+      "step": 1,
+      "unit": "rem",
+      "label": "Content max width",
+      "default": 38
+    }
+  ],
+  "blocks": [
+    {
+      "type": "message",
+      "name": "Message",
+      "settings": [
+        {
+          "type": "inline_richtext",
+          "id": "text",
+          "label": "Text",
+          "default": "Announce something here"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Fade announcement bar"
+    }
+  ]
+}
+{% endschema %}

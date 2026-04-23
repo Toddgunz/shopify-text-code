@@ -1,0 +1,230 @@
+<style>
+  #shopify-section-{{ section.id }} {
+    --section-vertical-spacing-block-start: {% if section.settings.top_spacing == 'none' %}0px{% elsif section.settings.top_spacing == 'sm' %}calc(var(--section-vertical-spacing) * 0.6){% elsif section.settings.top_spacing == 'md' %}var(--section-vertical-spacing){% else %}calc(var(--section-vertical-spacing) * 1.5){% endif %};
+    --pdp-split-story-gap: {% if section.settings.column_spacing == 'none' %}0px{% elsif section.settings.column_spacing == 'sm' %}calc(var(--container-gutter) / 2){% elsif section.settings.column_spacing == 'md' %}var(--container-gutter){% else %}calc(var(--container-gutter) * 1.5){% endif %};
+    --pdp-split-story-columns: 1fr;
+    --pdp-split-story-content-max-width: {{ section.settings.content_width }}px;
+    --pdp-split-story-media-radius: {{ section.settings.media_corner_radius }}px;
+  }
+
+  @media screen and (min-width: 1000px) {
+    #shopify-section-{{ section.id }} {
+      --pdp-split-story-columns: {% if section.settings.content_position == 'left' %}minmax(0, {{ section.settings.content_width_percentage }}fr) minmax(0, {{ 100 | minus: section.settings.content_width_percentage }}fr){% else %}minmax(0, {{ 100 | minus: section.settings.content_width_percentage }}fr) minmax(0, {{ section.settings.content_width_percentage }}fr){% endif %};
+    }
+  }
+</style>
+
+<div class="color-scheme color-scheme--{{ section.settings.color_scheme.id }}">
+  <div class="{% if section.settings.add_horizontal_spacing %}container{% endif %} section-spacing">
+    <div class="pdp-split-story{% if section.settings.content_position == 'right' %} pdp-split-story--reverse{% endif %}">
+      <div class="pdp-split-story__content">
+        <div class="prose prose-justify-{{ section.settings.text_alignment }}">
+          {%- if section.settings.subheading != blank -%}
+            {%- render 'subheading', content: section.settings.subheading -%}
+          {%- endif -%}
+
+          {%- if section.settings.title != blank -%}
+            {%- render 'heading', content: section.settings.title, style: section.settings.heading_size, html_tag: 'h2' -%}
+          {%- endif -%}
+
+          {%- if section.settings.text != blank -%}
+            <div class="max-w-full">
+              {{- section.settings.text -}}
+            </div>
+          {%- endif -%}
+
+          {%- if section.settings.button_text != blank and section.settings.button_link != blank -%}
+            {%- render 'button', content: section.settings.button_text, href: section.settings.button_link, style: section.settings.button_style -%}
+          {%- endif -%}
+        </div>
+      </div>
+
+      <div class="pdp-split-story__media">
+        {%- if section.settings.image != blank -%}
+          {{- section.settings.image | image_url: width: section.settings.image.width | image_tag: loading: 'lazy', widths: '500,700,900,1100,1400,1800', sizes: '(max-width: 999px) 100vw, 50vw', class: 'pdp-split-story__image' -}}
+        {%- else -%}
+          {{- 'image' | placeholder_svg_tag: 'pdp-split-story__image placeholder' -}}
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  #shopify-section-{{ section.id }} .pdp-split-story {
+    display: grid;
+    grid-template-columns: var(--pdp-split-story-columns);
+    gap: var(--pdp-split-story-gap);
+    align-items: center;
+  }
+
+  #shopify-section-{{ section.id }} .pdp-split-story__content {
+    order: 1;
+    max-width: var(--pdp-split-story-content-max-width);
+  }
+
+  #shopify-section-{{ section.id }} .pdp-split-story__media {
+    order: 2;
+    overflow: hidden;
+    border-radius: var(--pdp-split-story-media-radius);
+    background: rgb(var(--background-secondary));
+    aspect-ratio: {% if section.settings.image_ratio == 'portrait' %}4 / 5{% elsif section.settings.image_ratio == 'square' %}1 / 1{% else %}3 / 2{% endif %};
+  }
+
+  #shopify-section-{{ section.id }} .pdp-split-story__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  @media screen and (min-width: 1000px) {
+    #shopify-section-{{ section.id }} .pdp-split-story--reverse .pdp-split-story__content {
+      order: 2;
+      justify-self: end;
+    }
+
+    #shopify-section-{{ section.id }} .pdp-split-story--reverse .pdp-split-story__media {
+      order: 1;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "PDP Split Story",
+  "tag": "section",
+  "class": "shopify-section--pdp-split-story",
+  "disabled_on": {
+    "groups": ["header", "custom.overlay"]
+  },
+  "settings": [
+    { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-1" },
+    { "type": "checkbox", "id": "add_horizontal_spacing", "label": "Add horizontal spacing", "default": true },
+    {
+      "type": "select",
+      "id": "top_spacing",
+      "label": "Top spacing",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" }
+      ],
+      "default": "md"
+    },
+    {
+      "type": "select",
+      "id": "content_position",
+      "label": "Text position",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "range",
+      "id": "content_width_percentage",
+      "min": 35,
+      "max": 60,
+      "step": 5,
+      "unit": "%",
+      "label": "Text column width",
+      "default": 45
+    },
+    {
+      "type": "range",
+      "id": "content_width",
+      "min": 360,
+      "max": 760,
+      "step": 20,
+      "unit": "px",
+      "label": "Text max width",
+      "default": 520
+    },
+    {
+      "type": "select",
+      "id": "column_spacing",
+      "label": "Column spacing",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" }
+      ],
+      "default": "lg"
+    },
+    { "type": "image_picker", "id": "image", "label": "Image" },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Image ratio",
+      "options": [
+        { "value": "landscape", "label": "Landscape" },
+        { "value": "portrait", "label": "Portrait" },
+        { "value": "square", "label": "Square" }
+      ],
+      "default": "landscape"
+    },
+    {
+      "type": "range",
+      "id": "media_corner_radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Image corner radius",
+      "default": 0
+    },
+    { "type": "text", "id": "subheading", "label": "Subheading" },
+    { "type": "text", "id": "title", "label": "Heading", "default": "Built to tell a deeper story" },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "Heading size",
+      "options": [
+        { "value": "h2", "label": "Large" },
+        { "value": "h3", "label": "Medium" },
+        { "value": "h4", "label": "Small" }
+      ],
+      "default": "h3"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Text alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text",
+      "default": "<p>Use this section for athlete stories, fit notes, material narratives, or a brand message that needs more room to breathe.</p>"
+    },
+    { "type": "text", "id": "button_text", "label": "Button label" },
+    { "type": "url", "id": "button_link", "label": "Button link" },
+    {
+      "type": "select",
+      "id": "button_style",
+      "label": "Button style",
+      "options": [
+        { "value": "outline", "label": "Outline" },
+        { "value": "solid", "label": "Solid" },
+        { "value": "link", "label": "Link" }
+      ],
+      "default": "outline"
+    }
+  ],
+  "presets": [
+    {
+      "name": "PDP Split Story",
+      "category": "Product"
+    }
+  ]
+}
+{% endschema %}

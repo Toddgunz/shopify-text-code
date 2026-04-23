@@ -1,0 +1,219 @@
+<style>
+  #shopify-section-{{ section.id }} {
+    --section-vertical-spacing-block-start: {% if section.settings.top_spacing == 'none' %}0px{% elsif section.settings.top_spacing == 'sm' %}calc(var(--section-vertical-spacing) * 0.6){% elsif section.settings.top_spacing == 'md' %}var(--section-vertical-spacing){% else %}calc(var(--section-vertical-spacing) * 1.5){% endif %};
+  }
+</style>
+
+<div class="color-scheme color-scheme--{{ section.settings.color_scheme.id }}">
+  <div class="{% if section.settings.add_horizontal_spacing %}container{% endif %} section-spacing">
+    <div class="pdp-hero-story">
+      <div class="pdp-hero-story__media with-overlay" style="--overlay: {{ section.settings.overlay_color.rgb }} / {{ section.settings.overlay_opacity | divided_by: 100.0 }}">
+        {%- if section.settings.image != blank -%}
+          {%- render 'media' with section.settings.image, mobile_media: section.settings.mobile_image -%}
+        {%- else -%}
+          {{- 'hero-apparel-1' | placeholder_svg_tag: 'size-full' -}}
+        {%- endif -%}
+      </div>
+
+      <div class="pdp-hero-story__content {{ section.settings.mobile_text_position }} {{ section.settings.desktop_text_position }}">
+        <div class="max-w-{{ section.settings.content_width }} prose prose-justify-{{ section.settings.text_alignment }}">
+          {%- if section.settings.subheading != blank -%}
+            {%- render 'subheading', content: section.settings.subheading -%}
+          {%- endif -%}
+
+          {%- if section.settings.title != blank -%}
+            {%- render 'heading', content: section.settings.title, style: section.settings.heading_size, html_tag: 'h2' -%}
+          {%- endif -%}
+
+          {%- if section.settings.text != blank -%}
+            <div>
+              {{- section.settings.text -}}
+            </div>
+          {%- endif -%}
+
+          {%- if section.settings.button_text != blank and section.settings.button_link != blank -%}
+            {%- render 'button', content: section.settings.button_text, href: section.settings.button_link, style: section.settings.button_style -%}
+          {%- endif -%}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  #shopify-section-{{ section.id }} .pdp-hero-story {
+    position: relative;
+    min-height: {% if section.settings.section_height == 'sm' %}26rem{% elsif section.settings.section_height == 'md' %}34rem{% else %}42rem{% endif %};
+    display: grid;
+  }
+
+  #shopify-section-{{ section.id }} .pdp-hero-story__media {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    border-radius: {{ section.settings.media_corner_radius }}px;
+    background: rgb(var(--background-secondary));
+  }
+
+  #shopify-section-{{ section.id }} .pdp-hero-story__media > * {
+    width: 100%;
+    height: 100%;
+  }
+
+  #shopify-section-{{ section.id }} .pdp-hero-story__media img,
+  #shopify-section-{{ section.id }} .pdp-hero-story__media video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  #shopify-section-{{ section.id }} .pdp-hero-story__content {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    padding: min(2rem, var(--container-gutter));
+  }
+  @media screen and (min-width: 700px) {
+    #shopify-section-{{ section.id }} .pdp-hero-story__content {
+      padding: min(3rem, var(--container-gutter) * 2);
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "PDP Hero Story",
+  "tag": "section",
+  "class": "shopify-section--pdp-hero-story",
+  "disabled_on": {
+    "groups": ["header", "custom.overlay"]
+  },
+  "settings": [
+    { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-3" },
+    { "type": "checkbox", "id": "add_horizontal_spacing", "label": "Add horizontal spacing", "default": false },
+    {
+      "type": "select",
+      "id": "top_spacing",
+      "label": "Top spacing",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" }
+      ],
+      "default": "md"
+    },
+    {
+      "type": "select",
+      "id": "section_height",
+      "label": "Section height",
+      "options": [
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" }
+      ],
+      "default": "md"
+    },
+    { "type": "image_picker", "id": "image", "label": "Desktop image" },
+    { "type": "image_picker", "id": "mobile_image", "label": "Mobile image" },
+    { "type": "color", "id": "overlay_color", "label": "Overlay color", "default": "#000000" },
+    { "type": "range", "id": "overlay_opacity", "label": "Overlay opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 20 },
+    { "type": "range", "id": "media_corner_radius", "label": "Image corner radius", "min": 0, "max": 40, "step": 2, "unit": "px", "default": 0 },
+    {
+      "type": "select",
+      "id": "content_width",
+      "label": "Content width",
+      "options": [
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "full", "label": "Full" }
+      ],
+      "default": "md"
+    },
+    {
+      "type": "select",
+      "id": "desktop_text_position",
+      "label": "Desktop content position",
+      "options": [
+        { "value": "sm:place-self-start-start", "label": "Top left" },
+        { "value": "sm:place-self-start-center", "label": "Top center" },
+        { "value": "sm:place-self-start-end", "label": "Top right" },
+        { "value": "sm:place-self-center-start", "label": "Middle left" },
+        { "value": "sm:place-self-center", "label": "Middle center" },
+        { "value": "sm:place-self-center-end", "label": "Middle right" },
+        { "value": "sm:place-self-end-start", "label": "Bottom left" },
+        { "value": "sm:place-self-end-center", "label": "Bottom center" },
+        { "value": "sm:place-self-end-end", "label": "Bottom right" }
+      ],
+      "default": "sm:place-self-end-start"
+    },
+    {
+      "type": "select",
+      "id": "mobile_text_position",
+      "label": "Mobile content position",
+      "options": [
+        { "value": "place-self-start-start", "label": "Top left" },
+        { "value": "place-self-start-center", "label": "Top center" },
+        { "value": "place-self-start-end", "label": "Top right" },
+        { "value": "place-self-center-start", "label": "Middle left" },
+        { "value": "place-self-center", "label": "Middle center" },
+        { "value": "place-self-center-end", "label": "Middle right" },
+        { "value": "place-self-end-start", "label": "Bottom left" },
+        { "value": "place-self-end-center", "label": "Bottom center" },
+        { "value": "place-self-end-end", "label": "Bottom right" }
+      ],
+      "default": "place-self-end-start"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Text alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    { "type": "text", "id": "subheading", "label": "Subheading" },
+    { "type": "text", "id": "title", "label": "Heading", "default": "A full-width story moment" },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "Heading size",
+      "options": [
+        { "value": "h2", "label": "Large" },
+        { "value": "h3", "label": "Medium" },
+        { "value": "h4", "label": "Small" }
+      ],
+      "default": "h2"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text",
+      "default": "<p>Use this section when a brand gives you a strong hero visual and a short campaign story worth spotlighting.</p>"
+    },
+    { "type": "text", "id": "button_text", "label": "Button label" },
+    { "type": "url", "id": "button_link", "label": "Button link" },
+    {
+      "type": "select",
+      "id": "button_style",
+      "label": "Button style",
+      "options": [
+        { "value": "outline", "label": "Outline" },
+        { "value": "solid", "label": "Solid" },
+        { "value": "link", "label": "Link" }
+      ],
+      "default": "outline"
+    }
+  ],
+  "presets": [
+    {
+      "name": "PDP Hero Story",
+      "category": "Product"
+    }
+  ]
+}
+{% endschema %}

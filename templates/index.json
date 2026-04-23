@@ -9,858 +9,231 @@
  */
 {
   "sections": {
-    "slideshow": {
-      "type": "slideshow",
-      "blocks": {
-        "slideshow_image_slide_kRqKMw": {
-          "type": "_slideshow-image-slide",
-          "name": "t:sections.slideshow.blocks.image.name",
-          "settings": {
-            "color_scheme": "",
-            "image": "shopify://shop_images/ROKU_Images_8.jpg",
-            "mobile_image": "shopify://shop_images/ROKU_Images_8_6beadf1e-5856-41f3-bc96-f6111a18a0d1.jpg",
-            "slide_link": "",
-            "content_max_width": 1100,
-            "mobile_content_position": "place-self-start-center",
-            "desktop_content_position": "sm:place-self-start-end",
-            "overlay_color": "#000000",
-            "overlay_opacity": 20
-          },
-          "blocks": {
-            "heading_TjNndm": {
-              "type": "heading",
-              "settings": {
-                "text": "Introducing the Ellipse",
-                "heading_size": "display-m",
-                "html_tag": "h1",
-                "indent": "none",
-                "highlight_effect": "none",
-                "highlight_accent_color": "",
-                "highlight_text_color": ""
-              },
-              "blocks": {}
-            },
-            "button_dAThHm": {
-              "type": "button",
-              "name": "t:blocks.button.name",
-              "settings": {
-                "text": "Lose Track of Time",
-                "url": "",
-                "open_in_new_tab": false,
-                "style": "outline",
-                "background": "",
-                "text_color": ""
-              },
-              "blocks": {}
-            }
-          },
-          "block_order": [
-            "heading_TjNndm",
-            "button_dAThHm"
-          ]
-        },
-        "slideshow-image-slide-1": {
-          "type": "_slideshow-image-slide",
-          "settings": {
-            "color_scheme": "scheme-3",
-            "image": "shopify://shop_images/ROKU_Images_14.jpg",
-            "slide_link": "",
-            "content_max_width": 720,
-            "mobile_content_position": "place-self-end-start",
-            "desktop_content_position": "sm:place-self-end-start",
-            "overlay_color": "#000000",
-            "overlay_opacity": 20
-          },
-          "blocks": {
-            "rich_text_tEKGyt": {
-              "type": "rich-text",
-              "name": "t:blocks.rich_text.name",
-              "settings": {
-                "text": "<p>Discover our new collection: The On Cloudmonster 3 lineup. Engineered with premium cushioning and responsive technology, these shoes deliver the perfect balance of comfort and performance for every run.</p>",
-                "content_width": "sm"
-              },
-              "blocks": {}
-            },
-            "button-1": {
-              "type": "button",
-              "settings": {
-                "text": "VIEW ENTIRE LINEUP",
-                "url": "shopify://collections/all",
-                "open_in_new_tab": false,
-                "style": "solid",
-                "background": "",
-                "text_color": ""
-              },
-              "blocks": {}
-            }
-          },
-          "block_order": [
-            "rich_text_tEKGyt",
-            "button-1"
-          ]
-        },
-        "slideshow-controls": {
-          "type": "_slideshow-controls",
-          "static": true,
-          "settings": {
-            "controls_style": "line",
-            "controls_color": "#ffffff"
-          },
-          "blocks": {}
-        }
-      },
-      "block_order": [
-        "slideshow_image_slide_kRqKMw",
-        "slideshow-image-slide-1"
-      ],
+    "split_hero": {
+      "type": "split-hero",
       "settings": {
         "allow_transparent_header": true,
         "image_size": "fill",
-        "transition_type": "perspective",
-        "autoplay": true,
-        "pause_auto_rotate_on_hover": true,
-        "cycle_speed": 7,
-        "background": "#c4cfcd"
+        "panel_gap": 0,
+        "panel_gap_color_mode": "black",
+        "panel_gap_color": "#ffffff",
+        "show_top_vignette": true,
+        "top_vignette_color": "#000000",
+        "top_vignette_opacity": 20,
+        "top_vignette_height": 180,
+        "left_color_scheme": "scheme-3",
+        "left_image": "shopify://shop_images/ROKU_Images_8.jpg",
+        "left_mobile_image": "shopify://shop_images/ROKU_Images_8_6beadf1e-5856-41f3-bc96-f6111a18a0d1.jpg",
+        "left_link": "",
+        "left_content_max_width": 1100,
+        "left_mobile_padding_inline": 24,
+        "left_desktop_padding_inline": 48,
+        "left_mobile_content_position": "place-self-start-center",
+        "left_desktop_content_position": "sm:place-self-start-end",
+        "left_subheading": "",
+        "left_subheading_font_size": 16,
+        "left_subheading_padding_top": 0,
+        "left_subheading_padding_bottom": 0,
+        "left_subheading_position": "with_content",
+        "left_heading": "Introducing the Ellipse",
+        "left_heading_font_size": 80,
+        "left_heading_padding_top": 0,
+        "left_heading_padding_bottom": 0,
+        "left_text": "",
+        "left_use_custom_content_colors": false,
+        "left_subheading_color": "#ffffff",
+        "left_heading_color": "#ffffff",
+        "left_text_color": "#ffffff",
+        "left_button_text": "Lose Track of Time",
+        "left_button_font_size": 14,
+        "left_button_link": "",
+        "left_button_style": "outline",
+        "left_button_text_color": "#ffffff",
+        "left_button_background_color": "#000000",
+        "left_overlay_color": "#000000",
+        "left_overlay_opacity": 20,
+        "left_show_bottom_link": false,
+        "left_bottom_link_text": "",
+        "left_bottom_link_font_size": 16,
+        "left_bottom_link_url": "",
+        "left_bottom_link_position": "right",
+        "left_bottom_link_color": "#ffffff",
+        "left_bottom_link_padding_inline": 32,
+        "left_bottom_link_padding_bottom": 32,
+        "left_bottom_rule_thickness": 2,
+        "left_bottom_rule_inset": 32,
+        "left_bottom_rule_offset": 8,
+        "right_color_scheme": "scheme-3",
+        "right_image": "shopify://shop_images/Shopify_Split_Hero_2.png",
+        "right_link": "",
+        "right_content_max_width": 1200,
+        "right_mobile_padding_inline": 24,
+        "right_desktop_padding_inline": 48,
+        "right_mobile_content_position": "place-self-end-start",
+        "right_desktop_content_position": "sm:place-self-end-start",
+        "right_subheading": "",
+        "right_subheading_font_size": 26,
+        "right_subheading_padding_top": 96,
+        "right_subheading_padding_bottom": 0,
+        "right_subheading_position": "top-center",
+        "right_heading": "YOUR FRIENDLY NEIGHBORHOOD MONSTERS",
+        "right_heading_font_size": 68,
+        "right_heading_padding_top": 0,
+        "right_heading_padding_bottom": 120,
+        "right_text": "",
+        "right_use_custom_content_colors": true,
+        "right_subheading_color": "#ffffff",
+        "right_heading_color": "#ffffff",
+        "right_text_color": "#ffffff",
+        "right_button_text": "",
+        "right_button_font_size": 14,
+        "right_button_link": "",
+        "right_button_style": "solid",
+        "right_button_text_color": "#ffffff",
+        "right_button_background_color": "#000000",
+        "right_overlay_color": "#000000",
+        "right_overlay_opacity": 20,
+        "right_show_bottom_link": true,
+        "right_bottom_link_text": "Explore The Lineup",
+        "right_bottom_link_font_size": 16,
+        "right_bottom_link_url": "shopify://products/men-cloudrunner-3-black-ivory",
+        "right_bottom_link_position": "right",
+        "right_bottom_link_color": "#ffffff",
+        "right_bottom_link_padding_inline": 8,
+        "right_bottom_link_padding_bottom": 24,
+        "right_bottom_rule_thickness": 3,
+        "right_bottom_rule_inset": 0,
+        "right_bottom_rule_offset": 8
       }
     },
     "featured-product-list": {
       "type": "featured-product-list",
       "settings": {
         "color_scheme": "scheme-1",
-        "product_list": [],
+        "product_list": [
+          "men-cloudrunner-3-black-ivory",
+          "women-cloudrunner-3-heather-marsh",
+          "men-gel-nimbus-28-vital-green-illuminate-green",
+          "women-gel-nimbus-28-arctic-blue-velvet-purple"
+        ],
         "stack_products_mobile": false,
         "stack_products_desktop": false,
         "products_per_row_mobile": "2",
         "products_per_row_desktop": 4,
         "intro_color_scheme": "scheme-2",
         "intro_image_overlay": "#00000021",
-        "intro_title": "Winter collection",
+        "intro_title": "Latest Arrivals",
         "intro_title_tag": "h5",
-        "intro_content": "<p>Share details of your store's product selection, or share a story that speaks to your customers.</p>",
+        "intro_content": "<p>View the newest gear to arrive in store.</p>",
         "intro_button_text": "View all",
         "intro_button_link": "",
         "intro_button_style": "solid"
       }
     },
-    "featured-links": {
-      "type": "featured-links",
+    "media_blocks_UVKcQa": {
+      "type": "media-blocks",
       "blocks": {
-        "link-1": {
-          "type": "link",
+        "image_with_text_6QkmV9": {
+          "type": "image_with_text",
           "settings": {
-            "title": "Jackets",
-            "content": "",
-            "url": "",
-            "heading_tag": "display-m",
-            "background_hover": "#ecebe9",
-            "text_color_hover": ""
+            "change_color_scheme_on_hover": false,
+            "color_scheme": "",
+            "color_scheme_hover": "",
+            "image": "shopify://shop_images/DSCF0681.webp",
+            "icon": "none",
+            "icon_width": 32,
+            "mobile_icon_width": 24,
+            "icon_position": "middle_center",
+            "subheading": "",
+            "subheading_position": "middle_center",
+            "title": "OUR FIT PROCESS",
+            "heading_tag": "h1",
+            "heading_position": "middle_center",
+            "scrolling_title": false,
+            "scrolling_title_separator": "none",
+            "show_text_vertically": false,
+            "text": "",
+            "text_position": "middle_center",
+            "button_style": "solid",
+            "link_url": "",
+            "link_text": "",
+            "link_position": "middle_center"
           }
         },
-        "link-2": {
-          "type": "link",
+        "image_with_text_bq8Cn9": {
+          "type": "image_with_text",
           "settings": {
-            "title": "Tops",
-            "content": "",
-            "url": "",
-            "heading_tag": "display-m",
-            "background_hover": "#ecebe9",
-            "text_color_hover": ""
-          }
-        },
-        "link-3": {
-          "type": "link",
-          "settings": {
-            "title": "Bottoms",
-            "content": "",
-            "url": "",
-            "heading_tag": "display-m",
-            "background_hover": "#ecebe9",
-            "text_color_hover": ""
+            "change_color_scheme_on_hover": false,
+            "color_scheme": "scheme-3",
+            "color_scheme_hover": "",
+            "image": "shopify://shop_images/BANDIT_SPRING_26_COLLECTION_SLIDERS-01.webp",
+            "icon": "none",
+            "icon_width": 32,
+            "mobile_icon_width": 24,
+            "icon_position": "middle_center",
+            "subheading": "",
+            "subheading_position": "middle_center",
+            "title": "GROUP RUNS",
+            "heading_tag": "h1",
+            "heading_position": "middle_center",
+            "scrolling_title": false,
+            "scrolling_title_separator": "none",
+            "show_text_vertically": false,
+            "text": "",
+            "text_position": "middle_center",
+            "button_style": "solid",
+            "link_url": "",
+            "link_text": "",
+            "link_position": "middle_center"
           }
         }
       },
       "block_order": [
-        "link-1",
-        "link-2",
-        "link-3"
+        "image_with_text_6QkmV9",
+        "image_with_text_bq8Cn9"
       ],
-      "settings": {
-        "color_scheme": "scheme-1",
-        "title": "explore collections",
-        "layout": "list",
-        "show_dividers": true,
-        "change_colors_on_hover": true
-      }
-    },
-    "dynamic-grid": {
-      "type": "dynamic-grid",
-      "blocks": {
-        "dynamic-grid-item-1": {
-          "type": "_dynamic-grid-item",
-          "settings": {
-            "visibility": "both",
-            "text_alignment": "left",
-            "desktop_row_start": 2,
-            "desktop_column_start": 1,
-            "desktop_column_end": 6,
-            "desktop_horizontal_adjustment": 0,
-            "desktop_vertical_adjustment": 0,
-            "mobile_row_start": 2,
-            "mobile_column_start": 1,
-            "mobile_column_end": 5,
-            "mobile_horizontal_adjustment": 0,
-            "mobile_vertical_adjustment": 0,
-            "parallax_speed": 0,
-            "parallax_direction": "vertical"
-          },
-          "blocks": {
-            "dynamic-grid-heading-1": {
-              "type": "_dynamic-grid-heading",
-              "settings": {
-                "text": "Fall",
-                "show_text_vertically": false,
-                "font_size_desktop": 15,
-                "font_size_mobile": 15,
-                "font_size_line_height": 1,
-                "html_tag": "p",
-                "indent": "none",
-                "highlight_effect": "default",
-                "highlight_accent_color": "",
-                "highlight_text_color": ""
-              },
-              "blocks": {}
-            }
-          },
-          "block_order": [
-            "dynamic-grid-heading-1"
-          ]
-        },
-        "dynamic-grid-item-2": {
-          "type": "_dynamic-grid-item",
-          "settings": {
-            "visibility": "both",
-            "text_alignment": "left",
-            "desktop_row_start": 5,
-            "desktop_column_start": 4,
-            "desktop_column_end": 13,
-            "desktop_horizontal_adjustment": 0,
-            "desktop_vertical_adjustment": 0,
-            "mobile_row_start": 5,
-            "mobile_column_start": 1,
-            "mobile_column_end": 8,
-            "mobile_horizontal_adjustment": 0,
-            "mobile_vertical_adjustment": 0,
-            "parallax_speed": 0,
-            "parallax_direction": "vertical"
-          },
-          "blocks": {
-            "dynamic-grid-heading-1": {
-              "type": "_dynamic-grid-heading",
-              "settings": {
-                "text": "Winter",
-                "show_text_vertically": false,
-                "font_size_desktop": 15,
-                "font_size_mobile": 15,
-                "font_size_line_height": 1,
-                "html_tag": "p",
-                "indent": "none",
-                "highlight_effect": "default",
-                "highlight_accent_color": "",
-                "highlight_text_color": ""
-              },
-              "blocks": {}
-            }
-          },
-          "block_order": [
-            "dynamic-grid-heading-1"
-          ]
-        },
-        "dynamic-grid-item-3": {
-          "type": "_dynamic-grid-item",
-          "settings": {
-            "visibility": "both",
-            "text_alignment": "left",
-            "desktop_row_start": 8,
-            "desktop_column_start": 5,
-            "desktop_column_end": 10,
-            "desktop_horizontal_adjustment": 0,
-            "desktop_vertical_adjustment": 0,
-            "mobile_row_start": 8,
-            "mobile_column_start": 4,
-            "mobile_column_end": 8,
-            "mobile_horizontal_adjustment": 0,
-            "mobile_vertical_adjustment": 0,
-            "parallax_speed": 0,
-            "parallax_direction": "vertical"
-          },
-          "blocks": {
-            "dynamic-grid-heading-1": {
-              "type": "_dynamic-grid-heading",
-              "settings": {
-                "text": "2024",
-                "show_text_vertically": false,
-                "font_size_desktop": 15,
-                "font_size_mobile": 15,
-                "font_size_line_height": 1,
-                "html_tag": "p",
-                "indent": "none",
-                "highlight_effect": "default",
-                "highlight_accent_color": "",
-                "highlight_text_color": ""
-              },
-              "blocks": {}
-            }
-          },
-          "block_order": [
-            "dynamic-grid-heading-1"
-          ]
-        },
-        "dynamic-grid-item-4": {
-          "type": "_dynamic-grid-item",
-          "settings": {
-            "visibility": "both",
-            "text_alignment": "left",
-            "desktop_row_start": 2,
-            "desktop_column_start": 7,
-            "desktop_column_end": 8,
-            "desktop_horizontal_adjustment": 0,
-            "desktop_vertical_adjustment": 0,
-            "mobile_row_start": 2,
-            "mobile_column_start": 7,
-            "mobile_column_end": 8,
-            "mobile_horizontal_adjustment": 0,
-            "mobile_vertical_adjustment": 0,
-            "parallax_speed": 2,
-            "parallax_direction": "vertical"
-          },
-          "blocks": {
-            "image-with-caption-1": {
-              "type": "image-with-caption",
-              "settings": {
-                "caption": "",
-                "max_width": 100,
-                "mobile_max_width": 100
-              },
-              "blocks": {}
-            }
-          },
-          "block_order": [
-            "image-with-caption-1"
-          ]
-        },
-        "dynamic-grid-item-5": {
-          "type": "_dynamic-grid-item",
-          "settings": {
-            "visibility": "desktop_only",
-            "text_alignment": "left",
-            "desktop_row_start": 2,
-            "desktop_column_start": 15,
-            "desktop_column_end": 16,
-            "desktop_horizontal_adjustment": 0,
-            "desktop_vertical_adjustment": 0,
-            "mobile_row_start": 1,
-            "mobile_column_start": 1,
-            "mobile_column_end": 3,
-            "mobile_horizontal_adjustment": 0,
-            "mobile_vertical_adjustment": 0,
-            "parallax_speed": -1,
-            "parallax_direction": "vertical"
-          },
-          "blocks": {
-            "image-with-caption-1": {
-              "type": "image-with-caption",
-              "settings": {
-                "caption": "",
-                "max_width": 100,
-                "mobile_max_width": 100
-              },
-              "blocks": {}
-            }
-          },
-          "block_order": [
-            "image-with-caption-1"
-          ]
-        },
-        "dynamic-grid-item-6": {
-          "type": "_dynamic-grid-item",
-          "settings": {
-            "visibility": "desktop_only",
-            "text_alignment": "left",
-            "desktop_row_start": 5,
-            "desktop_column_start": 2,
-            "desktop_column_end": 3,
-            "desktop_horizontal_adjustment": 0,
-            "desktop_vertical_adjustment": 0,
-            "mobile_row_start": 4,
-            "mobile_column_start": 1,
-            "mobile_column_end": 2,
-            "mobile_horizontal_adjustment": 0,
-            "mobile_vertical_adjustment": 0,
-            "parallax_speed": -1,
-            "parallax_direction": "vertical"
-          },
-          "blocks": {
-            "image-with-caption-1": {
-              "type": "image-with-caption",
-              "settings": {
-                "caption": "",
-                "max_width": 100,
-                "mobile_max_width": 100
-              },
-              "blocks": {}
-            }
-          },
-          "block_order": [
-            "image-with-caption-1"
-          ]
-        },
-        "dynamic-grid-item-7": {
-          "type": "_dynamic-grid-item",
-          "settings": {
-            "visibility": "both",
-            "text_alignment": "left",
-            "desktop_row_start": 5,
-            "desktop_column_start": 14,
-            "desktop_column_end": 15,
-            "desktop_horizontal_adjustment": 0,
-            "desktop_vertical_adjustment": 0,
-            "mobile_row_start": 8,
-            "mobile_column_start": 1,
-            "mobile_column_end": 2,
-            "mobile_horizontal_adjustment": 0,
-            "mobile_vertical_adjustment": 0,
-            "parallax_speed": 2,
-            "parallax_direction": "vertical"
-          },
-          "blocks": {
-            "image-with-caption-1": {
-              "type": "image-with-caption",
-              "settings": {
-                "caption": "",
-                "max_width": 100,
-                "mobile_max_width": 100
-              },
-              "blocks": {}
-            }
-          },
-          "block_order": [
-            "image-with-caption-1"
-          ]
-        },
-        "dynamic-grid-item-8": {
-          "type": "_dynamic-grid-item",
-          "settings": {
-            "visibility": "desktop_only",
-            "text_alignment": "left",
-            "desktop_row_start": 8,
-            "desktop_column_start": 3,
-            "desktop_column_end": 4,
-            "desktop_horizontal_adjustment": 0,
-            "desktop_vertical_adjustment": 0,
-            "mobile_row_start": 5,
-            "mobile_column_start": 4,
-            "mobile_column_end": 5,
-            "mobile_horizontal_adjustment": 0,
-            "mobile_vertical_adjustment": -4,
-            "parallax_speed": 2,
-            "parallax_direction": "vertical"
-          },
-          "blocks": {
-            "image-with-caption-1": {
-              "type": "image-with-caption",
-              "settings": {
-                "caption": "",
-                "max_width": 100,
-                "mobile_max_width": 100
-              },
-              "blocks": {}
-            }
-          },
-          "block_order": [
-            "image-with-caption-1"
-          ]
-        },
-        "dynamic-grid-item-9": {
-          "type": "_dynamic-grid-item",
-          "settings": {
-            "visibility": "desktop_only",
-            "text_alignment": "left",
-            "desktop_row_start": 8,
-            "desktop_column_start": 15,
-            "desktop_column_end": 16,
-            "desktop_horizontal_adjustment": 0,
-            "desktop_vertical_adjustment": 0,
-            "mobile_row_start": 1,
-            "mobile_column_start": 1,
-            "mobile_column_end": 3,
-            "mobile_horizontal_adjustment": 0,
-            "mobile_vertical_adjustment": 0,
-            "parallax_speed": -1,
-            "parallax_direction": "vertical"
-          },
-          "blocks": {
-            "image-with-caption-1": {
-              "type": "image-with-caption",
-              "settings": {
-                "caption": "",
-                "max_width": 100,
-                "mobile_max_width": 100
-              },
-              "blocks": {}
-            }
-          },
-          "block_order": [
-            "image-with-caption-1"
-          ]
-        },
-        "dynamic-grid-item-10": {
-          "type": "_dynamic-grid-item",
-          "settings": {
-            "visibility": "both",
-            "text_alignment": "center",
-            "desktop_row_start": 9,
-            "desktop_column_start": 11,
-            "desktop_column_end": 14,
-            "desktop_horizontal_adjustment": 0,
-            "desktop_vertical_adjustment": -1,
-            "mobile_row_start": 11,
-            "mobile_column_start": 1,
-            "mobile_column_end": 8,
-            "mobile_horizontal_adjustment": 0,
-            "mobile_vertical_adjustment": 0,
-            "parallax_speed": 0,
-            "parallax_direction": "vertical"
-          },
-          "blocks": {
-            "button-1": {
-              "type": "button",
-              "settings": {
-                "text": "view lookbook",
-                "url": "",
-                "open_in_new_tab": false,
-                "style": "solid",
-                "background": "",
-                "text_color": ""
-              },
-              "blocks": {}
-            }
-          },
-          "block_order": [
-            "button-1"
-          ]
-        }
-      },
-      "block_order": [
-        "dynamic-grid-item-1",
-        "dynamic-grid-item-2",
-        "dynamic-grid-item-3",
-        "dynamic-grid-item-4",
-        "dynamic-grid-item-5",
-        "dynamic-grid-item-6",
-        "dynamic-grid-item-7",
-        "dynamic-grid-item-8",
-        "dynamic-grid-item-9",
-        "dynamic-grid-item-10"
-      ],
-      "settings": {
-        "color_scheme": "scheme-2",
-        "allow_transparent_header": true,
-        "show_background_image_parallax": false,
-        "add_vertical_spacing": true,
-        "add_horizontal_spacing": true,
-        "gap": 24,
-        "mobile_gap": 8,
-        "overlay_color": "#000000",
-        "overlay_opacity": 20
-      }
-    },
-    "hot-spots": {
-      "type": "hot-spots",
-      "blocks": {
-        "placeable-content-1": {
-          "type": "_placeable-content",
-          "settings": {
-            "position": "start",
-            "max_width": "xs"
-          },
-          "blocks": {
-            "subheading-1": {
-              "type": "subheading",
-              "settings": {
-                "text": "the autumn look"
-              },
-              "blocks": {}
-            },
-            "heading-1": {
-              "type": "heading",
-              "settings": {
-                "text": "BUILD TO <em>PERFORM</em>",
-                "heading_size": "h2",
-                "html_tag": "p",
-                "indent": "none",
-                "highlight_effect": "default",
-                "highlight_accent_color": "#e04837",
-                "highlight_text_color": "#ffffff"
-              },
-              "blocks": {}
-            }
-          },
-          "block_order": [
-            "subheading-1",
-            "heading-1"
-          ]
-        },
-        "hot-spot-content-product-1": {
-          "type": "_hot-spot-content-product",
-          "settings": {
-            "product": "",
-            "desktop_horizontal_position": 59,
-            "desktop_vertical_position": 35,
-            "mobile_horizontal_position": 84,
-            "mobile_vertical_position": 33
-          },
-          "blocks": {}
-        },
-        "hot-spot-content-product-2": {
-          "type": "_hot-spot-content-product",
-          "settings": {
-            "product": "",
-            "desktop_horizontal_position": 39,
-            "desktop_vertical_position": 66,
-            "mobile_horizontal_position": 37,
-            "mobile_vertical_position": 62
-          },
-          "blocks": {}
-        },
-        "hot-spot-content-product-3": {
-          "type": "_hot-spot-content-product",
-          "settings": {
-            "product": "",
-            "desktop_horizontal_position": 50,
-            "desktop_vertical_position": 85,
-            "mobile_horizontal_position": 62,
-            "mobile_vertical_position": 79
-          },
-          "blocks": {}
-        }
-      },
-      "block_order": [
-        "placeable-content-1",
-        "hot-spot-content-product-1",
-        "hot-spot-content-product-2",
-        "hot-spot-content-product-3"
-      ],
-      "settings": {
-        "color_scheme": "scheme-4",
-        "hot_spot_background": "#ffffff",
-        "hot_spot_color": "#000000",
-        "background_text": "",
-        "background_text_size": "display-l",
-        "lower_scrolling_text_layer": true,
-        "show_scrolling_title": false
-      }
-    },
-    "products-with-image": {
-      "type": "products-with-image",
-      "blocks": {
-        "subheading-1": {
-          "type": "subheading",
-          "settings": {
-            "text": "timeless caps & beanie",
-            "position": "top_left"
-          }
-        },
-        "heading-1": {
-          "type": "heading",
-          "settings": {
-            "text": "Style & <em>Comfort</em>",
-            "heading_tag": "h2",
-            "position": "bottom_left",
-            "highlight_effect": "default",
-            "highlight_accent_color": "",
-            "highlight_text_color": ""
-          }
-        },
-        "richtext-1": {
-          "type": "richtext",
-          "settings": {
-            "text": "<p>Stay warm in style with caps and beanies designed for comfort, performance, and life on the move.</p>",
-            "position": "bottom_left"
-          }
-        }
-      },
-      "block_order": [
-        "subheading-1",
-        "heading-1",
-        "richtext-1"
-      ],
-      "settings": {
-        "color_scheme": "scheme-2",
-        "products": [],
-        "desktop_product_list_position": "start",
-        "overlay_color": "#000000",
-        "overlay_opacity": 5,
-        "desktop_product_layout": "carousel",
-        "mobile_product_layout": "carousel",
-        "mobile_products_per_row": "2"
-      }
-    },
-    "reading-text": {
-      "type": "reading-text",
-      "settings": {
-        "color_scheme": "scheme-2",
-        "subheading": "About us",
-        "content": "Designed to bring ease and assurance to everyday life, this apparel blends practicality, function, and comfort for all-day wear.",
-        "button_text": "learn more",
-        "button_link": "",
-        "heading_tag": "h2",
-        "mobile_text_position": "place-self-center",
-        "desktop_text_position": "sm:place-self-center",
-        "content_width": "lg",
-        "reading_speed": "1.5",
-        "separate_button": false,
-        "text_opacity": 20,
-        "overlay_color": "#ffffff",
-        "overlay_opacity": 10
-      }
-    },
-    "testimonials": {
-      "type": "testimonials",
-      "blocks": {
-        "testimonial-1": {
-          "type": "testimonial",
-          "settings": {
-            "show_rating": true,
-            "rating": 4,
-            "author": "John b., An experienced hiker",
-            "title": "The Alpine pants are a game-changer for mountain treks. Lightweight yet durable, they offer excellent breathability and weather resistance. The articulated knees ensure total freedom on steep climbs.",
-            "heading_tag": "h5",
-            "product": "",
-            "position": "place-self-end-start"
-          }
-        },
-        "testimonial-2": {
-          "type": "testimonial",
-          "settings": {
-            "show_rating": true,
-            "rating": 5,
-            "author": "Chase S., golfer",
-            "title": "Perfect for chilly mornings, the Trail fleece delivers warmth without bulk. Its quick-dry fabric and ergonomic cut make it a reliable companion for running or layering during hikes.",
-            "heading_tag": "h5",
-            "product": "",
-            "position": "place-self-end-start"
-          }
-        }
-      },
-      "block_order": [
-        "testimonial-1",
-        "testimonial-2"
-      ],
+      "name": "t:sections.media_blocks.name",
       "settings": {
         "color_scheme": "",
-        "text_alignment": "left",
-        "image_position": "end",
-        "autoplay": true,
-        "cycle_speed": 6
-      }
-    },
-    "countdown": {
-      "type": "countdown",
-      "settings": {
-        "color_scheme": "scheme-2",
-        "image_position": "split",
-        "image_size": "md",
-        "add_image_spacing": true,
+        "allow_transparent_header": true,
         "subheading": "",
-        "title": "Special <em>Sale</em>",
-        "heading_tag": "display-xl",
-        "content": "<p>Shop our selection of exclusive products at reduced price during the Special Sale. Hurry up!</p>",
-        "button_text": "Discover",
-        "button_url": "",
-        "button_style": "outline",
-        "expiration_date": "2025-07-03 12:00",
-        "expiration_behavior": "leave",
-        "timer_size": "h1",
-        "show_timer_borders": true,
-        "animate_timer_numbers": true,
-        "caption_text": "Don't miss it!",
-        "caption_scrolling": true,
-        "caption_text_color": "#ffffff"
+        "title": "COME ON BY",
+        "content": "",
+        "heading_tag": "h4",
+        "text_alignment": "left",
+        "scrolling_title": false,
+        "scrolling_title_separator": "circle",
+        "stack_on_mobile": true,
+        "add_horizontal_spacing": true,
+        "add_border": false,
+        "column_spacing": "sm",
+        "items_per_row": 2,
+        "block_size": "auto"
       }
     },
-    "before-after": {
-      "type": "before-after",
+    "multi_column_RfVWNn": {
+      "type": "multi-column",
       "blocks": {
-        "before-1": {
-          "type": "before",
+        "multi_column_column_Pxid6m": {
+          "type": "_multi-column-column",
           "settings": {
-            "color_scheme": "scheme-4",
-            "text": "Before",
-            "text_size": "h7",
-            "text_position": "start"
-          }
-        },
-        "after-1": {
-          "type": "after",
-          "settings": {
-            "color_scheme": "scheme-4",
-            "text": "After",
-            "text_size": "h7",
-            "text_position": "start"
-          }
-        }
-      },
-      "block_order": [
-        "before-1",
-        "after-1"
-      ],
-      "settings": {
-        "color_scheme": "scheme-1",
-        "layout": "stacked",
-        "add_comparison_spacing": false,
-        "subheading": "Footwear Program",
-        "title": "The reinvented hiking boot",
-        "title_tag": "h3",
-        "content": "<p>Introducing a new generation of footwear—crafted for modern explorers who move with purpose. Blending style, comfort, and performance, these shoes are built for both urban journeys and outdoor escapes.</p>",
-        "button_text": "shop",
-        "button_url": "shopify://collections/all",
-        "button_style": "link",
-        "cursor_direction": "horizontal",
-        "cursor_initial_position": 50,
-        "cursor_background": "#ffffff",
-        "cursor_arrows_color": "#000000"
-      }
-    },
-    "dynamic-grid-2": {
-      "type": "dynamic-grid",
-      "blocks": {
-        "dynamic-grid-item-1": {
-          "type": "_dynamic-grid-item",
-          "settings": {
-            "visibility": "both",
-            "text_alignment": "center",
-            "desktop_row_start": 5,
-            "desktop_column_start": 3,
-            "desktop_column_end": 14,
-            "desktop_horizontal_adjustment": 0,
-            "desktop_vertical_adjustment": -2,
-            "mobile_row_start": 4,
-            "mobile_column_start": 1,
-            "mobile_column_end": 8,
-            "mobile_horizontal_adjustment": 0,
-            "mobile_vertical_adjustment": 0,
-            "parallax_speed": -1,
-            "parallax_direction": "vertical"
+            "color_scheme": "",
+            "text_alignment": "left"
           },
           "blocks": {
-            "dynamic-grid-heading-1": {
-              "type": "_dynamic-grid-heading",
+            "image_iieVbb": {
+              "type": "image",
               "settings": {
-                "text": "Sleek and Pragmatic",
-                "show_text_vertically": false,
-                "font_size_desktop": 8.5,
-                "font_size_mobile": 15,
-                "font_size_line_height": 0.9,
+                "max_width": 100,
+                "mobile_max_width": 100
+              },
+              "blocks": {}
+            },
+            "heading_TdkWLh": {
+              "type": "heading",
+              "settings": {
+                "text": "Column 1",
+                "heading_size": "h4",
                 "html_tag": "p",
                 "indent": "none",
                 "highlight_effect": "default",
@@ -869,251 +242,212 @@
               },
               "blocks": {}
             },
-            "rich-text-1": {
+            "rich_text_DcJje3": {
               "type": "rich-text",
               "settings": {
-                "text": "<p>We offer comfortable basics for every sphere of daily life.</p>",
+                "text": "<p>Pair text with an image to focus on your chosen product, collection, or blog post. Add details on availability, style, or even provide a review.</p>",
                 "content_width": "sm"
               },
               "blocks": {}
             }
           },
           "block_order": [
-            "dynamic-grid-heading-1",
-            "rich-text-1"
+            "image_iieVbb",
+            "heading_TdkWLh",
+            "rich_text_DcJje3"
           ]
         },
-        "dynamic-grid-item-2": {
-          "type": "_dynamic-grid-item",
+        "multi_column_column_h7WFqU": {
+          "type": "_multi-column-column",
           "settings": {
-            "visibility": "both",
-            "text_alignment": "left",
-            "desktop_row_start": 3,
-            "desktop_column_start": 4,
-            "desktop_column_end": 5,
-            "desktop_horizontal_adjustment": 0,
-            "desktop_vertical_adjustment": 0,
-            "mobile_row_start": 2,
-            "mobile_column_start": 2,
-            "mobile_column_end": 3,
-            "mobile_horizontal_adjustment": 0,
-            "mobile_vertical_adjustment": 0,
-            "parallax_speed": -3,
-            "parallax_direction": "vertical"
+            "color_scheme": "",
+            "text_alignment": "left"
           },
           "blocks": {
-            "image-with-caption-1": {
-              "type": "image-with-caption",
+            "image_rdpFYg": {
+              "type": "image",
               "settings": {
-                "caption": "",
                 "max_width": 100,
                 "mobile_max_width": 100
+              },
+              "blocks": {}
+            },
+            "heading_8LKtV4": {
+              "type": "heading",
+              "settings": {
+                "text": "Column 2",
+                "heading_size": "h4",
+                "html_tag": "p",
+                "indent": "none",
+                "highlight_effect": "default",
+                "highlight_accent_color": "",
+                "highlight_text_color": ""
+              },
+              "blocks": {}
+            },
+            "rich_text_VH7rRP": {
+              "type": "rich-text",
+              "settings": {
+                "text": "<p>Pair text with an image to focus on your chosen product, collection, or blog post. Add details on availability, style, or even provide a review.</p>",
+                "content_width": "sm"
               },
               "blocks": {}
             }
           },
           "block_order": [
-            "image-with-caption-1"
+            "image_rdpFYg",
+            "heading_8LKtV4",
+            "rich_text_VH7rRP"
           ]
         },
-        "dynamic-grid-item-3": {
-          "type": "_dynamic-grid-item",
+        "multi_column_column_qj8iAy": {
+          "type": "_multi-column-column",
           "settings": {
-            "visibility": "both",
-            "text_alignment": "left",
-            "desktop_row_start": 3,
-            "desktop_column_start": 6,
-            "desktop_column_end": 7,
-            "desktop_horizontal_adjustment": 0,
-            "desktop_vertical_adjustment": 0,
-            "mobile_row_start": 2,
-            "mobile_column_start": 4,
-            "mobile_column_end": 5,
-            "mobile_horizontal_adjustment": 0,
-            "mobile_vertical_adjustment": 0,
-            "parallax_speed": 0,
-            "parallax_direction": "vertical"
+            "color_scheme": "",
+            "text_alignment": "left"
           },
           "blocks": {
-            "image-with-caption-1": {
-              "type": "image-with-caption",
+            "image_6VYXt9": {
+              "type": "image",
               "settings": {
-                "caption": "",
                 "max_width": 100,
                 "mobile_max_width": 100
+              },
+              "blocks": {}
+            },
+            "heading_cJDcKG": {
+              "type": "heading",
+              "settings": {
+                "text": "Column 3",
+                "heading_size": "h4",
+                "html_tag": "p",
+                "indent": "none",
+                "highlight_effect": "default",
+                "highlight_accent_color": "",
+                "highlight_text_color": ""
+              },
+              "blocks": {}
+            },
+            "rich_text_jcmDE8": {
+              "type": "rich-text",
+              "settings": {
+                "text": "<p>Pair text with an image to focus on your chosen product, collection, or blog post. Add details on availability, style, or even provide a review.</p>",
+                "content_width": "sm"
               },
               "blocks": {}
             }
           },
           "block_order": [
-            "image-with-caption-1"
+            "image_6VYXt9",
+            "heading_cJDcKG",
+            "rich_text_jcmDE8"
           ]
         },
-        "dynamic-grid-item-4": {
-          "type": "_dynamic-grid-item",
+        "section-header": {
+          "type": "_section-header",
+          "static": true,
           "settings": {
-            "visibility": "both",
+            "subheading": "",
+            "title": "Multi-column",
+            "content": "<p>Use this content to share information about your store and products.</p>",
+            "button_text": "",
+            "button_link": "",
+            "button_style": "outline",
             "text_alignment": "left",
-            "desktop_row_start": 3,
-            "desktop_column_start": 8,
-            "desktop_column_end": 9,
-            "desktop_horizontal_adjustment": 0,
-            "desktop_vertical_adjustment": 0,
-            "mobile_row_start": 2,
-            "mobile_column_start": 6,
-            "mobile_column_end": 7,
-            "mobile_horizontal_adjustment": 0,
-            "mobile_vertical_adjustment": 0,
-            "parallax_speed": -3,
-            "parallax_direction": "vertical"
+            "heading_size": "h3",
+            "title_icon": "none",
+            "show_scrolling_title": false
           },
-          "blocks": {
-            "image-with-caption-1": {
-              "type": "image-with-caption",
-              "settings": {
-                "caption": "",
-                "max_width": 100,
-                "mobile_max_width": 100
-              },
-              "blocks": {}
-            }
-          },
-          "block_order": [
-            "image-with-caption-1"
-          ]
-        },
-        "dynamic-grid-item-5": {
-          "type": "_dynamic-grid-item",
-          "settings": {
-            "visibility": "desktop_only",
-            "text_alignment": "left",
-            "desktop_row_start": 3,
-            "desktop_column_start": 10,
-            "desktop_column_end": 11,
-            "desktop_horizontal_adjustment": 0,
-            "desktop_vertical_adjustment": 0,
-            "mobile_row_start": 8,
-            "mobile_column_start": 6,
-            "mobile_column_end": 8,
-            "mobile_horizontal_adjustment": 0,
-            "mobile_vertical_adjustment": 0,
-            "parallax_speed": 0,
-            "parallax_direction": "vertical"
-          },
-          "blocks": {
-            "image-with-caption-1": {
-              "type": "image-with-caption",
-              "settings": {
-                "caption": "",
-                "max_width": 100,
-                "mobile_max_width": 100
-              },
-              "blocks": {}
-            }
-          },
-          "block_order": [
-            "image-with-caption-1"
-          ]
-        },
-        "dynamic-grid-item-6": {
-          "type": "_dynamic-grid-item",
-          "settings": {
-            "visibility": "desktop_only",
-            "text_alignment": "left",
-            "desktop_row_start": 3,
-            "desktop_column_start": 12,
-            "desktop_column_end": 13,
-            "desktop_horizontal_adjustment": 0,
-            "desktop_vertical_adjustment": 0,
-            "mobile_row_start": 1,
-            "mobile_column_start": 1,
-            "mobile_column_end": 3,
-            "mobile_horizontal_adjustment": 0,
-            "mobile_vertical_adjustment": 0,
-            "parallax_speed": -3,
-            "parallax_direction": "vertical"
-          },
-          "blocks": {
-            "image-with-caption-1": {
-              "type": "image-with-caption",
-              "settings": {
-                "caption": "",
-                "max_width": 100,
-                "mobile_max_width": 100
-              },
-              "blocks": {}
-            }
-          },
-          "block_order": [
-            "image-with-caption-1"
-          ]
+          "blocks": {}
         }
       },
       "block_order": [
-        "dynamic-grid-item-1",
-        "dynamic-grid-item-2",
-        "dynamic-grid-item-3",
-        "dynamic-grid-item-4",
-        "dynamic-grid-item-5",
-        "dynamic-grid-item-6"
+        "multi_column_column_Pxid6m",
+        "multi_column_column_h7WFqU",
+        "multi_column_column_qj8iAy"
       ],
+      "name": "t:sections.multi_column.name",
       "settings": {
         "color_scheme": "",
-        "allow_transparent_header": true,
-        "show_background_image_parallax": false,
-        "add_vertical_spacing": true,
+        "show_internal_borders": false,
         "add_horizontal_spacing": true,
-        "gap": 8,
-        "mobile_gap": 4,
-        "overlay_color": "#000000",
-        "overlay_opacity": 20
+        "add_top_spacing": true,
+        "add_bottom_spacing": true,
+        "items_per_row": 3,
+        "stack_on_mobile": false,
+        "stack_on_desktop": true,
+        "column_spacing": "md",
+        "row_spacing": "md"
       }
     },
-    "blog-posts": {
-      "type": "blog-posts",
+    "store_locations_XHdEzN": {
+      "type": "store-locations",
       "blocks": {
-        "blog-1": {
-          "type": "blog",
+        "location_bajNKp": {
+          "type": "location",
           "settings": {
-            "blog": "news",
-            "posts_count": 4
+            "location_name": "Northeast",
+            "background_color": "",
+            "text_color": "",
+            "address": "<p>411 E Hennepin Avenue<br/>Minneapolis, MN 55414</p>",
+            "hours": "<p>Monday - Thursday | 11am - 7pm<br/>Friday | 11am - 6pm<br/>Saturday | 10am - 5pm<br/>Sunday | 11am - 5pm</p>",
+            "directions_url": "https://share.google/w462wEbLPqnjZqrtT",
+            "directions_label": "Directions",
+            "latitude": "44.988792670920034",
+            "longitude": "-93.25441750035122",
+            "map_zoom": 16,
+            "map_embed": ""
+          }
+        },
+        "location_Fcmgn4": {
+          "type": "location",
+          "settings": {
+            "location_name": "Highland",
+            "background_color": "",
+            "text_color": "",
+            "address": "<p>767 Cleveland Avenue S<br/>Saint Paul, MN 55116</p>",
+            "hours": "<p>Monday - Thursday | 11am - 7pm<br/>Friday | 11am - 6pm<br/>Saturday | 10am - 5pm<br/>Sunday | 11am - 5pm</p>",
+            "directions_url": "https://share.google/eb1LZNDM6hjd5BMXb",
+            "directions_label": "Directions",
+            "latitude": "44.918390214619734",
+            "longitude": "-93.18753703592215",
+            "map_zoom": 14,
+            "map_embed": ""
           }
         }
       },
       "block_order": [
-        "blog-1"
+        "location_bajNKp",
+        "location_Fcmgn4"
       ],
+      "name": "Store locations",
       "settings": {
         "color_scheme": "scheme-1",
-        "mobile_layout": "carousel",
-        "desktop_layout": "grid",
-        "title": "Latest news",
-        "heading_tag": "h1",
-        "scrolling_title_separator": "square",
-        "scrolling_title": false,
-        "button_link": "",
-        "button_text": "Read journal",
-        "button_style": "outline",
-        "blog_post_card_heading_size": "h4",
-        "separator_style": "border",
-        "show_category": true,
-        "show_date": true,
-        "show_excerpt": false
+        "subheading": "",
+        "title": "LOCATIONS",
+        "heading_size": "h2",
+        "content": "",
+        "overview_zoom": 11,
+        "location_panel_width": 30,
+        "location_side_padding": 60,
+        "desktop_map_height": 720,
+        "mobile_map_height": 500,
+        "map_style": "light",
+        "marker_color": "#1c1c1c",
+        "default_map_embed": "",
+        "location_heading_size": "h3",
+        "location_text_alignment": "end",
+        "show_location_name_tag": false,
+        "location_name_tag_background": "#f3f0ea",
+        "location_name_tag_border": "#111111"
       }
     }
   },
   "order": [
-    "slideshow",
+    "split_hero",
     "featured-product-list",
-    "featured-links",
-    "dynamic-grid",
-    "hot-spots",
-    "products-with-image",
-    "reading-text",
-    "testimonials",
-    "countdown",
-    "before-after",
-    "dynamic-grid-2",
-    "blog-posts"
+    "media_blocks_UVKcQa",
+    "multi_column_RfVWNn",
+    "store_locations_XHdEzN"
   ]
 }

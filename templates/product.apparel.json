@@ -42,10 +42,6 @@
             "show_empty": false
           }
         },
-        "payment_terms": {
-          "type": "payment_terms",
-          "settings": {}
-        },
         "separator": {
           "type": "separator",
           "settings": {}
@@ -93,6 +89,24 @@
             "payment_button_text_color": ""
           }
         },
+        "icons_with_text_YXHHAJ": {
+          "type": "icons_with_text",
+          "settings": {
+            "items_per_row": 3,
+            "icon_1_default": "picto-truck",
+            "icon_1_width": 50,
+            "icon_1_text": "FREE SHIPPING $100+",
+            "icon_2_default": "picto-return-box",
+            "icon_2_width": 50,
+            "icon_2_text": "EASY RETURNS",
+            "icon_3_default": "picto-secure",
+            "icon_3_width": 50,
+            "icon_3_text": "SECURE CHECKOUT",
+            "icon_4_default": "none",
+            "icon_4_width": 24,
+            "icon_4_text": ""
+          }
+        },
         "accordion_product_details": {
           "type": "accordion",
           "settings": {
@@ -106,8 +120,8 @@
         "accordion_tech_specs": {
           "type": "accordion",
           "settings": {
-            "title": "Tech Specs",
-            "content": "<p>Add structured footwear specs here, like weight, drop, stack height, foam, and surface.</p>",
+            "title": "Materials & Care",
+            "content": "<p>Add fabric details, fit notes, and care instructions here.</p>",
             "uppercase_title": false,
             "icon": "none",
             "page": ""
@@ -136,7 +150,7 @@
         "sibling_color_picker",
         "variant_picker",
         "buy_buttons",
-        "payment_terms",
+        "icons_with_text_YXHHAJ",
         "accordion_product_details",
         "accordion_tech_specs",
         "accordion_shipping_returns"
@@ -150,12 +164,115 @@
         "product_media_size": 50,
         "content_alignment": "left",
         "desktop_media_layout": "carousel",
-        "desktop_carousel_controls": "lines",
-        "mobile_controls": "lines",
+        "desktop_carousel_controls": "thumbnails_over",
+        "mobile_controls": "thumbnails",
         "enable_media_autoplay": false,
         "enable_video_looping": true,
         "enable_image_zoom": true,
         "max_image_zoom_level": 3
+      }
+    },
+    "apparel-feature-cards": {
+      "type": "pdp-feature-cards",
+      "blocks": {
+        "feature_1": {
+          "type": "feature",
+          "settings": {
+            "image": "shopify://shop_images/file.press.png",
+            "icon": "picto-check-mark",
+            "icon_width": 36,
+            "heading": "Light on your feet",
+            "heading_size": "h4",
+            "text": "<p>Use this card to highlight a key product benefit, fabric innovation, or feel on the run.</p>"
+          }
+        },
+        "feature_2": {
+          "type": "feature",
+          "settings": {
+            "image": "shopify://shop_images/asics-gel-nimbus-28-24039655-main.webp",
+            "icon": "picto-star",
+            "icon_width": 36,
+            "heading": "Built for long efforts",
+            "heading_size": "h4",
+            "text": "<p>Use this card to explain durability, performance, or what kind of training this product is made for.</p>"
+          }
+        },
+        "feature_3": {
+          "type": "feature",
+          "settings": {
+            "image": "shopify://shop_images/images.jpg",
+            "icon": "picto-leaf",
+            "icon_width": 36,
+            "heading": "Made to move",
+            "heading_size": "h4",
+            "text": "<p>Use this card for comfort, layering, range of motion, or any feature that helps tell the product story.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "feature_1",
+        "feature_2",
+        "feature_3"
+      ],
+      "settings": {
+        "color_scheme": "scheme-1",
+        "add_horizontal_spacing": true,
+        "content_source": "product",
+        "top_spacing": "md",
+        "subheading": "",
+        "title": "",
+        "content": "",
+        "heading_size": "h3",
+        "text_alignment": "left",
+        "items_per_row": 3,
+        "column_spacing": "md",
+        "image_ratio": "landscape",
+        "media_corner_radius": 0
+      }
+    },
+    "apparel-split-story": {
+      "type": "pdp-split-story",
+      "settings": {
+        "color_scheme": "",
+        "add_horizontal_spacing": true,
+        "top_spacing": "md",
+        "content_position": "left",
+        "content_width_percentage": 45,
+        "content_width": 520,
+        "column_spacing": "lg",
+        "image_ratio": "landscape",
+        "media_corner_radius": 0,
+        "subheading": "",
+        "title": "Designed for the long haul",
+        "heading_size": "h3",
+        "text_alignment": "left",
+        "text": "<p>Use this section when a brand gives you one strong lifestyle image and a longer product story, athlete quote, or feature narrative.</p>",
+        "button_text": "",
+        "button_link": "",
+        "button_style": "outline"
+      }
+    },
+    "apparel-hero-story": {
+      "type": "pdp-hero-story",
+      "settings": {
+        "color_scheme": "scheme-3",
+        "add_horizontal_spacing": false,
+        "top_spacing": "md",
+        "section_height": "md",
+        "overlay_color": "#000000",
+        "overlay_opacity": 20,
+        "media_corner_radius": 0,
+        "content_width": "md",
+        "desktop_text_position": "sm:place-self-end-start",
+        "mobile_text_position": "place-self-end-start",
+        "text_alignment": "left",
+        "subheading": "",
+        "title": "A hero story band for campaign assets",
+        "heading_size": "h2",
+        "text": "<p>Use this when a brand gives you one standout image and a short piece of campaign copy that deserves a full-width moment.</p>",
+        "button_text": "",
+        "button_link": "",
+        "button_style": "outline"
       }
     },
     "related-products": {
@@ -166,7 +283,7 @@
           "static": true,
           "settings": {
             "subheading": "",
-            "title": "Similar shoes",
+            "title": "Similar apparel",
             "content": "",
             "button_text": "",
             "button_link": "",
@@ -188,35 +305,13 @@
         "show_view_all_button": true,
         "show_scrolling_bar": true
       }
-    },
-    "footwear-story": {
-      "type": "footwear-story",
-      "settings": {
-        "color_scheme": "",
-        "subheading": "",
-        "title": "Description",
-        "heading_size": "h3",
-        "use_product_description": true,
-        "content": "<p>Add richer below-the-fold storytelling here, or leave this blank and use the product description above.</p>",
-        "image": "",
-        "mobile_image": "",
-        "image_position": "end",
-        "add_image_spacing": false
-      }
-    },
-    "compare-shoes": {
-      "type": "compare-shoes",
-      "settings": {
-        "color_scheme": "",
-        "title": "Compare shoes",
-        "heading_size": "h3"
-      }
     }
   },
   "order": [
     "main",
-    "footwear-story",
-    "compare-shoes",
+    "apparel-feature-cards",
+    "apparel-split-story",
+    "apparel-hero-story",
     "related-products"
   ]
 }
